@@ -1,0 +1,50 @@
+body{
+    background-color:#46aea8;
+}
+
+#twitter-user-container,
+#twitter-brand-container{
+    background-color: #def2f1;
+    min-height: 1000px;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+#comparison{
+    background-color: #17252a;
+    min-height: 400px;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+#history{
+    background-color: #a0b2b2;
+    min-height: 580px;
+    padding: 30px;
+    border-radius: 10px;
+    margin-top:20px;
+}
+
+#title{
+    font-size: 50px;
+    color: white;
+}
+
+#bae-description{
+    color:white;
+}
+
+i{
+    color:white;
+}
+
+#analyze-btn{
+    max-width:530px;
+    margin:10px auto 10px auto;
+    background:#063535;
+    font-size:20px;
+}
+#analyze-btn:hover {
+    background: #a0b2b2;
+    color:#063535;
+}

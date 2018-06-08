@@ -1,0 +1,49 @@
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, inital-scale=1")
+
+        <!-- settings -->
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+        link(href="https://fonts.googleapis.com/css?family=Ubuntu:300", rel="stylesheet")
+
+        <!-- bootstrap -->
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css",
+            integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", crossorigin="anonymous")
+
+        <!-- fontawesome -->
+        link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
+            integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
+
+        <!-- customized -->
+        link(href="css/index.css", rel="stylesheet")
+
+        body
+            div(class="headers", style="display:block;margin:50px auto auto auto;max-width:800px;text-align:center;")
+                img(src="img/bae_bg_logo.png", height=450)
+                h1(id="title") Brand Analytic Environment
+                p(id="bae-description") Use linguistic analytics to infer individuals' personality characteristics, including Big Five, Needs
+            div(class="search", style="display:block;margin:50px auto auto auto; max-width:800px; text-align:center;")
+                div(id="user-search", class="controls form-inline", style="margin:10px auto 10px auto;")
+                    i(class="fas fa-user-alt")
+                    input(class="form-control", placeholder="User's screen name", style="width:500px;margin-left:20px;")
+                div(id="brand-search", class="controls form-inline", style="margin:10px auto 10px auto;")
+                    i(class="fas fa-building")
+                    input(class="form-control", placeholder="Brand's screen name", style="width:500px;margin-left:20px;")
+                button(id="analyze-btn", class="btn btn-primary btn-block") Start Analyze
+
+            div(class="display", style="margin:50px 100px;")
+                div(class="col col-md-4 col-sm-4 col-xs-12")
+                    div(id="twitter-user-container")
+                div(class="col col-md-4 col-sm-4 col-xs-12")
+                    div(id="twitter-brand-container")
+                div(class="col col-md-4 col-sm-4 col-xs-12")
+                    div(id="comparison")
+                    div(id="history")
+
