@@ -1,8 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var result = require('./result-president-trump-tweets.json');
 
 router.get('/', function(req, res, next){
-    res.render('index', {});
+    res.render('index',{});
+});
+
+router.post('/update', function(req, res, next){
+    res.send({
+                user:{"screen_name": "@realDonaldTrump1",
+                    "profile_img": "",
+                    "personality": result},
+                brand:{"screen_name": "@realDonaldTrump1",
+                    "profile_img": "",
+                    "personality": result}
+        });
 });
 
 module.exports = router;
