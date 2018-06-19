@@ -24,6 +24,9 @@ html
         <!-- customized -->
         link(href="css/index.css", rel="stylesheet")
 
+        <!-- google chart -->
+        script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")
+
         body
             div(class="headers", style="display:block;margin:50px auto auto auto;max-width:800px;text-align:center;")
                 img(src="img/bae_bg_logo.png", height=450)
@@ -41,17 +44,6 @@ html
             div(class="display", style="margin:50px 50px;")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
                     div(id="twitter-user-container")
-                        div(style="text-align:center;")
-                            img(src="https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg", style="width:50px;border-radius:50px;display:inline-block;")
-                            h2(style="display:inline-block;margin-left:10px;vertical-align:middle") @realDonaldTrump
-                        div
-                            h3 Word Count: 6143
-                            h3 Language: EN
-                            h4 Openness 94%
-                            h4 Conscientiousness 13%
-                            h4 Extraversion 95%
-                            h4 Agreeableness 13%
-                            h4 Emotional Range 55%
                 div(class="col col-md-4 col-sm-4 col-xs-12")
                     div(id="twitter-brand-container")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
