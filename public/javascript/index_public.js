@@ -45,29 +45,36 @@ function updatePersonality(personality){
     //$(".personality.personality").empty();
     $.each(personality, function(i, content){
         $("#personality-personality").append(`
-            <h4>` + content['name'] + `&nbsp` + (content['percentile'] * 100).toFixed(2)  +`%</h4>
-            <div id=` + content['trait_id'] + `></div>
+            <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp` + (content['percentile'] * 100).toFixed(2)  +`%</h4>
+            <button style="float:right;background:none;border:none;"><i class="fas fa-chevron-circle-down" style="color:black;"></i></button>
+            <div style="margin:20px 0 20px 0;" id=` + content['trait_id'] + `></div>
         `);
 
-        var table = [['trait', '%']];
+        var table = [['', 'percentile']];
         $.each(content['children'], function(j,child){
-            table.push([child['name'], (child['percentile'] * 100).toFixed(2)])
-            //$("#personality-personality").append(`<h5>` + child['name'] + `&nbsp` + (child['percentile'] * 100).toFixed(2) + `%</h5>`);
+            table.push([child['name'], child['percentile'] * 100])
         });
+
+        console.log(table);
 
         var dataTable = google.visualization.arrayToDataTable(table);
         var materialOptions = {
             bars: 'horizontal',
-            hAxis: {textPosition: 'none'},
-            vAxis: {textPosition: 'none'},
+            legend: { position: 'none' },
             axes: {
                 y: {
                     0: {side: 'right'}
                 }
-            }
+            },
+            tooltip: {
+                textStyle: {
+                    color:'black'
+                }
+            },
+            backgroundColor:'transparent',
         };
         var materialChart = new google.charts.Bar(document.getElementById(content['trait_id']));
-        materialChart.draw(dataTable, materialOptions);
+        materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
     });
 };
 
