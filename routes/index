@@ -8,11 +8,11 @@ router.get('/', function(req, res, next){
 
 router.post('/update', function(req, res, next){
     res.send({
-                user:{"screen_name": "@realDonaldTrump1",
+                user:{"screen_name": "@realDonaldTrump",
                     "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
                     "personality": result},
-                brand:{"screen_name": "@realDonaldTrump1",
-                    "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
+                brand:{"screen_name": "@Nike",
+                    "profile_img": "https://pbs.twimg.com/profile_images/953320896101412864/UdE5mfkP_400x400.jpg",
                     "personality": result}
         });
 });

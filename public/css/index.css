@@ -1,5 +1,6 @@
 body{
     background-color:#46aea8;
+    font-family: 'Roboto';
 }
 
 #twitter-user-container,
@@ -9,6 +10,8 @@ body{
     padding: 30px;
     border-radius: 10px;
     overflow:auto;
+    /*font-family:'Roboto';*/
+    color:#063535;
 }
 
 #comparison{
