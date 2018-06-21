@@ -1,19 +1,26 @@
 var express = require('express');
 var router = express.Router();
-var result = require('./result-president-trump-tweets.json');
+var resultUser = require('./result-president-trump-tweets.json');
+var resultBrand = require('./result-profile.json');
 
 router.get('/', function(req, res, next){
     res.render('index',{});
+});
+
+router.get('/sunburst', function(req, res, next){
+    res.render('sunburst', {personality:resultUser,
+        profile_img:"https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg"});
 });
 
 router.post('/update', function(req, res, next){
     res.send({
                 user:{"screen_name": "@realDonaldTrump",
                     "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
-                    "personality": result},
+                    "personality": resultUser},
                 brand:{"screen_name": "@Nike",
                     "profile_img": "https://pbs.twimg.com/profile_images/953320896101412864/UdE5mfkP_400x400.jpg",
-                    "personality": result}
+                    "personality": resultBrand},
+                similarity: 0.8921
         });
 });
 

@@ -1,6 +1,19 @@
 body{
     background-color:#46aea8;
-    font-family: 'Roboto';
+    font-family: 'Monda';
+}
+i{
+    color:white;
+}
+
+a{
+    text-decoration:underline;
+}
+
+button:focus,
+button:visited,
+button:active{
+    outline:none;
 }
 
 #twitter-user-container,
@@ -23,7 +36,7 @@ body{
 }
 
 #history{
-    background-color: #a0b2b2;
+    background-color: #def2f1;
     min-height: 580px;
     padding: 30px;
     border-radius: 10px;
@@ -40,9 +53,7 @@ body{
     color:white;
 }
 
-i{
-    color:white;
-}
+
 
 #analyze-btn{
     max-width:530px;
@@ -55,4 +66,7 @@ i{
     color:#063535;
 }
 
-
+.history-links{
+    padding:10px;
+    display:block;
+}

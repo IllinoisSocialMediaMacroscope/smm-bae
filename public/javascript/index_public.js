@@ -19,6 +19,7 @@ $("#analyze-btn").on('click', function(){
 
                 update(data.user, 'user');
                 update(data.brand,'brand');
+                updateSimScore(data.similarity);
             }
         },
         error: function(jqXHR, exception){
@@ -145,7 +146,8 @@ function updatePersonality(personality, role){
     $.each(personality, function(i, content){
         $("#" + role + "-personality-chart").append(`
             <div style="margin:20px;">
-                <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp` + (content['percentile'] * 100).toFixed(2)  +`%</h4>
+                <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp</h4>
+                <h4 style="display:inline;vertical-align:baseline;color:#b04b39">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
                 <button style="float:right;background:none;border:none;" class="expand-personality-btn">
                     <i class="fas fa-chevron-circle-up fa-chevron-circle-down" style="color:black;"></i>
                 </button>
@@ -173,6 +175,7 @@ function updatePersonality(personality, role){
                 }
             },
             backgroundColor:'transparent',
+            colors:'#2a444b'
         };
         var materialChart = new google.charts.Bar(document.getElementById(role + "-" + content['trait_id']));
         materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
@@ -213,6 +216,22 @@ function updateConsumptionPreference(preference, role){
     var materialTable = new google.visualization.Table(document.getElementById(role +'-consumption-chart'));
     materialTable.draw(data, materialOptions);
 };
+
+// similarity score
+function updateSimScore(score){
+    var options = {
+        useEasing: true,
+        useGrouping: true,
+        decimal: '.',
+    };
+    var sim = new CountUp('similarity-score', 0, score, 2, 4, options);
+    if (!sim.error) {
+        sim.start();
+    } else {
+        console.error(sim.error);
+    }
+}
+
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);
