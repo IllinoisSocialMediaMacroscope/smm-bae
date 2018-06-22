@@ -28,6 +28,9 @@ function lambda_invoke(function_name, args){
 				reject(err);
 			}else{
 				response = JSON.parse(data.Payload);
+				if ('errorMessage' in response){
+					reject(response['errorMessage']);
+				}
 				resolve(response);
 			}
 		});

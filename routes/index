@@ -7,6 +7,7 @@ var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var lambda_invoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var s3_helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
 
 router.get('/', function(req, res, next){
     res.render('index',{});
@@ -18,35 +19,94 @@ router.get('/', function(req, res, next){
 // });
 
 router.post('/update', function(req, res, next){
-    // get user timeline (save raw json and text to s3)
-    args = {sessionID: 'local',
-        consumer_key: config.twitter.consumer_key,
-        consumer_secret: config.twitter.consumer_secret,
-        access_token: config.twitter.access_token,
-        access_token_secret: config.twitter.access_token_secret,
-        screen_name:'realDonaldTrump'
-    }
 
-    lambda_invoke('bae_collect_timeline', args).then( result =>{
-        console.log('result' + result);
-        res.send({
-            user:{"screen_name": "@realDonaldTrump",
-                "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
-                "personality": resultUser},
-            brand:{"screen_name": "@Nike",
-                "profile_img": "https://pbs.twimg.com/profile_images/953320896101412864/UdE5mfkP_400x400.jpg",
-                "personality": resultBrand},
-            similarity: 0.8921
-        });
+    getTimeline(req.body.sessionID, req.body.user_screen_name).then(results =>{
+        console.log(results);
+        //resolve(results);
     }).catch( err =>{
-        console.log('err' + err);
-    })
+        console.log(err);
+        //reject(err);
+    });
 
-    // get brand timeline (save raw json and text to s3)
-
-    // personality insight (sort json to text, send to IBM)
-
-
+    // var promises = [];
+    //
+    // promises.push(new Promise(function(resolve, reject){
+    //     getTimeline(req.body.sessionID, req.body.user_screen_name).then(results =>{
+    //         console.log(results);
+    //         resolve(results);
+    //     }).catch( err =>{
+    //         console.log(err);
+    //         reject(err);
+    //     });
+    // }));
+    // promises.push(new Promise(function(resolve, reject){
+    //     getTimeline(req.body.sessionID, req.body.brand_screen_name).then(results =>{
+    //         console.log(results);
+    //         resolve(results);
+    //     }).catch( err =>{
+    //         console.log(err);
+    //         reject(err);
+    //     });
+    // }));
+    //
+    // Promise.all(promises).then( results => {
+    //     console.log(results);
+    // });
 });
+
+function getTimeline(sessionID, screen_name){
+
+    lambda_invoke('bae_check_screen_name', {
+            consumer_key: config.twitter.consumer_key,
+            consumer_secret: config.twitter.consumer_secret,
+            access_token: config.twitter.access_token,
+            access_token_secret: config.twitter.access_token_secret,
+            screen_name:screen_name })
+        .then( result => {
+            if (result['user_exist']) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }).then( user_exist =>{
+            if (user_exist){
+                s3_helper.list_files(sessionID +'/' + screen_name).then( result => {
+                    var files = Object.keys(result);
+                    if (files.indexOf(screen_name + '_tweets.txt') > -1) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }).then( file_exist =>{
+                    if (file_exist){
+                        return {message: 'already collected!'}
+                    }
+                    else{
+                        lambda_invoke('bae_collect_timeline', {
+                            sessionID: sessionID,
+                            consumer_key: config.twitter.consumer_key,
+                            consumer_secret: config.twitter.consumer_secret,
+                            access_token: config.twitter.access_token,
+                            access_token_secret: config.twitter.access_token_secret,
+                            screen_name:screen_name
+                        }).then( result => {
+                            return result;
+                        }).catch( err => {
+                            return err;
+                        })
+                    }
+                }).catch( err => {
+                    console.log(err);
+                    return false;
+                })
+            }
+        })
+        .catch( err => {
+            console.log(err);
+            return false;
+        });
+}
 
 module.exports = router;

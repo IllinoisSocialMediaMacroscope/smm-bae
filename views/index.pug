@@ -37,8 +37,8 @@ html
             div(class="headers", style="display:block;margin:50px auto auto auto;max-width:800px;text-align:center;")
                 img(src="img/bae_bg_logo.png", height=450)
                 h1(id="title") Brand Analytics Environment
-                p(id="bae-description") Gain insight into how and why people think, act, and feel the way they do.
-                    |  This service applies linguistic analytics and personality theory to infer attributes from a person's unstructured text.
+                p(id="bae-description") BAE helps practitioners to gain insight into how individuals and groups may
+                    | interact with brands and various organizations. You may find an organization’s perfect “bae” through this tool.
             div(class="search", style="display:block;margin:50px auto auto auto; max-width:800px; text-align:center;")
                 div(id="user-search", class="controls form-inline", style="margin:10px auto 10px auto;")
                     i(class="fas fa-user-alt")
@@ -91,4 +91,9 @@ html
                                 i(class="fas fa-download", style="color:black;margin-right:10px;")
                                 i(class="far fa-eye", style="color:black;margin-right:10px;")
 
-            script(src="javascript/index_public.js")
+            include warning.pug
+            include error.pug
+
+            script(src="javascript/calcSessionID.js")
+            script(src="javascript/indexPublic.js")
+

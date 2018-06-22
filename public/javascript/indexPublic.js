@@ -1,32 +1,35 @@
 $("#analyze-btn").on('click', function(){
-    $.ajax({
-        url:"update",
-        type:"post",
-        data:{},
-        success:function(data){
-            // if error then prompt user to rename
-            $(".loading").hide();
-            if ('ERROR' in data){
-                $("#error").val(JSON.stringify(data));
-                $("#warning").modal('show');
-            }else{
+    if (formValidation()) {
+        var user_screen_name = $("#user-search").find('input').val();
+        var brand_screen_name = $("#brand-search").find('input').val();
+
+        $.ajax({
+            url: "update",
+            type: "post",
+            data: { "user_screen_name": user_screen_name,
+                "brand_screen_name":brand_screen_name,
+                "sessionID": sessionID
+            },
+            success: function (data) {
+                // if error then prompt user to rename
+                $(".loading").hide();
 
                 //focus on display containers
                 $("#display").show();
                 $('html, body').animate({
-                    scrollTop: ($('#display').first().offset().top-10)
-                },1000);
+                    scrollTop: ($('#display').first().offset().top - 10)
+                }, 1000);
 
                 update(data.user, 'user');
-                update(data.brand,'brand');
+                update(data.brand, 'brand');
                 updateSimScore(data.similarity);
+            },
+            error: function (jqXHR, exception) {
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
             }
-        },
-        error: function(jqXHR, exception){
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
+        });
+    }
 })
 
 function update(data, role) {
@@ -62,9 +65,9 @@ function update(data, role) {
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
-                    <button class="btn btn-primary">Download</button>
-                    <button class="btn btn-primary">Terminology</button>
-                    <button class="btn btn-primary">API Reference</button>
+                    <button class="btn btn-primary btn-sm">Download</button>
+                    <button class="btn btn-primary btn-sm">Terminology</button>
+                    <button class="btn btn-primary btn-sm">API Reference</button>
 </div>`);
             resolve();
         }
@@ -229,6 +232,26 @@ function updateSimScore(score){
     }
 }
 
+function formValidation(){
+    if ($("#user-search").find('input').val() === ''
+        || $("#user-search").find('input').val() === undefined){
+
+        $("#modal-message").text('You have to provide screen name of the user.');
+        $("#alert").modal('show');
+        return false;
+    }
+
+    if ($("#brand-search").find('input').val() === ''
+        || $("#brand-search").find('input').val() === undefined){
+
+        $("#modal-message").text('You have to provide screen name of the brand.');
+        $("#alert").modal('show');
+
+        return false;
+    }
+
+    return true;
+}
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);

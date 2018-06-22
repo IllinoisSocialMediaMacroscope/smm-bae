@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-var config = require('../../main_config');
+var config = require('../../config');
 var mime = require('mime');
 
 AWS.config.update({
@@ -13,7 +13,7 @@ function uploadToS3(localFile, remoteKey){
 	
 	return new Promise((resolve, reject) =>{
 				var buffer = fs.readFileSync(localFile);
-				var param = {Bucket:'macroscope-smile', 
+				var param = {Bucket:'macroscope-bae',
 					Key: remoteKey, 
 					Body: buffer,
 					ContentType:mime.getType(localFile)
@@ -23,7 +23,7 @@ function uploadToS3(localFile, remoteKey){
 							console.log(err);
 							reject(err);
 						}else{
-							var fileURL = s3.getSignedUrl('getObject',{Bucket:'macroscope-smile',Key:remoteKey, Expires:604800});
+							var fileURL = s3.getSignedUrl('getObject',{Bucket:'macroscope-bae',Key:remoteKey, Expires:604800});
 							resolve(fileURL);
 						}
 					});
@@ -33,7 +33,7 @@ function uploadToS3(localFile, remoteKey){
 
 function list_folders(prefix){
 	return new Promise((resolve,reject) =>{
-		s3.listObjectsV2({Bucket:'macroscope-smile',Prefix:prefix, Delimiter:'/'},function(err,data){
+		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix, Delimiter:'/'},function(err,data){
 			if (err){
 				console.log(err);
 				reject(err);
@@ -55,7 +55,7 @@ function list_folders(prefix){
 
 function list_files(prefix){
 	return new Promise((resolve,reject) =>{
-		s3.listObjectsV2({Bucket:'macroscope-smile',Prefix:prefix},function(err,data){
+		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix},function(err,data){
 			if (err){
 				console.log(err);
 				reject(err);
@@ -70,7 +70,7 @@ function list_files(prefix){
 						// generate downloadable URL
 						var filename = fileList[i].Key.split('/').slice(-1)[0];
 						var fileURL = s3.getSignedUrl('getObject',
-									{Bucket:'macroscope-smile',Key:fileList[i].Key, Expires:604800});
+									{Bucket:'macroscope-bae',Key:fileList[i].Key, Expires:604800});
 						folderObj[filename] = fileURL;
 					}
 
@@ -83,7 +83,7 @@ function list_files(prefix){
 function download_folder(prefix){
 	
 	return new Promise((resolve,reject) =>{
-		s3.listObjectsV2({Bucket:'macroscope-smile',Prefix:prefix}, function(err,data){
+		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix}, function(err,data){
 			if(err){
 				console.log(err);
 				reject(err);
@@ -104,7 +104,7 @@ function download_folder(prefix){
 							if (!fs.existsSync(currPath)) fs.mkdirSync(currPath);
 						}					
 						p_arr.push(new Promise((resolve,reject) =>{
-							s3.getObject({ Bucket:'macroscope-smile', Key:val.Key},function(err,data){
+							s3.getObject({ Bucket:'macroscope-bae', Key:val.Key},function(err,data){
 								if (err){
 									console.log(err,err.stack);
 									reject(err);
@@ -138,7 +138,7 @@ function download_folder(prefix){
 var deleteRemoteFolder = function(prefix){
 	
 	return new Promise((resolve,reject) =>{
-		s3.listObjectsV2({Bucket:'macroscope-smile',Prefix:prefix},function(err,data){
+		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix},function(err,data){
 			if (err){
 				// if not exist
 				console.log('cannot list error' + err);
@@ -149,7 +149,7 @@ var deleteRemoteFolder = function(prefix){
 					resolve();
 				}else{
 					if (!data.IsTruncated){
-						params = { Bucket: 'macroscope-smile',
+						params = { Bucket: 'macroscope-bae',
 							Delete:{ Objects:[] }
 						};
 						data.Contents.forEach(function(content) {
