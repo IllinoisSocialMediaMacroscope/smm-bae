@@ -37,10 +37,10 @@ function update(data, role) {
             $("#twitter-"+ role + "-container").append(
                 `<div class="personality-header" style="padding:20px;background-color:#607d8b59;border-radius:5px;overflow:auto;">
                     <div class="col col-md-3 col-sm-3 col-xs-3">
-                        <img src="` + data.profile_img + `" style="width:100px;border-radius:5px;display:inline;"/>
+                        <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
                     </div>
                     <div class="col col-md-9 col-sm-9 col-xs-9">
-                        <h3 style="vertical-align:middle">` + data.screen_name + `</h3>                   
+                        <h4 style="vertical-align:middle">` + data.screen_name + `</h4>                   
                         <h4 style="display:inline-block;">Word Count: </h4>
                         <h4 style="display:inline-block;color:#b04b39;font-weight:800;">` + data.personality.word_count + `</h4>                     
                     </div>
@@ -141,7 +141,6 @@ function updateValues(values, role){
     materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
 }
 
-
 function updatePersonality(personality, role){
     $.each(personality, function(i, content){
         $("#" + role + "-personality-chart").append(`
@@ -188,7 +187,6 @@ function updatePersonality(personality, role){
 
 };
 
-
 function updateConsumptionPreference(preference, role){
 
     var table = []
@@ -217,7 +215,6 @@ function updateConsumptionPreference(preference, role){
     materialTable.draw(data, materialOptions);
 };
 
-// similarity score
 function updateSimScore(score){
     var options = {
         useEasing: true,

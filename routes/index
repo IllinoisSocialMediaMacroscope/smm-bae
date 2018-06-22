@@ -2,26 +2,51 @@ var express = require('express');
 var router = express.Router();
 var resultUser = require('./result-president-trump-tweets.json');
 var resultBrand = require('./result-profile.json');
+var config = require('../config');
+
+var path = require('path');
+var appPath = path.dirname(__dirname);
+var lambda_invoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 
 router.get('/', function(req, res, next){
     res.render('index',{});
 });
 
-router.get('/sunburst', function(req, res, next){
-    res.render('sunburst', {personality:resultUser,
-        profile_img:"https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg"});
-});
+// router.get('/sunburst', function(req, res, next){
+//     res.render('sunburst', {personality:resultUser,
+//         profile_img:"https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg"});
+// });
 
 router.post('/update', function(req, res, next){
-    res.send({
-                user:{"screen_name": "@realDonaldTrump",
-                    "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
-                    "personality": resultUser},
-                brand:{"screen_name": "@Nike",
-                    "profile_img": "https://pbs.twimg.com/profile_images/953320896101412864/UdE5mfkP_400x400.jpg",
-                    "personality": resultBrand},
-                similarity: 0.8921
+    // get user timeline (save raw json and text to s3)
+    args = {sessionID: 'local',
+        consumer_key: config.twitter.consumer_key,
+        consumer_secret: config.twitter.consumer_secret,
+        access_token: config.twitter.access_token,
+        access_token_secret: config.twitter.access_token_secret,
+        screen_name:'realDonaldTrump'
+    }
+
+    lambda_invoke('bae_collect_timeline', args).then( result =>{
+        console.log('result' + result);
+        res.send({
+            user:{"screen_name": "@realDonaldTrump",
+                "profile_img": "https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg",
+                "personality": resultUser},
+            brand:{"screen_name": "@Nike",
+                "profile_img": "https://pbs.twimg.com/profile_images/953320896101412864/UdE5mfkP_400x400.jpg",
+                "personality": resultBrand},
+            similarity: 0.8921
         });
+    }).catch( err =>{
+        console.log('err' + err);
+    })
+
+    // get brand timeline (save raw json and text to s3)
+
+    // personality insight (sort json to text, send to IBM)
+
+
 });
 
 module.exports = router;

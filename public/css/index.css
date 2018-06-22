@@ -1,6 +1,7 @@
 body{
     background-color:#46aea8;
     font-family: 'Monda';
+    overflow:auto;
 }
 i{
     color:white;
