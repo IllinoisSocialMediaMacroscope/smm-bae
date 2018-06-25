@@ -11,7 +11,6 @@ $("#analyze-btn").on('click', function(){
                 "sessionID": sessionID
             },
             success: function (data) {
-                // if error then prompt user to rename
                 $(".loading").hide();
 
                 //focus on display containers
@@ -22,7 +21,33 @@ $("#analyze-btn").on('click', function(){
 
                 update(data.user, 'user');
                 update(data.brand, 'brand');
-                updateSimScore(data.similarity);
+                resetSimScore();
+            },
+            error: function (jqXHR, exception) {
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+})
+
+$("#similarity-metrics").on('change', function(){
+    var option = $(this).find('option').filter(":selected").val();
+
+    if (option === 'none'){
+        resetSimScore();
+    }else{
+        $.ajax({
+            url: "score",
+            type: "GET",
+            data: { "user_screen_name": $("#user-screen-name").text(),
+                "brand_screen_name":$("#brand-screen-name").text(),
+                "sessionID": sessionID,
+                "option": option
+            },
+            success: function (data) {
+                $(".loading").hide();
+                updateSimScore(data.sim_score);
             },
             error: function (jqXHR, exception) {
                 $("#error").val(jqXHR.responseText);
@@ -43,7 +68,7 @@ function update(data, role) {
                         <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
                     </div>
                     <div class="col col-md-9 col-sm-9 col-xs-9">
-                        <h4 style="vertical-align:middle">` + data.screen_name + `</h4>                   
+                        <h4 id="` + role +  `-screen-name", style="vertical-align:middle">` + data.screen_name + `</h4>                   
                         <h4 style="display:inline-block;">Word Count: </h4>
                         <h4 style="display:inline-block;color:#b04b39;font-weight:800;">` + data.personality.word_count + `</h4>                     
                     </div>
@@ -230,6 +255,11 @@ function updateSimScore(score){
     } else {
         console.error(sim.error);
     }
+}
+
+function resetSimScore() {
+    $('#similarity-metrics option:first').prop('selected', true);
+    $('#similarity-score').text('NA');
 }
 
 function formValidation(){

@@ -9,6 +9,7 @@ i{
 
 a{
     text-decoration:underline;
+    display:block;
 }
 
 button:focus,
@@ -70,4 +71,9 @@ button:active{
 .history-links{
     padding:10px;
     display:block;
+}
+
+#similarity-metrics{
+    margin:20px auto 20px auto;
+    width:60%;
 }

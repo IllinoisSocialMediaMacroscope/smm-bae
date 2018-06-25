@@ -56,6 +56,12 @@ html
                 div(class="col col-md-4 col-sm-4 col-xs-12")
                     div(id="comparison" style="text-align:center;")
                         h1(style="color:#def2f1;") Similarity Score
+                        select(class="form-control", id="similarity-metrics")
+                            option(value="none" selected) Please choose...
+                            option(value="personality_sim_score") Personality
+                            option(value="needs_sim_score") Needs
+                            option(value="values_sim_score") Values
+
                         h1(style="font-size:100px;color:white;margin:50px 50px;" id="similarity-score")
                         a(href="https://en.wikipedia.org/wiki/Cosine_similarity" target="_blank") How to calculate cosine similarity score?
                     div(id="history")

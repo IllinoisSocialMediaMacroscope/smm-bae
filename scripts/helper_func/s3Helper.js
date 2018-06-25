@@ -80,6 +80,19 @@ function list_files(prefix){
 	});					
 }
 
+function download_file(fname){
+    return new Promise((resolve,reject) => {
+        s3.getObject({Bucket: 'macroscope-bae', Key: fname}, function (err, data) {
+            if (err) {
+                console.log(err, err.stack);
+                reject(err);
+            } else {
+                resolve(JSON.parse(data.Body.toString()));
+            }
+        });
+    });
+}
+
 function download_folder(prefix){
 	
 	return new Promise((resolve,reject) =>{
@@ -176,4 +189,4 @@ var deleteRemoteFolder = function(prefix){
 
 
 
-module.exports = {uploadToS3, list_folders, list_files, deleteRemoteFolder, download_folder};
+module.exports = {uploadToS3, list_folders, list_files, deleteRemoteFolder, download_folder, download_file};
