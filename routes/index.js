@@ -16,20 +16,25 @@ router.get('/', function(req, res, next){
 // });
 
 router.post('/update', function(req, res, next){
-    var promises = [];
+    // var promises = [];
+    //
+    // promises.push( getTimeline(req.body.sessionID, req.body.user_screen_name));
+    // promises.push( getTimeline(req.body.sessionID, req.body.brand_screen_name));
+    // Promise.all(promises).then( results => {
+    //     res.status(200).send(
+    //     {
+    //         user:results[0],
+    //         brand:results[1]
+    //     })
+    // }).catch( err =>{
+    //     res.status(404).send(err);
+    // });
 
-    promises.push( getTimeline(req.body.sessionID, req.body.user_screen_name));
-    promises.push( getTimeline(req.body.sessionID, req.body.brand_screen_name));
-    Promise.all(promises).then( results => {
-        res.status(200).send(
+    res.status(200).send(
         {
-            user:results[0],
-            brand:results[1],
-            similarity: 0.8921
+            user:undefined,
+            brand:undefined
         })
-    }).catch( err =>{
-        res.status(404).send(err);
-    });
 });
 
 router.get('/score', function(req, res, next){

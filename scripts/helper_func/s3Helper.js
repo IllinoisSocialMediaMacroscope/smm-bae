@@ -187,6 +187,14 @@ var deleteRemoteFolder = function(prefix){
 
 };
 
+function generate_downloadable(key){
+    return new Promise((resolve,reject) =>{
+        s3.getSignedUrl('getObject', {Bucket:'macroscope-bae',Key:key, Expires: 60*60*24*7},
+			function(err,data){
+        		if (err) reject(err);
+        		resolve(data);
+        });
+    });
+}
 
-
-module.exports = {uploadToS3, list_folders, list_files, deleteRemoteFolder, download_folder, download_file};
+module.exports = {uploadToS3, list_folders, list_files, deleteRemoteFolder, download_folder, download_file, generate_downloadable};

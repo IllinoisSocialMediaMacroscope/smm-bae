@@ -7,6 +7,8 @@ html
 
         <!-- settings -->
         script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+        script(src="https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+        script(src="https://code.jquery.com/jquery-1.12.4.js")
 
         <!-- bootstrap -->
         link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
@@ -19,10 +21,6 @@ html
         <!-- fontawesome -->
         link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
             integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
-
-        <!-- customized -->
-        link(href="css/index.css", rel="stylesheet")
-
         <!-- google chart -->
         script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")
 
@@ -32,6 +30,13 @@ html
 
         <!-- Count up -->
         script(type="text/javascript", src="javascript/countUp.js")
+
+        <!-- auto complete -->
+        link(rel="stylesheet" href="css/awesomplete.css")
+        script(src="javascript/awesomplete.js")
+
+        <!-- customized -->
+        link(href="css/index.css", rel="stylesheet")
 
         body
             div(class="headers", style="display:block;margin:50px auto auto auto;max-width:800px;text-align:center;")
@@ -61,41 +66,14 @@ html
                             option(value="personality_sim_score") Personality
                             option(value="needs_sim_score") Needs
                             option(value="values_sim_score") Values
-
-                        h1(style="font-size:100px;color:white;margin:50px 50px;" id="similarity-score")
-                        a(href="https://en.wikipedia.org/wiki/Cosine_similarity" target="_blank") How to calculate cosine similarity score?
+                        h1(style="font-size:100px;color:white;margin:50px 50px;", id="similarity-score")
+                        a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank", style="color:white;") How to calculate cosine similarity score?
                     div(id="history")
                         h1 History
-                        div(class="history-links")
-                            a @realDonaldTrump vs Nike
-                            button(style="float:right;background:none;border:none;")
-                                i(class="fas fa-trash-alt", style="color:black;margin-right:10px;")
-                                i(class="fas fa-download", style="color:black;margin-right:10px;")
-                                i(class="far fa-eye", style="color:black;margin-right:10px;")
-                        div(class="history-links")
-                            a @realDonaldTrump vs Nike
-                            button(style="float:right;background:none;border:none;")
-                                i(class="fas fa-trash-alt", style="color:black;margin-right:10px;")
-                                i(class="fas fa-download", style="color:black;margin-right:10px;")
-                                i(class="far fa-eye", style="color:black;margin-right:10px;")
-                        div(class="history-links")
-                            a @realDonaldTrump vs Nike
-                            button(style="float:right;background:none;border:none;")
-                                i(class="fas fa-trash-alt", style="color:black;margin-right:10px;")
-                                i(class="fas fa-download", style="color:black;margin-right:10px;")
-                                i(class="far fa-eye", style="color:black;margin-right:10px;")
-                        div(class="history-links")
-                            a @realDonaldTrump vs Nike
-                            button(style="float:right;background:none;border:none;")
-                                i(class="fas fa-trash-alt", style="color:black;margin-right:10px;")
-                                i(class="fas fa-download", style="color:black;margin-right:10px;")
-                                i(class="far fa-eye", style="color:black;margin-right:10px;")
-                        div(class="history-links")
-                            a @realDonaldTrump vs Nike
-                            button(style="float:right;background:none;border:none;")
-                                i(class="fas fa-trash-alt", style="color:black;margin-right:10px;")
-                                i(class="fas fa-download", style="color:black;margin-right:10px;")
-                                i(class="far fa-eye", style="color:black;margin-right:10px;")
+                        div(class="history-form" style="overflow:auto;padding:30px;")
+                            input(class="awesomplete", id="user-history", placeholder="user screen name")
+                            input(class="awesomplete", id="brand-history", placeholder="brand screen name")
+                            button(class="btn btn-primary btn-block", id="history-btn") compare
 
             include warning.pug
             include error.pug

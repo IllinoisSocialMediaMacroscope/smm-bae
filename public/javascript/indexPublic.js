@@ -1,5 +1,5 @@
 $("#analyze-btn").on('click', function(){
-    if (formValidation()) {
+    if (formValidation('update')) {
         var user_screen_name = $("#user-search").find('input').val();
         var brand_screen_name = $("#brand-search").find('input').val();
 
@@ -22,6 +22,7 @@ $("#analyze-btn").on('click', function(){
                 update(data.user, 'user');
                 update(data.brand, 'brand');
                 resetSimScore();
+                updateHistory();
             },
             error: function (jqXHR, exception) {
                 $("#error").val(jqXHR.responseText);
@@ -57,6 +58,55 @@ $("#similarity-metrics").on('change', function(){
     }
 })
 
+$("#history-btn").on('click', function(){
+    if (formValidation('history')) {
+        var user_screen_name = $("#user-history").val();
+        var brand_screen_name = $("#brand-history").val();
+
+        $.ajax({
+            url: "history",
+            type: "post",
+            data: { "user_screen_name": user_screen_name,
+                "brand_screen_name":brand_screen_name,
+                "sessionID": sessionID
+            },
+            success: function (data) {
+                $(".loading").hide();
+
+                //focus on display containers
+                $("#display").show();
+                $('html, body').animate({
+                    scrollTop: ($('#display').first().offset().top - 10)
+                }, 1000);
+
+                update(data.user, 'user');
+                update(data.brand, 'brand');
+                resetSimScore();
+            },
+            error: function (jqXHR, exception) {
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+})
+
+function updateHistory(){
+    $.ajax({
+        url: "history",
+        type: "GET",
+        data: { "sessionID": sessionID },
+        success: function (data) {
+            $(".loading").hide();
+            renderHistoryList(data.history_list);
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+}
+
 function update(data, role) {
 
     var promise = new Promise(function(resolve, reject) {
@@ -90,9 +140,12 @@ function update(data, role) {
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
-                    <button class="btn btn-primary btn-sm">Download</button>
-                    <button class="btn btn-primary btn-sm">Terminology</button>
-                    <button class="btn btn-primary btn-sm">API Reference</button>
+                    <button class="btn btn-primary btn-sm" onclick="download('` + data.screen_name+ `');">Download</button>
+                    <a href="https://console.bluemix.net/docs/services/personality-insights/models.html#models"
+                    class="btn btn-primary btn-sm" role="button" target="_blank">Terminology</a>
+                    <a href="https://www.ibm.com/watson/developercloud/personality-insights/api/v3/curl.html?curl#profile" 
+                    class="btn btn-primary btn-sm" 
+                    role="button" target="_blank">API Reference</a>
 </div>`);
             resolve();
         }
@@ -109,6 +162,30 @@ function update(data, role) {
     });
 
 };
+
+function download(screen_name) {
+    $.ajax({
+        url: "download",
+        type: "POST",
+        data: {
+            "screen_name": screen_name,
+            "sessionID": sessionID,
+        },
+        success: function (data) {
+            var a = document.createElement('a');
+            var url = window.URL.createObjectURL(new Blob(data, {type: "application/json"}));
+            a.href = url;
+            a.download = screen_name + '.json';
+            a.click();
+            window.URL.revokeObjectURL(url);
+
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+}
 
 function updateNeeds(needs, role){
     var table = [['','percentile']]
@@ -236,7 +313,7 @@ function updateConsumptionPreference(preference, role){
     materialOptions = {
         showRowNumber: false,
         width: '100%',
-        pageSize: 10
+        pageSize: 5
     };
 
     var materialTable = new google.visualization.Table(document.getElementById(role +'-consumption-chart'));
@@ -262,25 +339,74 @@ function resetSimScore() {
     $('#similarity-score').text('NA');
 }
 
-function formValidation(){
-    if ($("#user-search").find('input').val() === ''
-        || $("#user-search").find('input').val() === undefined){
+function formValidation(whichPerformance){
+    if (whichPerformance === 'update'){
+        if ($("#user-search").find('input').val() === ''
+            || $("#user-search").find('input').val() === undefined){
 
-        $("#modal-message").text('You have to provide screen name of the user.');
-        $("#alert").modal('show');
-        return false;
+            $("#modal-message").text('You have to provide screen name of the user.');
+            $("#alert").modal('show');
+            return false;
+        }
+
+        if ($("#brand-search").find('input').val() === ''
+            || $("#brand-search").find('input').val() === undefined){
+
+            $("#modal-message").text('You have to provide screen name of the brand.');
+            $("#alert").modal('show');
+
+            return false;
+        }
     }
+    else if (whichPerformance === 'history'){
+        if ($("#user-history").val() === ''
+            || $("#user-history").val() === undefined){
 
-    if ($("#brand-search").find('input').val() === ''
-        || $("#brand-search").find('input').val() === undefined){
+            $("#modal-message").text('You have to provide screen name of the user.');
+            $("#alert").modal('show');
+            return false;
+        }
 
-        $("#modal-message").text('You have to provide screen name of the brand.');
-        $("#alert").modal('show');
+        if ($("#brand-history").val() === ''
+            || $("#brand-history").val() === undefined){
 
-        return false;
+            $("#modal-message").text('You have to provide screen name of the brand.');
+            $("#alert").modal('show');
+
+            return false;
+        }
+
+        if ($("#user-history").val() === $("#brand-history").val()){
+            $("#modal-message").text('You put in the same screen name for user and brand!');
+            $("#alert").modal('show');
+
+            return false;
+        }
     }
 
     return true;
+}
+
+function renderHistoryList(history_lists){
+    $.each(history_lists,function(i, val){
+        $("#history").append(`
+        <div class="history-links">
+            <p style="display:inline;">`+val +`</p>
+            <button style="float:right;background:none;border:none;">
+                <i class="fas fa-trash-alt", style="color:black;margin-right:10px;"/>
+            </button>
+            <button style="float:right;background:none;border:none;">
+                <i class="fas fa-download", style="color:black;margin-right:10px;"/>
+            </button>    
+            <button style="float:right;background:none;border:none;">
+                <i class="fas ffar fa-eye", style="color:black;margin-right:10px;"/>
+            </button>
+          </div>`
+        )
+    });
+
+    new Awesomplete(document.getElementById("user-history"), {list: history_lists, autoFirst:true});
+    new Awesomplete(document.getElementById("brand-history"), {list: history_lists, autoFirst:true});
 }
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
