@@ -181,7 +181,7 @@ function updateNeeds(needs, role){
             }
         },
         vAxis: { textStyle: {color:'#b04b39',fontSize:'14'}},
-        hAxis: { textStyle: {color:'#b04b39',fontSize:'14'}},
+        hAxis: { textStyle: {color:'#b04b39',fontSize:'14'}, viewWindow:{max:1}},
         tooltip: {
             textStyle: {
                 color:'black'
@@ -210,7 +210,7 @@ function updateValues(values, role){
             }
         },
         vAxis: { textStyle: {color:'#146563',fontSize:'14'}},
-        hAxis: { textStyle: {color:'#146563',fontSize:'14'}},
+        hAxis: { textStyle: {color:'#146563',fontSize:'14'},viewWindow:{max:1}},
         tooltip: {
             textStyle: {
                 color:'black'
@@ -250,6 +250,7 @@ function updatePersonality(personality, role){
                     0: {side: 'right'}
                 }
             },
+            hAxis: { viewWindow:{max:1}},
             tooltip: {
                 textStyle: {
                     color:'black'
