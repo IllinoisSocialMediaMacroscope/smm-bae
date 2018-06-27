@@ -108,7 +108,8 @@ function download_folder(prefix){
 					// create a promise array to hold all the downloads since it's async
 					var p_arr = [];
 					
-					data.Contents.forEach(function(val,index,array){						
+					data.Contents.forEach(function(val,index,array){
+						console.log(prefix, val.Key);
 						// making the path
 						var path = val.Key.split('/');
 						var currPath = './downloads';
@@ -174,7 +175,7 @@ var deleteRemoteFolder = function(prefix){
 								console.log('cannot delete err');
 								reject(err);
 							}else{
-							  resolve();
+							  resolve(data);
 							}
 						});
 					}else{

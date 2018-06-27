@@ -51,7 +51,9 @@ html
                 div(id="brand-search", class="controls form-inline", style="margin:10px auto 10px auto;")
                     i(class="fas fa-building")
                     input(class="form-control", placeholder="Brand's screen name", style="width:500px;margin-left:20px;")
-                button(id="analyze-btn", class="btn btn-primary btn-block") Start Analyze
+                button(id="analyze-btn", class="btn btn-primary btn-block") Start Analysis
+                div(class="loading", style="text-align:center;margin:50px 50px;display:none;")
+                    img(src="img/bae_loading_md.gif")
 
             div(id="display", style="margin:50px 50px;overflow:auto;display:none;")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
@@ -70,10 +72,7 @@ html
                         a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank", style="color:white;") How to calculate cosine similarity score?
                     div(id="history")
                         h1 History
-                        div(class="history-form" style="overflow:auto;padding:30px;")
-                            input(class="awesomplete", id="user-history", placeholder="user screen name")
-                            input(class="awesomplete", id="brand-history", placeholder="brand screen name")
-                            button(class="btn btn-primary btn-block", id="history-btn") compare
+                        div(id="history-form" style="overflow:auto;padding:30px;")
 
             include warning.pug
             include error.pug

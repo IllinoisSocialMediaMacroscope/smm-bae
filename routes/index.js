@@ -10,31 +10,20 @@ router.get('/', function(req, res, next){
     res.render('index',{});
 });
 
-// router.get('/sunburst', function(req, res, next){
-//     res.render('sunburst', {personality:resultUser,
-//         profile_img:"https://pbs.twimg.com/profile_images/874276197357596672/kUuht00m_400x400.jpg"});
-// });
-
 router.post('/update', function(req, res, next){
-    // var promises = [];
-    //
-    // promises.push( getTimeline(req.body.sessionID, req.body.user_screen_name));
-    // promises.push( getTimeline(req.body.sessionID, req.body.brand_screen_name));
-    // Promise.all(promises).then( results => {
-    //     res.status(200).send(
-    //     {
-    //         user:results[0],
-    //         brand:results[1]
-    //     })
-    // }).catch( err =>{
-    //     res.status(404).send(err);
-    // });
+    var promises = [];
 
-    res.status(200).send(
+    promises.push( getTimeline(req.body.sessionID, req.body.user_screen_name));
+    promises.push( getTimeline(req.body.sessionID, req.body.brand_screen_name));
+    Promise.all(promises).then( results => {
+        res.status(200).send(
         {
-            user:undefined,
-            brand:undefined
+            user:results[0],
+            brand:results[1]
         })
+    }).catch( err =>{
+        res.status(404).send(err);
+    });
 });
 
 router.get('/score', function(req, res, next){

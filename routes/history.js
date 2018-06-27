@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
+var fs = require('fs');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var s3_helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'deleteDir.js'));
+var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
     var personality_list = [];
@@ -30,13 +32,39 @@ router.post('/history', function(req,res,next){
     });
 });
 
-router.post('/download', function(req,res, next){
-    s3_helper.download_file(req.body.sessionID + '/' + req.body.screen_name + '/' + req.body.screen_name + '_personality.json')
-        .then( data =>{
-            res.send(data);
+router.get('/download', function(req,res, next){
+   s3_helper.download_folder(req.query.sessionID + '/' + req.query.screen_name +'/')
+        .then( fnames =>{
+            var filename = 'downloads/BAE-' + req.query.screen_name + '.zip';
+            zipDownloads(filename,'downloads/'+req.query.screen_name, req.query.screen_name).then(() => {
+                res.on('finish', function(){
+                    deleteLocalFolders('downloads').then(data => {
+                        console.log(data);
+                    }).catch(err =>{
+                        console.log(err);
+                    })
+                });
+                res.download(filename);}).catch(err => {res.status(500).send(err);
+
+            })
         }).catch(err =>{
         res.status(404).send(err);
     })
+});
+
+router.get('/deleteRemote', function(req,res,next){
+    s3_helper.deleteRemoteFolder(req.query.sessionID + '/' + req.query.screen_name + '/')
+        .then(data =>{
+            console.log('remove', data);
+            res.status(200).send(data);
+        }).catch(err => { res.status(404).send(err)} );
+});
+
+
+router.get('/sunburst', function(req, res, next){
+    getPersonality(req.query.sessionID, req.query.screen_name).then(data =>{
+        res.render('sunburst', {personality:data.personality, profile_img:data.profile_img});
+    }).catch(err =>{ res.status(404).render(err)});
 });
 
 function getPersonality(sessionID, screen_name){
@@ -48,6 +76,32 @@ function getPersonality(sessionID, screen_name){
             reject(err);
         })
     });
+}
+
+function zipDownloads(filename,zipfolder, screen_name){
+
+    return new Promise((resolve,reject) => {
+
+        var archive = archiver('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+
+        var fileOutput = fs.createWriteStream(filename);
+        fileOutput.on('close',function(){
+            resolve(archive.pointer() + ' total bytes');
+        });
+
+        archive.on('error',function(err){
+            console.log(err);
+            reject(err);
+        });
+
+        archive.pipe(fileOutput);
+        archive.directory(zipfolder, screen_name);
+
+        archive.finalize();
+    });
+
 }
 
 module.exports = router;

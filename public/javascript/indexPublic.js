@@ -3,6 +3,15 @@ $("#analyze-btn").on('click', function(){
         var user_screen_name = $("#user-search").find('input').val();
         var brand_screen_name = $("#brand-search").find('input').val();
 
+        // loading bar
+        $(".loading").show();
+        $("#analyze-btn").hide();
+
+        //focus on loading bar
+        $('html, body').animate({
+            scrollTop: ($('.loading').first().offset().top - 10)
+        }, 1000);
+
         $.ajax({
             url: "update",
             type: "post",
@@ -11,7 +20,9 @@ $("#analyze-btn").on('click', function(){
                 "sessionID": sessionID
             },
             success: function (data) {
+                // loading bar
                 $(".loading").hide();
+                $("#analyze-btn").show();
 
                 //focus on display containers
                 $("#display").show();
@@ -25,6 +36,10 @@ $("#analyze-btn").on('click', function(){
                 updateHistory();
             },
             error: function (jqXHR, exception) {
+                // loading bar
+                $(".loading").hide();
+                $("#analyze-btn").show();
+
                 $("#error").val(jqXHR.responseText);
                 $("#warning").modal('show');
             }
@@ -58,38 +73,23 @@ $("#similarity-metrics").on('change', function(){
     }
 })
 
-$("#history-btn").on('click', function(){
-    if (formValidation('history')) {
-        var user_screen_name = $("#user-history").val();
-        var brand_screen_name = $("#brand-history").val();
-
-        $.ajax({
-            url: "history",
-            type: "post",
-            data: { "user_screen_name": user_screen_name,
-                "brand_screen_name":brand_screen_name,
-                "sessionID": sessionID
-            },
-            success: function (data) {
-                $(".loading").hide();
-
-                //focus on display containers
-                $("#display").show();
-                $('html, body').animate({
-                    scrollTop: ($('#display').first().offset().top - 10)
-                }, 1000);
-
-                update(data.user, 'user');
-                update(data.brand, 'brand');
-                resetSimScore();
-            },
-            error: function (jqXHR, exception) {
-                $("#error").val(jqXHR.responseText);
-                $("#warning").modal('show');
-            }
-        });
-    }
-})
+function deleteRemote(screen_name){
+    $.ajax({
+        url: "deleteRemote",
+        type: "get",
+        data: { "screen_name": screen_name,
+            "sessionID": sessionID
+        },
+        success: function (data) {
+            $(".loading").hide();
+            updateHistory();
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+}
 
 function updateHistory(){
     $.ajax({
@@ -140,7 +140,8 @@ function update(data, role) {
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
-                    <button class="btn btn-primary btn-sm" onclick="download('` + data.screen_name+ `');">Download</button>
+                    <a class="btn btn-primary btn-sm" href="http://localhost:8080/download?screen_name=`
+                        + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
                     <a href="https://console.bluemix.net/docs/services/personality-insights/models.html#models"
                     class="btn btn-primary btn-sm" role="button" target="_blank">Terminology</a>
                     <a href="https://www.ibm.com/watson/developercloud/personality-insights/api/v3/curl.html?curl#profile" 
@@ -162,30 +163,6 @@ function update(data, role) {
     });
 
 };
-
-function download(screen_name) {
-    $.ajax({
-        url: "download",
-        type: "POST",
-        data: {
-            "screen_name": screen_name,
-            "sessionID": sessionID,
-        },
-        success: function (data) {
-            var a = document.createElement('a');
-            var url = window.URL.createObjectURL(new Blob(data, {type: "application/json"}));
-            a.href = url;
-            a.download = screen_name + '.json';
-            a.click();
-            window.URL.revokeObjectURL(url);
-
-        },
-        error: function (jqXHR, exception) {
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
-}
 
 function updateNeeds(needs, role){
     var table = [['','percentile']]
@@ -388,26 +365,66 @@ function formValidation(whichPerformance){
 }
 
 function renderHistoryList(history_lists){
+    $(".history-links").remove();
+    $("#history-form").empty();
+
+    $("#history-form").append(`<input class="awesomplete" id="user-history" placeholder="user screen name"/>
+                               <input class="awesomplete" id="brand-history" placeholder="brand screen name"/>
+                               <button class="btn btn-primary btn-block" id="history-btn">compare</button>`);
     $.each(history_lists,function(i, val){
         $("#history").append(`
         <div class="history-links">
             <p style="display:inline;">`+val +`</p>
-            <button style="float:right;background:none;border:none;">
+            <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
                 <i class="fas fa-trash-alt", style="color:black;margin-right:10px;"/>
             </button>
-            <button style="float:right;background:none;border:none;">
+            <a href="http://localhost:8080/download?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
                 <i class="fas fa-download", style="color:black;margin-right:10px;"/>
-            </button>    
-            <button style="float:right;background:none;border:none;">
+            </a>    
+            <a style="float:right;" href="http://localhost:8080/sunburst?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank">
                 <i class="fas ffar fa-eye", style="color:black;margin-right:10px;"/>
-            </button>
+            </a>
           </div>`
         )
     });
 
     new Awesomplete(document.getElementById("user-history"), {list: history_lists, autoFirst:true});
     new Awesomplete(document.getElementById("brand-history"), {list: history_lists, autoFirst:true});
+
+
+    $("#history-btn").on('click', function(){
+        if (formValidation('history')) {
+            var user_screen_name = $("#user-history").val();
+            var brand_screen_name = $("#brand-history").val();
+
+            $.ajax({
+                url: "history",
+                type: "post",
+                data: { "user_screen_name": user_screen_name,
+                    "brand_screen_name":brand_screen_name,
+                    "sessionID": sessionID
+                },
+                success: function (data) {
+                    //focus on display containers
+                    $("#display").show();
+                    $('html, body').animate({
+                        scrollTop: ($('#display').first().offset().top - 10)
+                    }, 1000);
+
+                    update(data.user, 'user');
+                    update(data.brand, 'brand');
+                    resetSimScore();
+                },
+                error: function (jqXHR, exception) {
+                    $(".loading").hide();
+                    $("#error").val(jqXHR.responseText);
+                    $("#warning").modal('show');
+                }
+            });
+        }
+    })
 }
+
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);
