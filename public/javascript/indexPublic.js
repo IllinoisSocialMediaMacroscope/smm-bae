@@ -230,7 +230,7 @@ function updatePersonality(personality, role){
                 <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp</h4>
                 <h4 style="display:inline;vertical-align:baseline;color:#b04b39">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
                 <button style="float:right;background:none;border:none;" class="expand-personality-btn">
-                    <i class="fas fa-chevron-circle-up fa-chevron-circle-down" style="color:black;"></i>
+                    <i class="fas fa-chevron-circle-down" style="color:black;"></i>
                 </button>
                 <div style="margin:20px 0 20px 0;" id="` + role + "-" + content['trait_id'] + `"></div>
             </div>
@@ -261,10 +261,19 @@ function updatePersonality(personality, role){
         };
         var materialChart = new google.charts.Bar(document.getElementById(role + "-" + content['trait_id']));
         materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
+        google.visualization.events.addListener(materialChart, 'ready', function () {
+            $("#" + role + "-" + content['trait_id']).hide();
+        });
     });
 
     $("#" + role + "-personality-chart").find(".expand-personality-btn").on('click',function(){
-        $(this).find('i').toggleClass('fa-chevron-circle-up')
+        if ($(this).find('i').hasClass('fa-chevron-circle-down')){
+            $(this).find('i').removeClass('fa-chevron-circle-down');
+            $(this).find('i').addClass('fa-chevron-circle-up');
+        }else{
+            $(this).find('i').addClass('fa-chevron-circle-down');
+            $(this).find('i').removeClass('fa-chevron-circle-up');
+        }
         $(this).next().toggle();
     })
 
