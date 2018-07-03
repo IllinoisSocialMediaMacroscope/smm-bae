@@ -73,6 +73,30 @@ $("#similarity-metrics").on('change', function(){
     }
 })
 
+$("#personality-algorithm").find('select').on('change', function(){
+    var option = $(this).find('option').filter(":selected").val();
+    if (option === 'IBM-Watson'){
+        $("citation")
+            .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
+            Yun, J. T., Wang, C., Troy, J., Vance, N. P., Marini, L., Booth, R., Nelson, T., Hetrick, A., & Hodgkins, H. (September, 2017) – Social Media Macroscope \
+            <a href='http://hdl.handle.net/2142/99742' target='_blank'>http://hdl.handle.net/2142/99742</a><br><br></p>\
+            Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
+            and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 Tweets to Know you: A New Model to Predict Personality with Social Media.\
+            </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.<br><br>\
+            <a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>More Research References ...</a>")
+            .tooltip('fixTitle')
+            .tooltip('show');
+    }
+    ///else if (option === 'another algorithm'){
+        // do something here
+    //}
+    else{
+        $("citation")
+            .attr('data-original-title', "")
+            .tooltip('hide');
+    }
+})
+
 function deleteRemote(screen_name){
     $.ajax({
         url: "deleteRemote",
@@ -112,42 +136,61 @@ function update(data, role) {
     var promise = new Promise(function(resolve, reject) {
         if (data != undefined) {
             $("#twitter-" + role + "-container").empty();
+
+            if (data.personality.warnings.length > 0){
+                var warning_message = data.personality.warnings[0].message;
+            }else{
+                var warning_message = "";
+            }
+
             $("#twitter-"+ role + "-container").append(
                 `<div class="personality-header" style="padding:20px;background-color:#607d8b59;border-radius:5px;overflow:auto;">
-                    <div class="col col-md-3 col-sm-3 col-xs-3">
-                        <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
-                    </div>
-                    <div class="col col-md-9 col-sm-9 col-xs-9">
-                        <h4 id="` + role +  `-screen-name", style="vertical-align:middle">` + data.screen_name + `</h4>                   
-                        <h4 style="display:inline-block;">Word Count: </h4>
-                        <h4 style="display:inline-block;color:#b04b39;font-weight:800;">` + data.personality.word_count + `</h4>                     
+                    <i class="fas fa-exclamation-circle"
+                        data-toggle="tooltip" data-placement="left" title="` + warning_message + `"></i>  
+                    <div class="row" style="overflow:auto;">
+                        <div class="col col-md-3 col-sm-3 col-xs-3">
+                            <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
+                        </div>
+                        <div class="col col-md-9 col-sm-9 col-xs-9">
+                            <h4 id="` + role +  `-screen-name", style="vertical-align:middle"><a target="_blank" href="https://twitter.com/` + data.screen_name +`">` + data.screen_name + `</a></h4>                   
+                            <h4 style="display:inline-block;">Word Count: </h4>
+                            <h4 style="display:inline-block;color:#b04b39;font-weight:800;">` + data.personality.word_count + `</h4>                  
+                        </div>
                     </div>
                 </div>
                 <div class="personality personality" style="padding:10px;">
-                    <h3>Personality</h3>
+                    <h3 class="category"
+                    data-toggle="tooltip" data-placement="top" 
+                    title="Big Five personality characteristics represent the most widely used model for generally describing 
+                    how a person engages with the world. The model includes five primary dimensions.">Personality</h3>
                     <div id="` + role + `-personality-chart"></div>
                 </div>                
                 <div class="personality needs" style="padding:10px;">
-                    <h3>Needs</h3>
+                    <h3 class="category" data-toggle="tooltip" data-placement="top" 
+                    title="Needs describe at a high level those aspects of a product that are likely to resonate with the 
+                    author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3>
                     <div id="` + role + `-needs-chart"></div>
                 </div>
                 <div class="personality values" style="padding:10px;">
-                    <h3>Values</h3>
+                    <h3 class="category" data-toggle="tooltip" data-placement="top" 
+                    title="Values describe motivating factors that influence the author's decision-making. 
+                    The following describes the five values that the service infers.">Values</h3>
                     <div id="` + role + `-values-chart"></div>
                 </div>
                 <div class="personality consumption-perferences" style="padding:10px;">
-                    <h3>Consumption</h3>
+                    <h3 class="category"
+                    data-toggle="tooltip" data-placement="top" 
+                    title="The service groups the more than 40 consumption preferences into eight high-level categories. 
+                    The preferences indicate the author's likelihood to prefer different 
+                    products, services, and activities.">Consumption Preference</h3>
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
                     <a class="btn btn-primary btn-sm" href="http://localhost:8080/download?screen_name=`
                         + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
-                    <a href="https://console.bluemix.net/docs/services/personality-insights/models.html#models"
-                    class="btn btn-primary btn-sm" role="button" target="_blank">Terminology</a>
-                    <a href="https://www.ibm.com/watson/developercloud/personality-insights/api/v3/curl.html?curl#profile" 
-                    class="btn btn-primary btn-sm" 
-                    role="button" target="_blank">API Reference</a>
-</div>`);
+                    <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
+                    role="button" target="_blank">Documentations</a>
+                </div>`);
             resolve();
         }
         else{
@@ -160,6 +203,11 @@ function update(data, role) {
         updateConsumptionPreference(data.personality.consumption_preferences, role);
         updateNeeds(data.personality.needs, role);
         updateValues(data.personality.values, role);
+
+        //tooltip
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
     });
 
 };
@@ -209,15 +257,15 @@ function updateValues(values, role){
                 0: {side: 'right'}
             }
         },
-        vAxis: { textStyle: {color:'#146563',fontSize:'14'}},
-        hAxis: { textStyle: {color:'#146563',fontSize:'14'},viewWindow:{max:1}},
+        vAxis: { textStyle: {color:'#2a444b',fontSize:'14'}},
+        hAxis: { textStyle: {color:'#2a444b',fontSize:'14'},viewWindow:{max:1}},
         tooltip: {
             textStyle: {
                 color:'black'
             }
         },
         backgroundColor:'transparent',
-        colors:['#146563']
+        colors:['#2a444b']
     };
     var materialChart = new google.charts.Bar(document.getElementById(role+'-values-chart'));
     materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
@@ -228,9 +276,12 @@ function updatePersonality(personality, role){
         $("#" + role + "-personality-chart").append(`
             <div style="margin:20px;">
                 <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp</h4>
-                <h4 style="display:inline;vertical-align:baseline;color:#b04b39">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
+                <h4 style="display:inline;vertical-align:baseline;color:#b04b39"
+                data-toggle="tooltip" title="Normalized scores represent a percentile ranking for each characteristic 
+                that is based on qualities that the service infers from the input text. The service computes normalized 
+                scores by comparing the raw score for the author's text with results from a sample population.">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
                 <button style="float:right;background:none;border:none;" class="expand-personality-btn">
-                    <i class="fas fa-chevron-circle-down" style="color:black;"></i>
+                    <i class="fas fa-chevron-down" style="color:black;"></i>
                 </button>
                 <div style="margin:20px 0 20px 0;" id="` + role + "-" + content['trait_id'] + `"></div>
             </div>
@@ -267,12 +318,12 @@ function updatePersonality(personality, role){
     });
 
     $("#" + role + "-personality-chart").find(".expand-personality-btn").on('click',function(){
-        if ($(this).find('i').hasClass('fa-chevron-circle-down')){
-            $(this).find('i').removeClass('fa-chevron-circle-down');
-            $(this).find('i').addClass('fa-chevron-circle-up');
+        if ($(this).find('i').hasClass('fa-chevron-down')){
+            $(this).find('i').removeClass('fa-chevron-down');
+            $(this).find('i').addClass('fa-chevron-up');
         }else{
-            $(this).find('i').addClass('fa-chevron-circle-down');
-            $(this).find('i').removeClass('fa-chevron-circle-up');
+            $(this).find('i').addClass('fa-chevron-down');
+            $(this).find('i').removeClass('fa-chevron-up');
         }
         $(this).next().toggle();
     })
@@ -323,7 +374,7 @@ function updateSimScore(score){
 
 function resetSimScore() {
     $('#similarity-metrics option:first').prop('selected', true);
-    $('#similarity-score').text('NA');
+    $('#similarity-score').text('');
 }
 
 function formValidation(whichPerformance){
@@ -340,6 +391,15 @@ function formValidation(whichPerformance){
             || $("#brand-search").find('input').val() === undefined){
 
             $("#modal-message").text('You have to provide screen name of the brand.');
+            $("#alert").modal('show');
+
+            return false;
+        }
+
+        if ($("#personality-algorithm").find('select').find('option').filter(":selected").val() === 'none'
+            || $("#personality-algorithm").find('select').find('option').filter(":selected").val() === undefined){
+
+            $("#modal-message").text('You have to select the algorithm for personality analysis.');
             $("#alert").modal('show');
 
             return false;
@@ -391,9 +451,6 @@ function renderHistoryList(history_lists){
             <a href="http://localhost:8080/download?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
                 <i class="fas fa-download", style="color:black;margin-right:10px;"/>
             </a>    
-            <a style="float:right;" href="http://localhost:8080/sunburst?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank">
-                <i class="fas ffar fa-eye", style="color:black;margin-right:10px;"/>
-            </a>
           </div>`
         )
     });
@@ -432,10 +489,14 @@ function renderHistoryList(history_lists){
                 }
             });
         }
-    })
+    });
 }
-
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);
 google.charts.setOnLoadCallback(updateConsumptionPreference);
+
+//tooltip
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
