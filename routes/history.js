@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var s3_helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var lambda_invoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'deleteDir.js'));
 var archiver = require('archiver');
 
@@ -18,17 +19,13 @@ router.get('/history', function(req, res, next){
 });
 
 router.post('/history', function(req,res,next){
-    var promises = [];
-    promises.push( getPersonality(req.body.sessionID, req.body.user_screen_name));
-    promises.push( getPersonality(req.body.sessionID, req.body.brand_screen_name));
-    Promise.all(promises).then( results => {
-        res.status(200).send(
-        {
-            user:results[0],
-            brand:results[1]
-        })
-    }).catch( err =>{
-        res.status(404).send(err);
+    lambda_invoke('bae_bulk_comparison', {
+        screen_names: req.body.screen_names,
+        sessionID: req.body.sessionID
+    }).then(table => {
+        res.status(200).send(table);
+    }).catch(err => {
+        res.status(500).send(err);
     });
 });
 

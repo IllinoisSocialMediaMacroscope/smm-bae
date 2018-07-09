@@ -25,8 +25,8 @@ html
         script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")
 
         <!-- google font -->
-        link(href='https://fonts.googleapis.com/css?family=Anton', rel='stylesheet')
         link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Nothing You Could Do', rel='stylesheet')
 
         <!-- Count up -->
         script(type="text/javascript", src="javascript/countUp.js")
@@ -34,6 +34,9 @@ html
         <!-- auto complete -->
         link(rel="stylesheet" href="css/awesomplete.css")
         script(src="javascript/awesomplete.js")
+
+        <!-- d3 -->
+        script(type="text/javascript", src="https://d3js.org/d3.v5.min.js")
 
         <!-- customized -->
         link(href="css/index.css", rel="stylesheet")
@@ -43,7 +46,7 @@ html
                 img(src="img/bae_bg_logo.png", height=450)
                 h1(id="title") Brand Analytics Environment
                 p(id="bae-description") BAE helps practitioners to gain insight into how individuals and groups may
-                    | interact with brands and various organizations. You may find an organization’s perfect “bae” through this tool.
+                    |  interact with brands and various organizations. You may find an organization’s perfect “bae” through this tool.
             div(class="search", style="display:block;margin:50px auto auto auto; max-width:800px; text-align:center;")
                 div(id="user-search", class="controls form-inline", style="margin:10px auto 10px auto;")
                     i(class="fas fa-user-alt")
@@ -73,7 +76,7 @@ html
                         a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank", style="color:white;") How to calculate cosine similarity score?
                     div(id="history")
                         h1 History
-                        div(id="history-form" style="overflow:auto;padding:30px;")
+                        div(id="history-form" style="padding:30px;")
 
             include warning.pug
             include error.pug

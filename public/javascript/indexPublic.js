@@ -98,6 +98,7 @@ function updateHistory(){
         data: { "sessionID": sessionID },
         success: function (data) {
             $(".loading").hide();
+            $("#history-chart").empty();
             renderHistoryList(data.history_list);
         },
         error: function (jqXHR, exception) {
@@ -180,8 +181,8 @@ function updateNeeds(needs, role){
                 0: {side: 'right'}
             }
         },
-        vAxis: { textStyle: {color:'#b04b39',fontSize:'14'}},
-        hAxis: { textStyle: {color:'#b04b39',fontSize:'14'}, viewWindow:{max:1}},
+        vAxis: { textStyle: {color:'#b04b39',fontSize:'14', fontName:'Monda'}},
+        hAxis: { textStyle: {color:'#b04b39',fontSize:'14', fontName:'Monda'}, viewWindow:{max:1}},
         tooltip: {
             textStyle: {
                 color:'black'
@@ -209,8 +210,8 @@ function updateValues(values, role){
                 0: {side: 'right'}
             }
         },
-        vAxis: { textStyle: {color:'#146563',fontSize:'14'}},
-        hAxis: { textStyle: {color:'#146563',fontSize:'14'},viewWindow:{max:1}},
+        vAxis: { textStyle: {color:'#146563',fontSize:'14', fontName:'Monda'}},
+        hAxis: { textStyle: {color:'#146563',fontSize:'14', fontName:'Monda'},viewWindow:{max:1}},
         tooltip: {
             textStyle: {
                 color:'black'
@@ -250,7 +251,8 @@ function updatePersonality(personality, role){
                     0: {side: 'right'}
                 }
             },
-            hAxis: { viewWindow:{max:1}},
+            hAxis: { viewWindow:{max:1}, textStyle: {fontName:'Monda'}},
+            vAxis: {textStyle: {fontName:'Monda'}},
             tooltip: {
                 textStyle: {
                     color:'black'
@@ -300,7 +302,12 @@ function updateConsumptionPreference(preference, role){
     materialOptions = {
         showRowNumber: false,
         width: '100%',
-        pageSize: 5
+        pageSize: 5,
+        cssClassNames:{
+            headerRow: 'consumption-header-row',
+            headerCell:'consumption-table-cell',
+            tableCell:'consumption-table-cell'
+        }
     };
 
     var materialTable = new google.visualization.Table(document.getElementById(role +'-consumption-chart'));
@@ -346,25 +353,17 @@ function formValidation(whichPerformance){
         }
     }
     else if (whichPerformance === 'history'){
-        if ($("#user-history").val() === ''
-            || $("#user-history").val() === undefined){
+        var count = 0 ;
+        var screen_names = [];
+        $('.history-input-autocomplete').each(function(){
+            if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== ''){
+                count++;
+                screen_names.push($(this).val());
+            }
+        });
 
-            $("#modal-message").text('You have to provide screen name of the user.');
-            $("#alert").modal('show');
-            return false;
-        }
-
-        if ($("#brand-history").val() === ''
-            || $("#brand-history").val() === undefined){
-
-            $("#modal-message").text('You have to provide screen name of the brand.');
-            $("#alert").modal('show');
-
-            return false;
-        }
-
-        if ($("#user-history").val() === $("#brand-history").val()){
-            $("#modal-message").text('You put in the same screen name for user and brand!');
+        if (screen_names.length < 2){
+            $("#modal-message").text('You have to provide at least 2 different screen names to compare!');
             $("#alert").modal('show');
 
             return false;
@@ -378,11 +377,31 @@ function renderHistoryList(history_lists){
     $(".history-links").remove();
     $("#history-form").empty();
 
-    $("#history-form").append(`<input class="awesomplete" id="user-history" placeholder="user screen name"/>
-                               <input class="awesomplete" id="brand-history" placeholder="brand screen name"/>
-                               <button class="btn btn-primary btn-block" id="history-btn">compare</button>`);
+    $("#history-form").append(`<div class="history-input">
+                                    <input class="history-input-autocomplete" placeholder="screen name"/>
+                                    <button id="history-input-btn"><i class="fas fa-plus-circle" style="color:#b04b39;"></i></button>
+                                </div>                                
+                               <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>`);
+    addAutocomplete(history_lists);
+    // add more input box
+    $("#history-input-btn").on('click', function(){
+        $("#history-form").prepend(`<div class="history-input">
+                                    <input class="history-input-autocomplete" placeholder="screen name"/>
+                                    <button class="history-input-del-btn"><i class="fas fa-minus-circle" style="color:#063535;"></i></button>
+                                </div>`)
+
+        addAutocomplete(history_lists);
+
+        // delete input box
+        $(".history-input-del-btn").on('click', function(){
+            $(this).parent().remove();
+        });
+    });
+
+    // render list of histories
     $.each(history_lists,function(i, val){
         $("#history").append(`
+        <div id="history-chart" style="margin-bottom: 40px; display:none;"></div>
         <div class="history-links">
             <p style="display:inline;">`+val +`</p>
             <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
@@ -398,34 +417,56 @@ function renderHistoryList(history_lists){
         )
     });
 
-    new Awesomplete(document.getElementById("user-history"), {list: history_lists, autoFirst:true});
-    new Awesomplete(document.getElementById("brand-history"), {list: history_lists, autoFirst:true});
+    // history bulk comparison
+    history_bulk_comparison();
+}
 
+function addAutocomplete(list){
+    $.each(document.getElementsByClassName("history-input-autocomplete"), function(i, val){
+        // if the input hasn't turn into a autocomplete, do that:
+        if ($(val).parent().attr('class') !== 'awesomplete'){
+             new Awesomplete(val, {list: list, autoFirst:true});
+         };
+    })
+};
 
+function history_bulk_comparison(){
     $("#history-btn").on('click', function(){
         if (formValidation('history')) {
-            var user_screen_name = $("#user-history").val();
-            var brand_screen_name = $("#brand-history").val();
-
+            var screen_names = [];
+            $('.history-input-autocomplete').each(function(){
+                if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== '') screen_names.push($(this).val());
+            });
             $.ajax({
                 url: "history",
                 type: "post",
-                data: { "user_screen_name": user_screen_name,
-                    "brand_screen_name":brand_screen_name,
+                data: JSON.stringify({ "screen_names":screen_names,
                     "sessionID": sessionID
-                },
+                }),
+                contentType: "application/json",
                 success: function (data) {
-                    //focus on display containers
-                    $("#display").show();
-                    $('html, body').animate({
-                        scrollTop: ($('#display').first().offset().top - 10)
-                    }, 1000);
+                    $("#history-chart").empty();
+                    $("#history-chart").append(`<h3>Similarity Matrix</h3>`);
+                    $("#history-chart").show();
+                    draw_correlation_matrix({
+                        container : '#history-chart',
+                        data      : data['correlation_matrix_no_legends'],
+                        labels    : screen_names,
+                        start_color : '#ffffff',
+                        end_color : '#b04b39'
+                    });
+                    $("#history-chart").append(`<div class="history-btn-group" style="text-align:center;">
+                                                <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-download"></i>
+                                                    Similarity</button>
+                                                <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-download"></i>
+                                                    Personality</button>
+                                                </div>`)
 
-                    update(data.user, 'user');
-                    update(data.brand, 'brand');
-                    resetSimScore();
+                    // downloads
+                    front_end_download("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');
+                    front_end_download("#comparison-table-btn", data['comparison_table'], 'Bulk_Personality_Table.csv');
                 },
-                error: function (jqXHR, exception) {
+                error: function(jqXHR, exception) {
                     $(".loading").hide();
                     $("#error").val(jqXHR.responseText);
                     $("#warning").modal('show');
@@ -433,8 +474,142 @@ function renderHistoryList(history_lists){
             });
         }
     })
+};
+
+function front_end_download(btn_id, data, filename){
+    $(btn_id).on('click', function(){
+        let csvContent = "data:text/csv;charset=utf-8,";
+        data.forEach(function(rowArray){
+            let row = rowArray.join(",");
+            csvContent += row + "\r\n";
+        });
+        var encodedUri = encodeURI(csvContent);
+        const anchor = document.createElement('a');
+        anchor.href = encodedUri;
+        anchor.download = filename;
+        anchor.click();
+    });
 }
 
+function draw_correlation_matrix(options){
+    var width, height, top, right, bottom, left;
+    width = height = $("#history-chart").width()* 0.55; // %55 percent of the div
+    top = right = $("#history-chart").width() * 0.07;
+    bottom = left = $("#history-chart").width() * 0.275;
+
+    var margin = {top: top, right: right, bottom: bottom, left: left},
+        width = width,
+        height = height,
+        data = options.data,
+        container = options.container,
+        labelsData = options.labels,
+        startColor = options.start_color,
+        endColor = options.end_color;
+
+    if(!data){
+        throw new Error('Please pass data');
+    }
+
+    if(!Array.isArray(data) || !data.length || !Array.isArray(data[0])){
+        throw new Error('It should be a 2-D array');
+    }
+
+    var maxValue = d3.max(data, function(layer) { return d3.max(layer, function(d) { return d; }); });
+    var minValue = d3.min(data, function(layer) { return d3.min(layer, function(d) { return d; }); });
+
+    var numrows = data.length;
+    var numcols = data[0].length;
+
+    var svg = d3.select(container).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var background = svg.append("rect")
+        .attr("width", width)
+        .attr("height", height);
+
+    var x = d3.scaleBand()
+        .domain(d3.range(numcols))
+        .domain(d3.range(numcols))
+        .range([0, width]);
+
+    var y = d3.scaleBand()
+        .domain(d3.range(numrows))
+        .range([0, height]);
+
+    var colorMap = d3.scaleLinear()
+        .domain([minValue,maxValue])
+        .range([startColor, endColor]);
+
+    var row = svg.selectAll(".row")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "row")
+        .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
+
+    var cell = row.selectAll(".cell")
+        .data(function(d) { return d; })
+        .enter().append("g")
+        .attr("class", "cell")
+        .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
+
+    cell.append('rect')
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("stroke-width", 0);
+
+    cell.on("mouseover", function(d, i) {
+            d3.select(this)
+                .append("text")
+                .attr("x", function(d, i){ return x(i) +width/(numrows*2); })
+                .attr("y", function(d, i){ return y(i) +width/(numrows*2); })
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333")
+                .style("font-size", "14px")
+                .text(d.toFixed(2));
+        })
+        .on("mouseout", function(d, i) {
+            row.selectAll(".cell").select("text").remove();
+        });
+
+    row.selectAll(".cell")
+        .data(function(d, i) { return data[i]; })
+        .style("fill", colorMap);
+
+    var labels = svg.append('g')
+        .attr('class', "labels");
+
+    var rowLabels = labels.selectAll(".row-label")
+        .data(labelsData)
+        .enter().append("g")
+        .attr("class", "row-label")
+        .attr("transform", function(d, i) { return "translate(" + 0 + "," + y(i) + ")"; });
+
+    rowLabels.append("text")
+        .attr("x", -4)
+        .attr("y", y.bandwidth() / 2)
+        .attr("dy", ".6em")
+        .style("font-size", "14px")
+        .attr("text-anchor", "end")
+        .text(function(d, i) { return d; });
+
+    var columnLabels = labels.selectAll(".column-label")
+        .data(labelsData)
+        .enter().append("g")
+        .attr("class", "column-label")
+        .attr("transform", function(d, i) { return "translate(" + x(i) + "," + height + ")"; });
+
+    columnLabels.append("text")
+        .attr("x", 0)
+        .attr("y", y.bandwidth() / 2)
+        .attr("dy", ".82em")
+        .style("font-size", "14px")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-60)")
+        .text(function(d, i) { return d; });
+}
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);
