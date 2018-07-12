@@ -50,7 +50,10 @@ html
                 h1(id="title") Brand Analytics Environment
                 p(id="bae-description") BAE helps practitioners to gain insight into how individuals and groups may
                     |  interact with brands and various organizations. You may find an organization’s perfect “bae” through this tool.
-            div(class="search", style="display:block;margin:50px auto auto auto; max-width:800px; text-align:center;")
+
+            include auth.pug
+
+            div(id="search", style="display:none;margin:50px auto auto auto; max-width:800px; text-align:center;")
                 div(id="user-search", class="controls form-inline", style="margin:10px auto 10px auto;")
                     i(class="fas fa-user-alt", data-toggle="tooltip", data-placement="left", title="Please make sure this screen name belongs to a twitter user's account.")
                     input(class="form-control", placeholder="User's screen name", style="width:500px;margin-left:20px;")

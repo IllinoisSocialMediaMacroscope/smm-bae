@@ -134,4 +134,20 @@ button:active{
     float:right;
 }
 
+.login {
+    width: 40%;
+    background-color: #DEF2F2;
+    padding: 50px;
+    border-radius: 10px;
+    margin: 50px auto;
+    overflow:auto;
+    display:none;
+}
 
+#login-instruction{
+    padding:15px;
+}
+
+kbd{
+    background-color: #607D8B;
+}

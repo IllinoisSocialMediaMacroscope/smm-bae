@@ -1,3 +1,69 @@
+$(document).ready(function(){
+    //focus on login
+    $(".login").fadeIn(2000);
+    $('html, body').animate({
+        scrollTop: ($('.login').first().offset().top - 10)
+    }, 3000);
+    checkLoginStatus();
+});
+
+// whenever error modal shows, check if credential is valid or not
+$('#warning').on('shown.bs.modal', function (e) {
+    checkLoginStatus();
+});
+
+/*-----------------------authorization-----------------------------*/
+$("#twitter-auth").find('a').on('click', function(){
+    $(this).attr('href', '/login/twitter?currentURL=' + newPath);
+    $("#twitter-callback").modal('show');
+});
+
+$("#bluemix-auth").find('a').on('click', function(){
+    $("#bluemix-callback").modal('show');
+});
+
+// post the pin to retreive access key and token
+$("#twitter-pin-submit").on('click', function(){
+    if (formValidation('twitter-auth')) {
+        $.ajax({
+            type: 'post',
+            url: 'login/twitter',
+            data: {"twt_pin": $("#twitter-pin").val()},
+            success: function (data) {
+                window.location.replace(data.redirect_url);
+            },
+            error: function (jqXHR, exception) {
+                $("#twitter-callback").modal('hide');
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+});
+
+// save personality username and password
+$("#bluemix-pin-submit").on('click', function(){
+    if (formValidation('bluemix-auth')){
+        $.ajax({
+            type: 'post',
+            url: 'login/bluemix',
+            data: {
+                "currentURL":newPath,
+                "bluemix_personaity_username": $("#bluemix-personaity-username").val(),
+                "bluemix_personaity_password": $("#bluemix-personaity-password").val()
+            },
+            success: function (data) {
+                window.location.replace(data.redirect_url);
+            },
+            error: function (jqXHR, exception) {
+                $("#twitter-callback").modal('hide');
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+});
+
 $("#analyze-btn").on('click', function(){
     if (formValidation('update')) {
         var user_screen_name = $("#user-search").find('input').val();
@@ -429,6 +495,29 @@ function formValidation(whichPerformance){
             return false;
         }
     }
+    else if (whichPerformance === 'bluemix-auth'){
+        if ($("#bluemix-personaity-username").val() === ''){
+            $("#modal-message").text('You have to provide a valid IBM personality insight Username!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+
+        if ($("#bluemix-personaity-password").val() === ''){
+            $("#modal-message").text('You have to provide a valid IBM personality insight Password!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'twitter-auth'){
+        if ($("#twitter-pin").val() === ''){
+            $("#modal-message").text('You have to copy-paste the twitter pin!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
 
     return true;
 }
@@ -666,6 +755,38 @@ function draw_correlation_matrix(options){
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-60)")
         .text(function(d, i) { return d; });
+}
+
+function checkLoginStatus(){
+    $.ajax({
+        type:'get',
+        url:'login/status',
+        success:function(data){
+           if (data.twitter && data.bluemix){
+                $(".login").hide();
+                $("#search").show();
+            }else{
+               $("#search").hide();
+               $("#display").hide();
+               $(".login").show();
+
+               if (data.twitter){
+                   $("#twitter-auth").hide();
+                   $("#bluemix-auth").show();
+               }else if (data.bluemix){
+                   $("#twitter-auth").show();
+                   $("#bluemix-auth").hide();
+               }else{
+                   $("#twitter-auth").show();
+                   $("#bluemix-auth").show();
+               }
+           }
+        },
+        error:function(jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
 }
 
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
