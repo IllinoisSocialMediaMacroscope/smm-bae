@@ -547,10 +547,14 @@ function renderHistoryList(history_lists){
         });
     });
 
+    // add history chart area
+    $("#history").append(`
+        <div id="history-chart" style="margin-bottom: 40px; display:block;"></div>
+        <div id="history-chart-legend" style="margin-bottom:40px;"></div>`);
+    
     // render list of histories
     $.each(history_lists,function(i, val){
         $("#history").append(`
-        <div id="history-chart" style="margin-bottom: 40px; display:none;"></div>
         <div class="history-links">
             <p style="display:inline;">`+val +`</p>
             <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
@@ -706,18 +710,18 @@ function draw_correlation_matrix(options){
         .attr("height", y.bandwidth())
         .style("stroke-width", 0);
 
-    cell.on("mouseover", function(d, i) {
+    cell.on("mouseenter", function(d, i){
             d3.select(this)
                 .append("text")
                 .attr("x", function(d, i){ return x(i) +width/(numrows*2); })
                 .attr("y", function(d, i){ return y(i) +width/(numrows*2); })
                 .attr("text-anchor", "middle")
                 .attr("fill", "#333")
-                .style("font-size", "14px")
+                .style("font-size", "10px")
                 .text(d.toFixed(2));
         })
-        .on("mouseout", function(d, i) {
-            row.selectAll(".cell").select("text").remove();
+        .on("mouseleave", function(d, i) {
+            d3.select(this).select("text").remove();
         });
 
     row.selectAll(".cell")
