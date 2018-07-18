@@ -61,20 +61,25 @@ function list_files(prefix){
 				reject(err);
 				
 			}else{
-				
-				//if (!data.IsTruncated){
-					
-					var folderObj = {};
-					var fileList = data.Contents;
-					for (var i=0, length=fileList.length; i< length; i++){
-						// generate downloadable URL
-						var filename = fileList[i].Key.split('/').slice(-1)[0];
-						var fileURL = s3.getSignedUrl('getObject',
-									{Bucket:'macroscope-bae',Key:fileList[i].Key, Expires:604800});
-						folderObj[filename] = fileURL;
-					}
+				// folderObj = { filename: {lastModified: lastModified, upTodDate: boolean(lastmodified <= monthFromToday)} }
+				var folderObj = {};
+				var fileList = data.Contents;
+				for (var i=0, length=fileList.length; i< length; i++){
+					var filename = fileList[i].Key.split('/').slice(-1)[0];
+					var lastModified = new Date(fileList[i].LastModified);
 
-					resolve(folderObj);
+					var monthFromToday = new Date();
+                    monthFromToday.setMonth(monthFromToday.getMonth() -1);
+                    monthFromToday.setHours(0,0,0);
+                    monthFromToday.setMilliseconds(0);
+					var upToDate = +lastModified > +monthFromToday;
+
+					folderObj[filename] = {};
+					folderObj[filename]['lastModified'] = lastModified;
+					folderObj[filename]['upToDate'] = upToDate;
+				}
+
+				resolve(folderObj);
 			}
 		});
 	});					

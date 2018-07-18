@@ -71,15 +71,17 @@ function getTimeline(sessionID, screen_name, credentials){
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
-                    if (files.indexOf(screen_name + '_tweets.txt') > -1) {
-                        console.log({ message: 'Timeline has already been collected!'});
-
+                    if (files.indexOf(screen_name + '_tweets.txt') > -1
+                        && timelines[screen_name + '_tweets.txt']['upToDate']) {
+                        console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
                         s3_helper.list_files(sessionID +'/' + screen_name).then( personalities => {
                             var files = Object.keys(personalities);
 
                             // 1.1.1.1 if personality has been collected, job done!
-                            if (files.indexOf(screen_name + '_personality.json') > -1) {
-                                console.log({message: 'Personality has already been collected!'});
+                            if (files.indexOf(screen_name + '_personality.json') > -1
+                                && timelines[screen_name + '_personality.json']['upToDate']) {
+                                console.log({message: 'Personality has already been collected and it is within one month of date range!'});
+
                                 s3_helper.download_file(sessionID + '/' + screen_name + '/' + screen_name + '_personality.json')
                                     .then( personality =>{
                                         resolve(personality);
