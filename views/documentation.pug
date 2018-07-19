@@ -1,0 +1,178 @@
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, inital-scale=1")
+
+        <!-- settings -->
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+        script(src="https://code.jquery.com/ui/1.12.1/jquery-ui.js")
+        script(src="https://code.jquery.com/jquery-1.12.4.js")
+
+        <!-- bootstrap -->
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css",
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", crossorigin="anonymous")
+
+        <!-- fontawesome -->
+        link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
+        integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
+
+        <!-- google font -->
+        link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Nothing You Could Do', rel='stylesheet')
+
+        <!-- tooltip -->
+        script(src="javascript/popper.js")
+
+        <!-- customized -->
+        link(href="css/documentation.css", rel="stylesheet")
+
+        body
+            include header.pug
+            div(class="section")
+                div(class="header1")
+                    h2
+                        a(id="create-bluemix") How to create IBM Bluemix account?
+                        i(class="fas fa-question-circle pull-left")
+                div(class="content")
+                    p First thing of all, you need to&nbsp
+                        a(href="https://idaas.iam.ibm.com/idaas/mtfim/sps/authsvc?PolicyId=urn:ibm:security:authentication:asf:basicldapuser", target="_blank") register/signin IBM Bluemix platform
+                        |  in order to use our platform. Once sign in, you can
+                        |  choose from three payment models that IBM bluemix offers. Start with a&nbsp
+                        a(href="https://idaas.iam.ibm.com/idaas/mtfim/sps/authsvc?PolicyId=urn:ibm:security:authentication:asf:basicldapuser", target="_blank") Lite account
+                        |  and upgrade when you’re ready. Pay for what you need or secure pricing with a subscription.
+                    div(class="header2")
+                        h3 Create Bluemix account
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/create-bluemix0.png")
+                            img(src="img/create-bluemix1.png")
+                    div(class="header2")
+                        h3 Activate IBM Cloud
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/create-bluemix2.png")
+                    div(class="header2")
+                        h3 Add Promotion Code
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/add-promo.png")
+            div(class="section")
+                div(class="header1")
+                    h2
+                        a(id="bluemix-special-offer") How To Get Special Offers
+                        i(class="fas fa-question-circle pull-left")
+                div(class="content")
+                    div(class="header2")
+                        h3 What Are The Faculty And Student Special Offers
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            p IBM is offering faculty and students the opportunity to access services/service levels which may
+                                |  not otherwise be available though the free, no time limit, public cloud Lite plan.
+                                |  Those who qualify for and apply an academic code to their IBM Cloud account are entitled to access the free
+                                |  service levels ($Free Plan) as defined in the Standard pricing plan for each service.
+                                | A list of services and their details can be found&nbsp
+                                a(href="http://mycatalog.mybluemix.net", target="_blank") here.
+                            p
+                                a(href="https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=b46379bb-0463-e611-9420-b8ca3a5db7a1", target="_blank") Faculty codes
+                                |  will set the users account type to Trial for up to one year (renewable) AND increase the
+                                |  memory allocation up to 8 GB and allow up to 40 services running concurrently.&nbsp
+                                a(href="https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=bb3528b7-2b63-e611-9420-b8ca3a5db7a1", target="_blank") Student codes
+                                |  will set the users account type to Trial for up to six months (renewable) AND increase the memory
+                                |  allocation up to 2 GB and allow up to 10 services running concurrently.
+                    div(class="header2")
+                        h3 Get Faculty and Student Special Offers
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/bluemix-special-offer0.png")
+                            img(src="img/bluemix-special-offer1.png")
+                            img(src="img/bluemix-special-offer2.png")
+                            img(src="img/bluemix-special-offer3.png")
+                    div(class="header2")
+                        h3 Get Watson Analytics Special Offers
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/access-watson0.png")
+                            img(src="img/access-watson1.png")
+                            img(src="img/access-watson2.png")
+            div(class="section")
+                div(class="header1")
+                    h2
+                        a(id="access-watson") How To Access IBM Personality Insights
+                        i(class="fas fa-question-circle pull-left")
+                div(class="content")
+                    div(class="header2")
+                        h3 What does IBM Personality Insights do?
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            p
+                                a(href="", target="_blank") IBM personality
+                                |  predicts personality characteristics, needs and values through written text. It is capable of understanding
+                                |  your customers’ habits and preferences on an individual level, and at scale. It uses linguistic analytics to infer individuals' personality characteristics,
+                                |  including Big Five, Needs, and Values; it also looks at a users inclination to pursue different products, services, and activities,
+                                |  including shopping, music, movies, and more.
+                    div(class="header2")
+                        h3 What Is The Pricing?
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/personality-pricing.png")
+                    div(class="header2")
+                        h3 Get Personality Insights On Bluemix Platform
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/access-watson3.png")
+                            img(src="img/access-watson4.png")
+                            img(src="img/access-watson5.png")
+            div(class="section")
+                div(class="header1")
+                    h2
+                        a(id="find-watson-credential") Where to find your IBM Personaity Insights Credentials?
+                        i(class="fas fa-question-circle pull-left")
+                div(class="content")
+                    div(class="header2")
+                        h3 Login Bluemix And Find Dashboard
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            img(src="img/find-watson-credential0.png")
+                            img(src="img/find-watson-credential1.png")
+
+            div(class="section")
+                div(class="header1")
+                    h2
+                        a(id="what-we-do") How do we handle your credentials?
+                        i(class="fas fa-question-circle pull-left")
+                div(class="content")
+                    div(class="header2")
+                        h3 Your credential is safe with us
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            p We temporarily store your credentials in the session at server side for 30 minutes.
+                                |  Since each BAE instance is a standalone "server" inside individual container,
+                                |  your credentials will not be seen by any other person.
+                    div(class="header2")
+                        h3 In case of unusual behaviour of your account
+                            i(class="fas fa-chevron-down pull-right")
+                            i(class="far fa-question-circle pull-left")
+                        div(class="content2")
+                            p In case you notice any unusual behaviour of your Personality Insights account, you can regenerate the
+                                |  credentials easily. Just login Bluemix, and locate your personality insights instance. In the Service
+                                |  credentials tab, you can manipulate all of your credentials.
+                            img(src="img/regenerate-watson.png")
+
+            script(src="javascript/documentationPublic.js")
