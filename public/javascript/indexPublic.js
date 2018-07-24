@@ -54,7 +54,7 @@ $("#twitter-pin-submit").on('click', function(){
         $.ajax({
             type: 'post',
             url: 'login/twitter',
-            data: {"twt_pin": $("#twitter-pin").val()},
+            data: {"twtPin": $("#twitter-pin").val()},
             success: function (data) {
                 window.location.replace(data.redirect_url);
             },
