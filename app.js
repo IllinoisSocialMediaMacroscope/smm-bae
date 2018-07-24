@@ -31,7 +31,7 @@ app.use('/', require('./routes/documentation'));
 
 // set server
 var debug = require('debug');
-var port = normalizePort('8080');
+var port = normalizePort('8001');
 app.set('port', port);
 var server = http.createServer(app);
 server.timeout = 1000*60*10; // 10 minutes

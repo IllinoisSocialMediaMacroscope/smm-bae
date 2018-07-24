@@ -9,6 +9,12 @@ AWS.config.update({
 var s3 = new AWS.S3();
 var fs = require('fs');
 
+/**
+ * upload local files to s3 bucket
+ * @param localFile
+ * @param remoteKey
+ * @returns {Promise<any>}
+ */
 function uploadToS3(localFile, remoteKey){
 	
 	return new Promise((resolve, reject) =>{
@@ -31,6 +37,11 @@ function uploadToS3(localFile, remoteKey){
 			
 }
 
+/**
+ * list all the folder names in s3 bucket path
+ * @param prefix
+ * @returns {Promise<any>}
+ */
 function list_folders(prefix){
 	return new Promise((resolve,reject) =>{
 		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix, Delimiter:'/'},function(err,data){
@@ -53,6 +64,11 @@ function list_folders(prefix){
 		
 };
 
+/**
+ * list all the file names in s3 bucket path
+ * @param prefix
+ * @returns {Promise<any>}
+ */
 function list_files(prefix){
 	return new Promise((resolve,reject) =>{
 		s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix},function(err,data){
@@ -85,6 +101,11 @@ function list_files(prefix){
 	});					
 }
 
+/**
+ * download all the file given filename
+ * @param fname
+ * @returns {Promise<any>}
+ */
 function download_file(fname){
     return new Promise((resolve,reject) => {
         s3.getObject({Bucket: 'macroscope-bae', Key: fname}, function (err, data) {

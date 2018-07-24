@@ -1,28 +1,54 @@
+/**
+ * scroll down and focus on login
+ */
 $(document).ready(function(){
-    //focus on login
     $(".login").fadeIn(2000);
-    $('html, body').animate({
-        scrollTop: ($('.login').first().offset().top - 10)
-    }, 3000);
+    $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
 });
 
-// whenever error modal shows, check if credential is valid or not
-$('#warning').on('shown.bs.modal', function (e) {
-    checkLoginStatus();
-});
+/**
+ * select personality algorithm and show citations
+ */
+$("#personality-algorithm").find('select').on('change', function(){
+    var option = $(this).find('option').filter(":selected").val();
+    if (option === 'IBM-Watson'){
+        $("citation")
+            .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
+            Yun, J. T., Wang, C., Troy, J., Vance, N. P., Marini, L., Booth, R., Nelson, T., Hetrick, A., & Hodgkins, \
+            H. (September, 2017) – Social Media Macroscope \
+            <a href='http://hdl.handle.net/2142/99742' target='_blank'>http://hdl.handle.net/2142/99742</a><br><br></p>\
+            Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
+            and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 \
+            Tweets to Know you: A New Model to Predict Personality with Social Media.\
+            </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.<br><br>\
+            <a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>\
+            More Research References ...</a>")
+            .tooltip('fixTitle')
+            .tooltip('show');
+    }
+    else{
+        $("citation").attr('data-original-title', "").tooltip('hide');
+    }
+})
 
-/*-----------------------authorization-----------------------------*/
+/******************************* AUTHORIZATION ********************************/
+/**
+ * whenever error modal shows, check if credential is valid or not
+ */
+$('#warning').on('shown.bs.modal', function (e) { checkLoginStatus(); });
+
+/**
+ * Twitter authorization
+ */
 $("#twitter-auth").find('a').on('click', function(){
     $(this).attr('href', '/login/twitter?currentURL=' + newPath);
     $("#twitter-callback").modal('show');
 });
 
-$("#bluemix-auth").find('a').on('click', function(){
-    $("#bluemix-callback").modal('show');
-});
-
-// post the pin to retreive access key and token
+/**
+ * post the pin to retreive Twitteraccess key and token
+ */
 $("#twitter-pin-submit").on('click', function(){
     if (formValidation('twitter-auth')) {
         $.ajax({
@@ -41,7 +67,16 @@ $("#twitter-pin-submit").on('click', function(){
     }
 });
 
-// save personality username and password
+/**
+ * IBM authorization
+ */
+$("#bluemix-auth").find('a').on('click', function(){
+    $("#bluemix-callback").modal('show');
+});
+
+/**
+ * save IBM personality username and password
+ */
 $("#bluemix-pin-submit").on('click', function(){
     if (formValidation('bluemix-auth')){
         $.ajax({
@@ -64,6 +99,10 @@ $("#bluemix-pin-submit").on('click', function(){
     }
 });
 
+/******************************* START ANALYSIS ********************************/
+/**
+ * analyze button (Main function)
+ */
 $("#analyze-btn").on('click', function(){
     if (formValidation('update')) {
         var user_screen_name = $("#user-search").find('input').val();
@@ -111,93 +150,14 @@ $("#analyze-btn").on('click', function(){
             }
         });
     }
-})
+});
 
-$("#similarity-metrics").on('change', function(){
-    var option = $(this).find('option').filter(":selected").val();
-
-    if (option === 'none'){
-        resetSimScore();
-    }else{
-        $.ajax({
-            url: "score",
-            type: "GET",
-            data: { "user_screen_name": $("#user-screen-name").text(),
-                "brand_screen_name":$("#brand-screen-name").text(),
-                "sessionID": sessionID,
-                "option": option
-            },
-            success: function (data) {
-                $(".loading").hide();
-                updateSimScore(data.sim_score);
-            },
-            error: function (jqXHR, exception) {
-                $("#error").val(jqXHR.responseText);
-                $("#warning").modal('show');
-            }
-        });
-    }
-})
-
-$("#personality-algorithm").find('select').on('change', function(){
-    var option = $(this).find('option').filter(":selected").val();
-    if (option === 'IBM-Watson'){
-        $("citation")
-            .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
-            Yun, J. T., Wang, C., Troy, J., Vance, N. P., Marini, L., Booth, R., Nelson, T., Hetrick, A., & Hodgkins, H. (September, 2017) – Social Media Macroscope \
-            <a href='http://hdl.handle.net/2142/99742' target='_blank'>http://hdl.handle.net/2142/99742</a><br><br></p>\
-            Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
-            and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 Tweets to Know you: A New Model to Predict Personality with Social Media.\
-            </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.<br><br>\
-            <a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>More Research References ...</a>")
-            .tooltip('fixTitle')
-            .tooltip('show');
-    }
-    ///else if (option === 'another algorithm'){
-        // do something here
-    //}
-    else{
-        $("citation")
-            .attr('data-original-title', "")
-            .tooltip('hide');
-    }
-})
-
-function deleteRemote(screen_name){
-    $.ajax({
-        url: "deleteRemote",
-        type: "get",
-        data: { "screen_name": screen_name,
-            "sessionID": sessionID
-        },
-        success: function (data) {
-            $(".loading").hide();
-            updateHistory();
-        },
-        error: function (jqXHR, exception) {
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
-}
-
-function updateHistory(){
-    $.ajax({
-        url: "history",
-        type: "GET",
-        data: { "sessionID": sessionID },
-        success: function (data) {
-            $(".loading").hide();
-            $("#history-chart").empty();
-            renderHistoryList(data.history_list);
-        },
-        error: function (jqXHR, exception) {
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
-}
-
+/**
+ * update the main personality panel
+ * related to $("#analyze-btn").on('click', function()
+ * @param data
+ * @param role: user or brand
+ */
 function update(data, role) {
 
     var promise = new Promise(function(resolve, reject) {
@@ -254,7 +214,7 @@ function update(data, role) {
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
                     <a class="btn btn-primary btn-sm" href="http://localhost:8080/download?screen_name=`
-                        + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
+                + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
                     <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
                     role="button" target="_blank">Documentations</a>
                 </div>`);
@@ -279,6 +239,11 @@ function update(data, role) {
 
 };
 
+/**
+ * update the Needs barchart
+ * @param needs
+ * @param role: user or brand
+ */
 function updateNeeds(needs, role){
     var table = [['','percentile']]
     $.each(needs, function(i, content){
@@ -307,8 +272,13 @@ function updateNeeds(needs, role){
     };
     var materialChart = new google.charts.Bar(document.getElementById(role + '-needs-chart'));
     materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
-}
+};
 
+/**
+ * update the Value barchart
+ * @param values
+ * @param role
+ */
 function updateValues(values, role){
     var table = [['','percentile']]
     $.each(values, function(i, content){
@@ -336,8 +306,13 @@ function updateValues(values, role){
     };
     var materialChart = new google.charts.Bar(document.getElementById(role+'-values-chart'));
     materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
-}
+};
 
+/**
+ * update the personality barchart and scores
+ * @param personality
+ * @param role
+ */
 function updatePersonality(personality, role){
     $.each(personality, function(i, content){
         $("#" + role + "-personality-chart").append(`
@@ -398,6 +373,11 @@ function updatePersonality(personality, role){
 
 };
 
+/**
+ * update the consumption preference table
+ * @param preference
+ * @param role
+ */
 function updateConsumptionPreference(preference, role){
 
     var table = []
@@ -431,6 +411,41 @@ function updateConsumptionPreference(preference, role){
     materialTable.draw(data, materialOptions);
 };
 
+/******************************* SIMILARITY SCORE ********************************/
+/**
+ * similarity drop down (calcuate single sim score)
+ */
+$("#similarity-metrics").on('change', function(){
+    var option = $(this).find('option').filter(":selected").val();
+
+    if (option === 'none'){
+        resetSimScore();
+    }else{
+        $.ajax({
+            url: "score",
+            type: "GET",
+            data: { "user_screen_name": $("#user-screen-name").text(),
+                "brand_screen_name":$("#brand-screen-name").text(),
+                "sessionID": sessionID,
+                "option": option
+            },
+            success: function (data) {
+                $(".loading").hide();
+                updateSimScore(data.sim_score);
+            },
+            error: function (jqXHR, exception) {
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+});
+
+/**
+ * update the similarity score
+ * related to $("#similarity-metrics").on('change', function()
+ * @param score
+ */
 function updateSimScore(score){
     var options = {
         useEasing: true,
@@ -443,85 +458,41 @@ function updateSimScore(score){
     } else {
         console.error(sim.error);
     }
-}
+};
 
+/**
+ * reset similarity score to empty whenever refresh or analyze new users
+ */
 function resetSimScore() {
     $('#similarity-metrics option:first').prop('selected', true);
     $('#similarity-score').text('');
-}
+};
 
-function formValidation(whichPerformance){
-    if (whichPerformance === 'update'){
-        if ($("#user-search").find('input').val() === ''
-            || $("#user-search").find('input').val() === undefined){
-
-            $("#modal-message").text('You have to provide screen name of the user.');
-            $("#alert").modal('show');
-            return false;
+/******************************* HISTORY PANEL ********************************/
+/**
+ * update filelist in history panel
+ */
+function updateHistory(){
+    $.ajax({
+        url: "history",
+        type: "GET",
+        data: { "sessionID": sessionID },
+        success: function (data) {
+            $(".loading").hide();
+            $("#history-chart").empty();
+            renderHistoryList(data.history_list);
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
         }
+    });
+};
 
-        if ($("#brand-search").find('input').val() === ''
-            || $("#brand-search").find('input').val() === undefined){
-
-            $("#modal-message").text('You have to provide screen name of the brand.');
-            $("#alert").modal('show');
-
-            return false;
-        }
-
-        if ($("#personality-algorithm").find('select').find('option').filter(":selected").val() === 'none'
-            || $("#personality-algorithm").find('select').find('option').filter(":selected").val() === undefined){
-
-            $("#modal-message").text('You have to select the algorithm for personality analysis.');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'history'){
-        var count = 0 ;
-        var screen_names = [];
-        $('.history-input-autocomplete').each(function(){
-            if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== ''){
-                count++;
-                screen_names.push($(this).val());
-            }
-        });
-
-        if (screen_names.length < 2){
-            $("#modal-message").text('You have to provide at least 2 different screen names to compare!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'bluemix-auth'){
-        if ($("#bluemix-personaity-username").val() === ''){
-            $("#modal-message").text('You have to provide a valid IBM personality insight Username!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-
-        if ($("#bluemix-personaity-password").val() === ''){
-            $("#modal-message").text('You have to provide a valid IBM personality insight Password!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'twitter-auth'){
-        if ($("#twitter-pin").val() === ''){
-            $("#modal-message").text('You have to copy-paste the twitter pin!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-
-    return true;
-}
-
+/**
+ * rendering file list in hisotry panel
+ * @param history_lists
+ */
 function renderHistoryList(history_lists){
     $(".history-links").remove();
     $("#history-form").empty();
@@ -551,7 +522,7 @@ function renderHistoryList(history_lists){
     $("#history").append(`
         <div id="history-chart" style="margin-bottom: 40px; display:block;"></div>
         <div id="history-chart-legend" style="margin-bottom:40px;"></div>`);
-    
+
     // render list of histories
     $.each(history_lists,function(i, val){
         $("#history").append(`
@@ -569,17 +540,24 @@ function renderHistoryList(history_lists){
 
     // history bulk comparison
     history_bulk_comparison();
-}
+};
 
+/**
+ * history panel autocomplete screen_name
+ * @param list
+ */
 function addAutocomplete(list){
     $.each(document.getElementsByClassName("history-input-autocomplete"), function(i, val){
         // if the input hasn't turn into a autocomplete, do that:
         if ($(val).parent().attr('class') !== 'awesomplete'){
-             new Awesomplete(val, {list: list, autoFirst:true});
-         };
+            new Awesomplete(val, {list: list, autoFirst:true});
+        };
     })
 };
 
+/**
+ * bulk comparison
+ */
 function history_bulk_comparison(){
     $("#history-btn").on('click', function(){
         if (formValidation('history')) {
@@ -626,6 +604,34 @@ function history_bulk_comparison(){
     });
 };
 
+/**
+ * delete button in the history panel
+ * @param screen_name
+ */
+function deleteRemote(screen_name){
+    $.ajax({
+        url: "deleteRemote",
+        type: "get",
+        data: { "screen_name": screen_name,
+            "sessionID": sessionID
+        },
+        success: function (data) {
+            $(".loading").hide();
+            updateHistory();
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+};
+
+/**
+ * download button in history panel
+ * @param btn_id
+ * @param data
+ * @param filename
+ */
 function front_end_download(btn_id, data, filename){
     $(btn_id).on('click', function(){
         let csvContent = "data:text/csv;charset=utf-8,";
@@ -639,8 +645,12 @@ function front_end_download(btn_id, data, filename){
         anchor.download = filename;
         anchor.click();
     });
-}
+};
 
+/**
+ * bulk comparison draw correlation matrix
+ * @param options
+ */
 function draw_correlation_matrix(options){
     var width, height, top, right, bottom, left;
     width = height = $("#history-chart").width()* 0.55; // %55 percent of the div
@@ -711,15 +721,15 @@ function draw_correlation_matrix(options){
         .style("stroke-width", 0);
 
     cell.on("mouseenter", function(d, i){
-            d3.select(this)
-                .append("text")
-                .attr("x", function(d, i){ return x(i) +width/(numrows*2); })
-                .attr("y", function(d, i){ return y(i) +width/(numrows*2); })
-                .attr("text-anchor", "middle")
-                .attr("fill", "#333")
-                .style("font-size", "10px")
-                .text(d.toFixed(2));
-        })
+        d3.select(this)
+            .append("text")
+            .attr("x", function(d, i){ return x(i) +width/(numrows*2); })
+            .attr("y", function(d, i){ return y(i) +width/(numrows*2); })
+            .attr("text-anchor", "middle")
+            .attr("fill", "#333")
+            .style("font-size", "10px")
+            .text(d.toFixed(2));
+    })
         .on("mouseleave", function(d, i) {
             d3.select(this).select("text").remove();
         });
@@ -759,8 +769,89 @@ function draw_correlation_matrix(options){
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-60)")
         .text(function(d, i) { return d; });
-}
+};
 
+/******************************* HELPER FUNCTIONS ********************************/
+/**
+ * frontend validation
+ * @param whichPerformance
+ * @returns {boolean}
+ */
+function formValidation(whichPerformance){
+    if (whichPerformance === 'update'){
+        if ($("#user-search").find('input').val() === ''
+            || $("#user-search").find('input').val() === undefined){
+
+            $("#modal-message").text('You have to provide screen name of the user.');
+            $("#alert").modal('show');
+            return false;
+        }
+
+        if ($("#brand-search").find('input').val() === ''
+            || $("#brand-search").find('input').val() === undefined){
+
+            $("#modal-message").text('You have to provide screen name of the brand.');
+            $("#alert").modal('show');
+
+            return false;
+        }
+
+        if ($("#personality-algorithm").find('select').find('option').filter(":selected").val() === 'none'
+            || $("#personality-algorithm").find('select').find('option').filter(":selected").val() === undefined){
+
+            $("#modal-message").text('You have to select the algorithm for personality analysis.');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'history'){
+        var count = 0 ;
+        var screen_names = [];
+        $('.history-input-autocomplete').each(function(){
+            if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== ''){
+                count++;
+                screen_names.push($(this).val());
+            }
+        });
+
+        if (screen_names.length < 2){
+            $("#modal-message").text('You have to provide at least 2 different screen names to compare!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'bluemix-auth'){
+        if ($("#bluemix-personaity-username").val() === ''){
+            $("#modal-message").text('You have to provide a valid IBM personality insight Username!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+
+        if ($("#bluemix-personaity-password").val() === ''){
+            $("#modal-message").text('You have to provide a valid IBM personality insight Password!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'twitter-auth'){
+        if ($("#twitter-pin").val() === ''){
+            $("#modal-message").text('You have to copy-paste the twitter pin!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+
+    return true;
+};
+
+/**
+ * check if twitter and ibm credentials already exists
+ */
 function checkLoginStatus(){
     $.ajax({
         type:'get',
@@ -793,11 +884,16 @@ function checkLoginStatus(){
     });
 }
 
+/**
+ * draw google charts
+ */
 google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
 google.charts.setOnLoadCallback(updatePersonality);
 google.charts.setOnLoadCallback(updateConsumptionPreference);
 
-//tooltip
+/**
+ * tooltip
+ */
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })

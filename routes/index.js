@@ -52,6 +52,13 @@ router.get('/score', function(req, res, next){
 
 })
 
+/**
+ * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
+ * @param sessionID
+ * @param screen_name
+ * @param credentials
+ * @returns {Promise<any>}
+ */
 function getTimeline(sessionID, screen_name, credentials){
 
     return new Promise((resolve, reject) =>

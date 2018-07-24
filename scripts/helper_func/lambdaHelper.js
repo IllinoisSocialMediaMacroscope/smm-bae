@@ -12,6 +12,12 @@ var lambda = new AWS.Lambda({region: 'us-west-2',
 								httpOptions:{timeout:600000}
 							});
 
+/**
+ * wrapper function to invoke any AWS lambda with parameters
+ * @param function_name
+ * @param args
+ * @returns {Promise<any>}
+ */
 function lambda_invoke(function_name, args){
 	
 	var params = {

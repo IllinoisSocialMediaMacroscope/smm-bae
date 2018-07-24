@@ -57,24 +57,13 @@ router.get('/deleteRemote', function(req,res,next){
         }).catch(err => { res.status(404).send(err)} );
 });
 
-
-router.get('/sunburst', function(req, res, next){
-    getPersonality(req.query.sessionID, req.query.screen_name).then(data =>{
-        res.render('sunburst', {personality:data.personality, profile_img:data.profile_img});
-    }).catch(err =>{ res.status(404).render(err)});
-});
-
-function getPersonality(sessionID, screen_name){
-    return new Promise((resolve, reject) =>{
-        s3_helper.download_file(sessionID + '/' + screen_name + '/' + screen_name + '_personality.json')
-            .then( personality =>{
-                resolve(personality);
-            }).catch(err =>{
-            reject(err);
-        })
-    });
-}
-
+/**
+ * zip the downloaded forder to one file
+ * @param filename
+ * @param zipfolder
+ * @param screen_name
+ * @returns {Promise<any>}
+ */
 function zipDownloads(filename,zipfolder, screen_name){
 
     return new Promise((resolve,reject) => {
