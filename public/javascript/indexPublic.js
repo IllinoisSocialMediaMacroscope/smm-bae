@@ -14,7 +14,7 @@ $('#warning').on('shown.bs.modal', function (e) {
 
 /*-----------------------authorization-----------------------------*/
 $("#twitter-auth").find('a').on('click', function(){
-    $(this).attr('href', '/login/twitter?currentURL=' + newPath);
+    $(this).attr('href', 'login/twitter?currentURL=' + newPath);
     $("#twitter-callback").modal('show');
 });
 
@@ -28,7 +28,9 @@ $("#twitter-pin-submit").on('click', function(){
         $.ajax({
             type: 'post',
             url: 'login/twitter',
-            data: {"twt_pin": $("#twitter-pin").val()},
+            data: {
+                "currentURL":newPath,
+                "twt_pin": $("#twitter-pin").val()},
             success: function (data) {
                 window.location.replace(data.redirect_url);
             },
@@ -253,7 +255,7 @@ function update(data, role) {
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
-                    <a class="btn btn-primary btn-sm" href="http://localhost:8080/download?screen_name=`
+                    <a class="btn btn-primary btn-sm" href="download?screen_name=`
                         + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
                     <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
                     role="button" target="_blank">Documentations</a>
@@ -524,8 +526,8 @@ function formValidation(whichPerformance){
 
 function renderHistoryList(history_lists){
     $(".history-links").remove();
-    $("#history-form").empty();
 
+    $("#history-form").empty();
     $("#history-form").append(`<div class="history-input">
                                     <input class="history-input-autocomplete" placeholder="screen name"/>
                                     <button id="history-input-btn"><i class="fas fa-plus-circle" style="color:#b04b39;"></i></button>
@@ -547,11 +549,6 @@ function renderHistoryList(history_lists){
         });
     });
 
-    // add history chart area
-    $("#history").append(`
-        <div id="history-chart" style="margin-bottom: 40px; display:block;"></div>
-        <div id="history-chart-legend" style="margin-bottom:40px;"></div>`);
-    
     // render list of histories
     $.each(history_lists,function(i, val){
         $("#history").append(`
@@ -560,7 +557,7 @@ function renderHistoryList(history_lists){
             <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
                 <i class="fas fa-trash-alt", style="color:black;margin-right:10px;"/>
             </button>
-            <a href="http://localhost:8080/download?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
+            <a href="download?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
                 <i class="fas fa-download", style="color:black;margin-right:10px;"/>
             </a>    
           </div>`

@@ -12,12 +12,11 @@ router.get('/login/twitter', function(req,res,next){
     consumer.getOAuthRequestToken({ 'oauth_callback': "oob"}, function(error, oauthToken, oauthTokenSecret, results){
         if (error) {
             console.log(error);
-            res.redirect(req.query.currentURL + 'query?error=' + JSON.stringify(error));
+            res.redirect(req.query.currentURL + '?error=' + JSON.stringify(error));
         } else {
 
             req.session.twt_oauthRequestToken = oauthToken;
             req.session.twt_oauthRequestTokenSecret = oauthTokenSecret;
-            req.session.currentURL = req.query.currentURL;
             req.session.save();
             res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.twt_oauthRequestToken);
         }
@@ -33,7 +32,7 @@ router.post('/login/twitter',function(req,res,next){
                 req.session.twt_access_token_key = oauthAccessToken;
                 req.session.twt_access_token_secret = oauthAccessTokenSecret;
                 req.session.save();
-                res.status(200).send({redirect_url: req.session.currentURL});
+                res.status(200).send({redirect_url: req.body.currentURL});
             }
         });
 
