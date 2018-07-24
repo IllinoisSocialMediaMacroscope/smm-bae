@@ -12,14 +12,13 @@ router.get('/login/twitter', function(req,res,next){
     consumer.getOAuthRequestToken({ 'oauth_callback': "oob"}, function(error, oauthToken, oauthTokenSecret, results){
         if (error) {
             console.log(error);
-            res.redirect(req.query.currentURL + 'query?error=' + JSON.stringify(error));
+            res.redirect(req.query.currentURL + '?error=' + JSON.stringify(error));
         } else {
 
             req.session.twtOauthRequestToken = oauthToken;
             req.session.twtOauthRequestTokenSecret = oauthTokenSecret;
-            req.session.currentURL = req.query.currentURL;
             req.session.save();
-            res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.twt_oauthRequestToken);
+            res.redirect("https://twitter.com/oauth/authorize?oauth_token="+req.session.twtOauthRequestToken);
         }
     });
 });
@@ -33,18 +32,18 @@ router.post('/login/twitter',function(req,res,next){
                 req.session.twtAccessTokenKey = oauthAccessToken;
                 req.session.twtAccessTokenSecret = oauthAccessTokenSecret;
                 req.session.save();
-                res.status(200).send({redirectUrl: req.session.currentURL});
+                res.status(200).send({redirectUrl: req.body.currentURL});
             }
         });
 
 });
 
 router.post('/login/bluemix',function(req,res,next){
-    if (req.body.bluemixPersonaityUsername !== undefined && req.body.bluemixPersonaityUsername !== ''
-        && req.body.bluemixPersonaityPassword !== undefined && req.body.bluemixPersonaityPassword !== ''){
+    if (req.body.bluemixPersonalityUsername !== undefined && req.body.bluemixPersonalityUsername !== ''
+        && req.body.bluemixPersonalityPassword !== undefined && req.body.bluemixPersonalityPassword !== ''){
 
-        req.session.bluemixPersonaityUsername = req.body.bluemixPersonaityUsername;
-        req.session.bluemixPersonaityPassword = req.body.bluemixPersonaityPassword;
+        req.session.bluemixPersonalityUsername = req.body.bluemixPersonalityUsername;
+        req.session.bluemixPersonalityPassword = req.body.bluemixPersonalityPassword;
         req.session.save();
         res.status(200).send({redirectUrl: req.body.currentURL});
     }
@@ -56,10 +55,10 @@ router.post('/login/bluemix',function(req,res,next){
 router.get('/login/status', function(req,res,next){
     loginStatus = {twitter:false, bluemix:false};
 
-    if (req.session.twt_access_token_key !== undefined && req.session.twt_access_token_secret !== undefined){
+    if (req.session.twtAccessTokenKey !== undefined && req.session.twtAccessTokenSecret !== undefined){
         loginStatus['twitter'] = true;
     }
-    if (req.session.bluemix_personaity_username !== undefined && req.session.bluemix_personaity_password !== undefined){
+    if (req.session.bluemixPersonalityUsername !== undefined && req.session.bluemixPersonalityPassword !== undefined){
         loginStatus['bluemix'] = true;
     }
 

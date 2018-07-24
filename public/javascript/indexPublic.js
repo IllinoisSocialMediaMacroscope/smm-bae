@@ -42,7 +42,7 @@ $('#warning').on('shown.bs.modal', function (e) { checkLoginStatus(); });
  * Twitter authorization
  */
 $("#twitter-auth").find('a').on('click', function(){
-    $(this).attr('href', '/login/twitter?currentURL=' + newPath);
+    $(this).attr('href', 'login/twitter?currentURL=' + newPath);
     $("#twitter-callback").modal('show');
 });
 
@@ -54,9 +54,12 @@ $("#twitter-pin-submit").on('click', function(){
         $.ajax({
             type: 'post',
             url: 'login/twitter',
-            data: {"twtPin": $("#twitter-pin").val()},
+            data: {
+                currentURL:newPath,
+                twtPin: $("#twitter-pin").val()
+            },
             success: function (data) {
-                window.location.replace(data.redirect_url);
+                window.location.replace(data.redirectUrl);
             },
             error: function (jqXHR, exception) {
                 $("#twitter-callback").modal('hide');
@@ -83,12 +86,12 @@ $("#bluemix-pin-submit").on('click', function(){
             type: 'post',
             url: 'login/bluemix',
             data: {
-                "currentURL":newPath,
-                "bluemix_personaity_username": $("#bluemix-personaity-username").val(),
-                "bluemix_personaity_password": $("#bluemix-personaity-password").val()
+                currentURL:newPath,
+                bluemixPersonalityUsername: $("#bluemix-personaity-username").val(),
+                bluemixPersonalityPassword: $("#bluemix-personaity-password").val()
             },
             success: function (data) {
-                window.location.replace(data.redirect_url);
+                window.location.replace(data.redirectUrl);
             },
             error: function (jqXHR, exception) {
                 $("#twitter-callback").modal('hide');
@@ -105,8 +108,8 @@ $("#bluemix-pin-submit").on('click', function(){
  */
 $("#analyze-btn").on('click', function(){
     if (formValidation('update')) {
-        var user_screen_name = $("#user-search").find('input').val();
-        var brand_screen_name = $("#brand-search").find('input').val();
+        var userScreenName = $("#user-search").find('input').val();
+        var brandScreenName = $("#brand-search").find('input').val();
 
         // loading bar
         $(".loading").show();
@@ -120,8 +123,8 @@ $("#analyze-btn").on('click', function(){
         $.ajax({
             url: "update",
             type: "post",
-            data: { "user_screen_name": user_screen_name,
-                "brand_screen_name":brand_screen_name,
+            data: { "userScreenName": userScreenName,
+                "brandScreenName":brandScreenName,
                 "sessionID": sessionID
             },
             success: function (data) {
@@ -213,7 +216,7 @@ function update(data, role) {
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
                 <div class="personality-btn-group" style="padding:10px; text-align:center;">
-                    <a class="btn btn-primary btn-sm" href="http://localhost:8080/download?screen_name=`
+                    <a class="btn btn-primary btn-sm" href="download?screenName=`
                 + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
                     <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
                     role="button" target="_blank">Documentations</a>
@@ -424,8 +427,8 @@ $("#similarity-metrics").on('change', function(){
         $.ajax({
             url: "score",
             type: "GET",
-            data: { "user_screen_name": $("#user-screen-name").text(),
-                "brand_screen_name":$("#brand-screen-name").text(),
+            data: { "userScreenName": $("#user-screen-name").text(),
+                "brandScreenName":$("#brand-screen-name").text(),
                 "sessionID": sessionID,
                 "option": option
             },
@@ -531,7 +534,7 @@ function renderHistoryList(history_lists){
             <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
                 <i class="fas fa-trash-alt", style="color:black;margin-right:10px;"/>
             </button>
-            <a href="http://localhost:8080/download?screen_name=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
+            <a href="download?screenName=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
                 <i class="fas fa-download", style="color:black;margin-right:10px;"/>
             </a>    
           </div>`
@@ -543,7 +546,7 @@ function renderHistoryList(history_lists){
 };
 
 /**
- * history panel autocomplete screen_name
+ * history panel autocomplete screenName
  * @param list
  */
 function addAutocomplete(list){
@@ -561,14 +564,14 @@ function addAutocomplete(list){
 function history_bulk_comparison(){
     $("#history-btn").on('click', function(){
         if (formValidation('history')) {
-            var screen_names = [];
+            var screenNames = [];
             $('.history-input-autocomplete').each(function(){
-                if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== '') screen_names.push($(this).val());
+                if(screenNames.indexOf($(this).val()) === -1 && $(this).val() !== '') screenNames.push($(this).val());
             });
             $.ajax({
                 url: "history",
                 type: "post",
-                data: JSON.stringify({ "screen_names":screen_names,
+                data: JSON.stringify({ screenNames:screenNames,
                     "sessionID": sessionID
                 }),
                 contentType: "application/json",
@@ -579,7 +582,7 @@ function history_bulk_comparison(){
                     draw_correlation_matrix({
                         container : '#history-chart',
                         data      : data['correlation_matrix_no_legends'],
-                        labels    : screen_names,
+                        labels    : screenNames,
                         start_color : '#ffffff',
                         end_color : '#b04b39'
                     });
@@ -606,13 +609,13 @@ function history_bulk_comparison(){
 
 /**
  * delete button in the history panel
- * @param screen_name
+ * @param screenName
  */
-function deleteRemote(screen_name){
+function deleteRemote(screenName){
     $.ajax({
         url: "deleteRemote",
         type: "get",
-        data: { "screen_name": screen_name,
+        data: { "screenName": screenName,
             "sessionID": sessionID
         },
         success: function (data) {
@@ -807,15 +810,15 @@ function formValidation(whichPerformance){
     }
     else if (whichPerformance === 'history'){
         var count = 0 ;
-        var screen_names = [];
+        var screenNames = [];
         $('.history-input-autocomplete').each(function(){
-            if(screen_names.indexOf($(this).val()) === -1 && $(this).val() !== ''){
+            if(screenNames.indexOf($(this).val()) === -1 && $(this).val() !== ''){
                 count++;
-                screen_names.push($(this).val());
+                screenNames.push($(this).val());
             }
         });
 
-        if (screen_names.length < 2){
+        if (screenNames.length < 2){
             $("#modal-message").text('You have to provide at least 2 different screen names to compare!');
             $("#alert").modal('show');
 

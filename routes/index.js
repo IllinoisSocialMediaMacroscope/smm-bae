@@ -3,8 +3,8 @@ var router = express.Router();
 var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
-var lambda_invoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
-var s3_helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
 
 router.get('/', function(req, res, next){
     res.render('index',{});
@@ -13,8 +13,8 @@ router.get('/', function(req, res, next){
 router.post('/update', function(req, res, next){
     var promises = [];
 
-    promises.push( getTimeline(req.body.sessionID, req.body.user_screen_name, req.session));
-    promises.push( getTimeline(req.body.sessionID, req.body.brand_screen_name, req.session));
+    promises.push( getTimeline(req.body.sessionID, req.body.userScreenName, req.session));
+    promises.push( getTimeline(req.body.sessionID, req.body.brandScreenName, req.session));
     Promise.all(promises).then( results => {
         res.status(200).send(
         {
@@ -26,8 +26,8 @@ router.post('/update', function(req, res, next){
             var parsedError = JSON.parse(err);
             if (parsedError.code === 401 && parsedError.error ==='Not Authorized'){
                 // this error means personality credentials are invalid
-                delete req.session.bluemix_personaity_username;
-                delete req.session.bluemix_personaity_password;
+                delete req.session.bluemixPersonalityUsername;
+                delete req.session.bluemixPersonalityPassword;
             }
         }catch(e){
             console.log(e);
@@ -39,9 +39,9 @@ router.post('/update', function(req, res, next){
 
 router.get('/score', function(req, res, next){
 
-    lambda_invoke('bae_get_sim_score', {
-        user_screen_name: req.query.user_screen_name,
-        brand_screen_name: req.query.brand_screen_name,
+    lambdaInvoke('bae_get_sim_score', {
+        user_screen_name: req.query.userScreenName,
+        brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
         sessionID: req.query.sessionID
     }).then(score => {
@@ -55,41 +55,41 @@ router.get('/score', function(req, res, next){
 /**
  * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
  * @param sessionID
- * @param screen_name
+ * @param screenName
  * @param credentials
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screen_name, credentials){
+function getTimeline(sessionID, screenName, credentials){
 
     return new Promise((resolve, reject) =>
 
         // 1. check if username exist
-        lambda_invoke('bae_check_screen_name', {
-            consumer_key: config.twitter.consumer_key,
-            consumer_secret: config.twitter.consumer_secret,
-            access_token: credentials.twt_access_token_key,
-            access_token_secret: credentials.twt_access_token_secret,
-            screen_name:screen_name })
+        lambdaInvoke('bae_check_screen_name', {
+            consumer_key: config.twitter.consumerKey,
+            consumer_secret: config.twitter.consumerSecret,
+            access_token: credentials.twtAccessTokenKey,
+            access_token_secret: credentials.twtAccessTokenSecret,
+            screen_name:screenName })
         .then( user => {
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
-                s3_helper.list_files(sessionID +'/' + screen_name).then( timelines => {
+                s3Helper.listFiles(sessionID +'/' + screenName).then( timelines => {
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
-                    if (files.indexOf(screen_name + '_tweets.txt') > -1
-                        && timelines[screen_name + '_tweets.txt']['upToDate']) {
+                    if (files.indexOf(screenName + '_tweets.txt') > -1
+                        && timelines[screenName + '_tweets.txt']['upToDate']) {
                         console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
-                        s3_helper.list_files(sessionID +'/' + screen_name).then( personalities => {
+                        s3Helper.listFiles(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
 
                             // 1.1.1.1 if personality has been collected, job done!
-                            if (files.indexOf(screen_name + '_personality.json') > -1
-                                && timelines[screen_name + '_personality.json']['upToDate']) {
+                            if (files.indexOf(screenName + '_personality.json') > -1
+                                && timelines[screenName + '_personality.json']['upToDate']) {
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
-                                s3_helper.download_file(sessionID + '/' + screen_name + '/' + screen_name + '_personality.json')
+                                s3Helper.downloadFile(sessionID + '/' + screenName + '/' + screenName + '_personality.json')
                                     .then( personality =>{
                                         resolve(personality);
                                 }).catch(err =>{
@@ -98,11 +98,11 @@ function getTimeline(sessionID, screen_name, credentials){
                             }
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
-                                lambda_invoke('bae_get_personality', {
+                                lambdaInvoke('bae_get_personality', {
                                     sessionID: sessionID,
-                                    username: credentials.bluemix_personaity_username,
-                                    password: credentials.bluemix_personaity_password,
-                                    screen_name: screen_name,
+                                    username: credentials.bluemixPersonalityUsername,
+                                    password: credentials.bluemixPersonalityPassword,
+                                    screen_name: screenName,
                                     profile_img: user['profile_img']
                                 }).then(personality => {
                                     resolve(personality);
@@ -117,20 +117,20 @@ function getTimeline(sessionID, screen_name, credentials){
 
                     // 1.1.2 if timeline hasn't been collected, collect timeline
                     else {
-                        lambda_invoke('bae_collect_timeline', {
+                        lambdaInvoke('bae_collect_timeline', {
                             sessionID: sessionID,
-                            consumer_key: config.twitter.consumer_key,
-                            consumer_secret: config.twitter.consumer_secret,
-                            access_token: credentials.twt_access_token_key,
-                            access_token_secret: credentials.twt_access_token_secret,
-                            screen_name:screen_name
+                            consumer_key: config.twitter.consumerKey,
+                            consumer_secret: config.twitter.consumerSecret,
+                            access_token: credentials.twtAccessTokenKey,
+                            access_token_secret: credentials.twtAccessTokenSecret,
+                            screen_name:screenName
                         }).then( timelines => {
                             // 1.1.2.1 collect personality, job done
-                            lambda_invoke('bae_get_personality', {
+                            lambdaInvoke('bae_get_personality', {
                                 sessionID: sessionID,
-                                username: credentials.bluemix_personaity_username,
-                                password: credentials.bluemix_personaity_password,
-                                screen_name: screen_name,
+                                username: credentials.bluemixPersonalityUsername,
+                                password: credentials.bluemixPersonalityPassword,
+                                screen_name: screenName,
                                 profile_img: user['profile_img']
                             }).then( personality => {
                                 resolve(personality);
@@ -150,7 +150,7 @@ function getTimeline(sessionID, screen_name, credentials){
 
             // 1.2 if doesn't exist, reject
             else {
-                reject('User screen name: ' + screen_name + ' does not exist!');
+                reject('User screen name: ' + screenName + ' does not exist!');
             }
         }).catch( err => {
             console.log(err);

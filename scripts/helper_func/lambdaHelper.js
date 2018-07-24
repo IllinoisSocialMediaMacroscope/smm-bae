@@ -2,8 +2,8 @@ var AWS = require('aws-sdk');
 var config = require('../../config');
 
 AWS.config.update({
-	accessKeyId: config.aws.access_key,
-	secretAccessKey: config.aws.access_key_secret });
+	accessKeyId: config.aws.accessKey,
+	secretAccessKey: config.aws.accessKeySecret });
 	
 var lambda = new AWS.Lambda({region: 'us-west-2', 
 								apiVersion: '2015-03-31',
@@ -18,7 +18,7 @@ var lambda = new AWS.Lambda({region: 'us-west-2',
  * @param args
  * @returns {Promise<any>}
  */
-function lambda_invoke(function_name, args){
+function lambdaInvoke(function_name, args){
 	
 	var params = {
 		FunctionName: function_name,
@@ -45,4 +45,4 @@ function lambda_invoke(function_name, args){
 }
 
 
-module.exports = lambda_invoke;
+module.exports = lambdaInvoke;
