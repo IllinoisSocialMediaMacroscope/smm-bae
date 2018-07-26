@@ -2,8 +2,8 @@
  * scroll down and focus on login
  */
 $(document).ready(function(){
-    $(".login").fadeIn(2000);
-    $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
+    $("#login").fadeIn(2000);
+    $('html, body').animate({ scrollTop: ($('#login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
 });
 
@@ -87,8 +87,8 @@ $("#bluemix-pin-submit").on('click', function(){
             url: 'login/bluemix',
             data: {
                 currentURL:newPath,
-                bluemixPersonalityUsername: $("#bluemix-personaity-username").val(),
-                bluemixPersonalityPassword: $("#bluemix-personaity-password").val()
+                bluemixPersonalityUsername: $("#bluemix-personality-username").val(),
+                bluemixPersonalityPassword: $("#bluemix-personality-password").val()
             },
             success: function (data) {
                 window.location.replace(data.redirectUrl);
@@ -174,40 +174,42 @@ function update(data, role) {
             }
 
             $("#twitter-"+ role + "-container").append(
-                `<div class="personality-header" style="padding:20px;background-color:#607d8b59;border-radius:5px;overflow:auto;">
-                    <i class="fas fa-exclamation-circle"
+                `<div class="personality-header">
+                    <i class="fas fa-exclamation-circle pull-right"
                         data-toggle="tooltip" data-placement="left" title="` + warningMessage + `"></i>  
-                    <div class="row" style="overflow:auto;">
+                    <div class="row">
                         <div class="col col-md-3 col-sm-3 col-xs-3">
-                            <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
+                            <img src="` + data.profile_img + `"/>
                         </div>
                         <div class="col col-md-9 col-sm-9 col-xs-9">
-                            <h4 id="` + role +  `-screen-name", style="vertical-align:middle"><a target="_blank" href="https://twitter.com/` + data.screen_name +`">` + data.screen_name + `</a></h4>                   
-                            <h4 style="display:inline-block;">Word Count: </h4>
-                            <h4 style="display:inline-block;color:#b04b39;font-weight:800;">` + data.personality.word_count + `</h4>                  
+                            <h4 id="` + role +  `-screen-name">
+                                <a target="_blank" href="https://twitter.com/` + data.screen_name +`">` + data.screen_name + `</a>
+                            </h4>                   
+                            <h4 class="word-count">Word Count: </h4>
+                            <h4 class="number">` + data.personality.word_count + `</h4>                  
                         </div>
                     </div>
                 </div>
-                <div class="personality personality" style="padding:10px;">
+                <div class="personality personality">
                     <h3 class="category"
                     data-toggle="tooltip" data-placement="top" 
                     title="Big Five personality characteristics represent the most widely used model for generally describing 
                     how a person engages with the world. The model includes five primary dimensions.">Personality</h3>
                     <div id="` + role + `-personality-chart"></div>
                 </div>                
-                <div class="personality needs" style="padding:10px;">
+                <div class="personality needs">
                     <h3 class="category" data-toggle="tooltip" data-placement="top" 
                     title="Needs describe at a high level those aspects of a product that are likely to resonate with the 
                     author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3>
                     <div id="` + role + `-needs-chart"></div>
                 </div>
-                <div class="personality values" style="padding:10px;">
+                <div class="personality values">
                     <h3 class="category" data-toggle="tooltip" data-placement="top" 
                     title="Values describe motivating factors that influence the author's decision-making. 
                     The following describes the five values that the service infers.">Values</h3>
                     <div id="` + role + `-values-chart"></div>
                 </div>
-                <div class="personality consumption-perferences" style="padding:10px;">
+                <div class="personality consumption-perferences">
                     <h3 class="category"
                     data-toggle="tooltip" data-placement="top" 
                     title="The service groups the more than 40 consumption preferences into eight high-level categories. 
@@ -215,7 +217,7 @@ function update(data, role) {
                     products, services, and activities.">Consumption Preference</h3>
                     <div id="` + role + `-consumption-chart"></div>
                 </div>
-                <div class="personality-btn-group" style="padding:10px; text-align:center;">
+                <div class="button-group">
                     <a class="btn btn-primary btn-sm" href="download?screenName=`
                 + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
                     <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
@@ -319,16 +321,16 @@ function updateValues(values, role){
 function updatePersonality(personality, role){
     $.each(personality, function(i, content){
         $("#" + role + "-personality-chart").append(`
-            <div style="margin:20px;">
-                <h4 style="display:inline;vertical-align:baseline;">` + content['name'] + `&nbsp</h4>
-                <h4 style="display:inline;vertical-align:baseline;color:#b04b39"
+            <div class="personality personality-big5-scores">
+                <h4 class="word-count">` + content['name'] + `&nbsp</h4>
+                <h4 class="number"
                 data-toggle="tooltip" title="Normalized scores represent a percentile ranking for each characteristic 
                 that is based on qualities that the service infers from the input text. The service computes normalized 
                 scores by comparing the raw score for the author's text with results from a sample population.">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
-                <button style="float:right;background:none;border:none;" class="expand-personality-btn">
-                    <i class="fas fa-chevron-down" style="color:black;"></i>
+                <button class="expand-personality-btn">
+                    <i class="fas fa-chevron-down"></i>
                 </button>
-                <div style="margin:20px 0 20px 0;" id="` + role + "-" + content['trait_id'] + `"></div>
+                <div id="` + role + "-" + content['trait_id'] + `"></div>
             </div>
         `);
 
@@ -427,8 +429,8 @@ $("#similarity-metrics").on('change', function(){
         $.ajax({
             url: "score",
             type: "GET",
-            data: { "userScreenName": $("#user-screen-name").text(),
-                "brandScreenName":$("#brand-screen-name").text(),
+            data: { "userScreenName": $("#user-screen-name").find('a').text(),
+                "brandScreenName":$("#brand-screen-name").find('a').text(),
                 "sessionID": sessionID,
                 "option": option
             },
@@ -502,7 +504,7 @@ function renderHistoryList(historyList){
 
     $("#history-form").append(`<div class="history-input">
                                     <input class="history-input-autocomplete" placeholder="screen name"/>
-                                    <button id="history-input-btn"><i class="fas fa-plus-circle" style="color:#b04b39;"></i></button>
+                                    <button id="history-input-btn"><i class="fas fa-plus-circle"></i></button>
                                 </div>                                
                                <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>`);
     addAutocomplete(historyList);
@@ -510,7 +512,7 @@ function renderHistoryList(historyList){
     $("#history-input-btn").on('click', function(){
         $("#history-form").prepend(`<div class="history-input">
                                     <input class="history-input-autocomplete" placeholder="screen name"/>
-                                    <button class="history-input-del-btn"><i class="fas fa-minus-circle" style="color:#063535;"></i></button>
+                                    <button class="history-input-del-btn"><i class="fas fa-minus-circle"></i></button>
                                 </div>`)
 
         addAutocomplete(historyList);
@@ -523,19 +525,19 @@ function renderHistoryList(historyList){
 
     // add history chart area
     $("#history").append(`
-        <div id="history-chart" style="margin-bottom: 40px; display:block;"></div>
-        <div id="history-chart-legend" style="margin-bottom:40px;"></div>`);
+        <div id="history-chart"></div>
+        <div id="history-chart-legend"></div>`);
 
     // render list of histories
     $.each(historyList,function(i, val){
         $("#history").append(`
         <div class="history-links">
-            <p style="display:inline;">`+val +`</p>
-            <button style="float:right;background:none;border:none;" onclick="deleteRemote('`+ val + `');">
-                <i class="fas fa-trash-alt", style="color:black;margin-right:10px;"/>
+            <p>`+val +`</p>
+            <button onclick="deleteRemote('`+ val + `');">
+                <i class="fas fa-trash-alt"/>
             </button>
-            <a href="download?screenName=`+val +`&sessionID=` + sessionID + `" target="_blank" style="float:right;">
-                <i class="fas fa-download", style="color:black;margin-right:10px;"/>
+            <a href="download?screenName=`+val +`&sessionID=` + sessionID + `" target="_blank"">
+                <i class="fas fa-download"/>
             </a>    
           </div>`
         )
@@ -586,7 +588,7 @@ function historyBulkComparison(){
                         start_color : '#ffffff',
                         end_color : '#b04b39'
                     });
-                    $("#history-chart").append(`<div class="history-btn-group" style="text-align:center;">
+                    $("#history-chart").append(`<div class="button-group">
                                                 <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-download"></i>
                                                     Similarity</button>
                                                 <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-download"></i>
@@ -826,14 +828,14 @@ function formValidation(whichPerformance){
         }
     }
     else if (whichPerformance === 'bluemix-auth'){
-        if ($("#bluemix-personaity-username").val() === ''){
+        if ($("#bluemix-personality-username").val() === ''){
             $("#modal-message").text('You have to provide a valid IBM personality insight Username!');
             $("#alert").modal('show');
 
             return false;
         }
 
-        if ($("#bluemix-personaity-password").val() === ''){
+        if ($("#bluemix-personality-password").val() === ''){
             $("#modal-message").text('You have to provide a valid IBM personality insight Password!');
             $("#alert").modal('show');
 
@@ -861,12 +863,12 @@ function checkLoginStatus(){
         url:'login/status',
         success:function(data){
            if (data.twitter && data.bluemix){
-                $(".login").hide();
+                $("#login").hide();
                 $("#search").show();
             }else{
                $("#search").hide();
                $("#display").hide();
-               $(".login").show();
+               $("#login").show();
 
                if (data.twitter){
                    $("#twitter-auth").hide();
