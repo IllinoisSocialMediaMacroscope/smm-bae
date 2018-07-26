@@ -174,55 +174,54 @@ function update(data, role) {
             }
 
             $("#twitter-"+ role + "-container").append(
-                `<div class="personality-header">
-                    <i class="fas fa-exclamation-circle pull-right"
-                        data-toggle="tooltip" data-placement="left" title="` + warningMessage + `"></i>  
-                    <div class="row">
-                        <div class="col col-md-3 col-sm-3 col-xs-3">
-                            <img src="` + data.profile_img + `"/>
-                        </div>
-                        <div class="col col-md-9 col-sm-9 col-xs-9">
-                            <h4 id="` + role +  `-screen-name">
-                                <a target="_blank" href="https://twitter.com/` + data.screen_name +`">` + data.screen_name + `</a>
-                            </h4>                   
-                            <h4 class="word-count">Word Count: </h4>
-                            <h4 class="number">` + data.personality.word_count + `</h4>                  
-                        </div>
-                    </div>
-                </div>
-                <div class="personality personality">
-                    <h3 class="category"
-                    data-toggle="tooltip" data-placement="top" 
-                    title="Big Five personality characteristics represent the most widely used model for generally describing 
-                    how a person engages with the world. The model includes five primary dimensions.">Personality</h3>
-                    <div id="` + role + `-personality-chart"></div>
-                </div>                
-                <div class="personality needs">
-                    <h3 class="category" data-toggle="tooltip" data-placement="top" 
-                    title="Needs describe at a high level those aspects of a product that are likely to resonate with the 
-                    author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3>
-                    <div id="` + role + `-needs-chart"></div>
-                </div>
-                <div class="personality values">
-                    <h3 class="category" data-toggle="tooltip" data-placement="top" 
-                    title="Values describe motivating factors that influence the author's decision-making. 
-                    The following describes the five values that the service infers.">Values</h3>
-                    <div id="` + role + `-values-chart"></div>
-                </div>
-                <div class="personality consumption-perferences">
-                    <h3 class="category"
-                    data-toggle="tooltip" data-placement="top" 
-                    title="The service groups the more than 40 consumption preferences into eight high-level categories. 
-                    The preferences indicate the author's likelihood to prefer different 
-                    products, services, and activities.">Consumption Preference</h3>
-                    <div id="` + role + `-consumption-chart"></div>
-                </div>
-                <div class="button-group">
-                    <a class="btn btn-primary btn-sm" href="download?screenName=`
-                + data.screen_name +`&sessionID=` + sessionID + `" target="_blank">Download</a>
-                    <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" 
-                    role="button" target="_blank">Documentations</a>
-                </div>`);
+                '<div class="personality-header">\
+                    <i class="fas fa-exclamation-circle pull-right"\
+                        data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
+                    <div class="row">\
+                        <div class="col col-md-3 col-sm-3 col-xs-3">\
+                            <img src="' + data.profile_img + '"/>\
+                        </div>\
+                        <div class="col col-md-9 col-sm-9 col-xs-9">\
+                            <h4 id="' + role +  '-screen-name">\
+                                <a target="_blank" href="https://twitter.com/' + data.screen_name +'">' + data.screen_name + '</a>\
+                            </h4>\
+                            <h4 class="word-count">Word Count: </h4>\
+                            <h4 class="number">' + data.personality.word_count + '</h4>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="personality personality">\
+                    <h3 class="category"\
+                    data-toggle="tooltip" data-placement="top" \
+                    title="Big Five personality characteristics represent the most widely used model for generally describing \
+                    how a person engages with the world. The model includes five primary dimensions.">Personality</h3>\
+                    <div id="' + role + '-personality-chart"></div>\
+                </div>\
+                <div class="personality needs">\
+                    <h3 class="category" data-toggle="tooltip" data-placement="top" \
+                    title="Needs describe at a high level those aspects of a product that are likely to resonate with the \
+                    author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3>\
+                    <div id="' + role + '-needs-chart"></div>\
+                </div>\
+                <div class="personality values">\
+                    <h3 class="category" data-toggle="tooltip" data-placement="top" \
+                    title="Values describe motivating factors that influence the author\'s decision-making.\
+                    The following describes the five values that the service infers.">Values</h3>\
+                    <div id="' + role + '-values-chart"></div>\
+                </div>\
+                <div class="personality consumption-perferences">\
+                    <h3 class="category"\
+                    data-toggle="tooltip" data-placement="top" \
+                    title="The service groups the more than 40 consumption preferences into eight high-level categories. \
+                    The preferences indicate the author\'s likelihood to prefer different \
+                    products, services, and activities.">Consumption Preference</h3>\
+                    <div id="' + role + '-consumption-chart"></div>\
+                </div>\
+                <div class="button-group">\
+                    <a class="btn btn-primary btn-sm" href="download?screenName=' + data.screen_name +'&sessionID=' + sessionID + '" target="_blank">Download</a>\
+                    <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" \
+                    role="button" target="_blank">Documentations</a>\
+                </div>');
             resolve();
         }
         else{
@@ -320,19 +319,17 @@ function updateValues(values, role){
  */
 function updatePersonality(personality, role){
     $.each(personality, function(i, content){
-        $("#" + role + "-personality-chart").append(`
-            <div class="personality personality-big5-scores">
-                <h4 class="word-count">` + content['name'] + `&nbsp</h4>
-                <h4 class="number"
-                data-toggle="tooltip" title="Normalized scores represent a percentile ranking for each characteristic 
-                that is based on qualities that the service infers from the input text. The service computes normalized 
-                scores by comparing the raw score for the author's text with results from a sample population.">`+ (content['percentile'] * 100).toFixed(2)  +`%</h4>
-                <button class="expand-personality-btn">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <div id="` + role + "-" + content['trait_id'] + `"></div>
-            </div>
-        `);
+        $("#" + role + "-personality-chart").append('<div class="personality personality-big5-scores">\
+                <h4 class="word-count">' + content['name'] + '&nbsp</h4>\
+                <h4 class="number"\
+                data-toggle="tooltip" title="Normalized scores represent a percentile ranking for each characteristic \
+                that is based on qualities that the service infers from the input text. The service computes normalized \
+                scores by comparing the raw score for the author\'s text with results from a sample population.">'+ (content['percentile'] * 100).toFixed(2)  +'%</h4>\
+                <button class="expand-personality-btn">\
+                    <i class="fas fa-chevron-down"></i>\
+                </button>\
+                <div id="' + role + "-" + content['trait_id'] + '"></div>\
+            </div>');
 
         var table = [['', 'percentile']];
         $.each(content['children'], function(j,child){
@@ -502,18 +499,18 @@ function renderHistoryList(historyList){
     $(".history-links").remove();
     $("#history-form").empty();
 
-    $("#history-form").append(`<div class="history-input">
-                                    <input class="history-input-autocomplete" placeholder="screen name"/>
-                                    <button id="history-input-btn"><i class="fas fa-plus-circle"></i></button>
-                                </div>                                
-                               <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>`);
+    $("#history-form").append('<div class="history-input">\
+                                    <input class="history-input-autocomplete" placeholder="screen name"/>\
+                                    <button id="history-input-btn"><i class="fas fa-plus-circle"></i></button>\
+                                </div>\
+                               <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>');
     addAutocomplete(historyList);
     // add more input box
     $("#history-input-btn").on('click', function(){
-        $("#history-form").prepend(`<div class="history-input">
-                                    <input class="history-input-autocomplete" placeholder="screen name"/>
-                                    <button class="history-input-del-btn"><i class="fas fa-minus-circle"></i></button>
-                                </div>`)
+        $("#history-form").prepend('<div class="history-input">\
+                                    <input class="history-input-autocomplete" placeholder="screen name"/>\
+                                    <button class="history-input-del-btn"><i class="fas fa-minus-circle"></i></button>\
+                                </div>')
 
         addAutocomplete(historyList);
 
@@ -524,23 +521,19 @@ function renderHistoryList(historyList){
     });
 
     // add history chart area
-    $("#history").append(`
-        <div id="history-chart"></div>
-        <div id="history-chart-legend"></div>`);
+    $("#history").append('<div id="history-chart"></div><div id="history-chart-legend"></div>');
 
     // render list of histories
     $.each(historyList,function(i, val){
-        $("#history").append(`
-        <div class="history-links">
-            <p>`+val +`</p>
-            <button onclick="deleteRemote('`+ val + `');">
-                <i class="fas fa-trash-alt"/>
-            </button>
-            <a href="download?screenName=`+val +`&sessionID=` + sessionID + `" target="_blank"">
-                <i class="fas fa-download"/>
-            </a>    
-          </div>`
-        )
+        $("#history").append('<div class="history-links">\
+            <p>'+val +'</p>\
+            <button onclick="deleteRemote('+ val + ');">\
+                <i class="fas fa-trash-alt"/>\
+            </button>\
+            <a href="download?screenName='+val +'&sessionID=' + sessionID + '" target="_blank"">\
+                <i class="fas fa-download"/>\
+            </a>\
+          </div>')
     });
 
     // history bulk comparison
@@ -579,7 +572,7 @@ function historyBulkComparison(){
                 contentType: "application/json",
                 success: function (data) {
                     $("#history-chart").empty();
-                    $("#history-chart").append(`<h3>Similarity Matrix</h3>`);
+                    $("#history-chart").append('<h3>Similarity Matrix</h3>');
                     $("#history-chart").show();
                     drawCorrelationMatrix({
                         container : '#history-chart',
@@ -588,12 +581,12 @@ function historyBulkComparison(){
                         start_color : '#ffffff',
                         end_color : '#b04b39'
                     });
-                    $("#history-chart").append(`<div class="button-group">
-                                                <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-download"></i>
-                                                    Similarity</button>
-                                                <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-download"></i>
-                                                    Personality</button>
-                                                </div>`)
+                    $("#history-chart").append('<div class="button-group">\
+                                                <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-file-download"></i>\
+                                                    Similarity</button>\
+                                                <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-file-download"></i>\
+                                                    Personality</button>\
+                                                </div>')
 
                     // downloads
                     frontendDownload("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');
