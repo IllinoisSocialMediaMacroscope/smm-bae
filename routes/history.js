@@ -11,7 +11,7 @@ var archiver = require('archiver');
 router.get('/history', function(req, res, next){
     s3Helper.listFolders(req.query.sessionID + '/').then( folders => {
         var folders = Object.keys(folders);
-        res.status(200).send({'history_list': folders});
+        res.status(200).send({'historyList': folders});
 
     });
 });

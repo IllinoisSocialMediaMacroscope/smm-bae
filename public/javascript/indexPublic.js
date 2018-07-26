@@ -15,9 +15,9 @@ $("#personality-algorithm").find('select').on('change', function(){
     if (option === 'IBM-Watson'){
         $("citation")
             .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
-            Yun, J. T., Wang, C., Troy, J., Vance, N. P., Marini, L., Booth, R., Nelson, T., Hetrick, A., & Hodgkins, \
-            H. (September, 2017) – Social Media Macroscope \
-            <a href='http://hdl.handle.net/2142/99742' target='_blank'>http://hdl.handle.net/2142/99742</a><br><br></p>\
+            Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018). \
+            The Social Media Macroscope. In Gateways 2018. \
+            <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br></p>\
             Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
             and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 \
             Tweets to Know you: A New Model to Predict Personality with Social Media.\
@@ -168,15 +168,15 @@ function update(data, role) {
             $("#twitter-" + role + "-container").empty();
 
             if (data.personality.warnings.length > 0){
-                var warning_message = data.personality.warnings[0].message;
+                var warningMessage = data.personality.warnings[0].message;
             }else{
-                var warning_message = "";
+                var warningMessage = "";
             }
 
             $("#twitter-"+ role + "-container").append(
                 `<div class="personality-header" style="padding:20px;background-color:#607d8b59;border-radius:5px;overflow:auto;">
                     <i class="fas fa-exclamation-circle"
-                        data-toggle="tooltip" data-placement="left" title="` + warning_message + `"></i>  
+                        data-toggle="tooltip" data-placement="left" title="` + warningMessage + `"></i>  
                     <div class="row" style="overflow:auto;">
                         <div class="col col-md-3 col-sm-3 col-xs-3">
                             <img src="` + data.profile_img + `" style="width:60px;border-radius:5px;display:inline;"/>
@@ -483,7 +483,7 @@ function updateHistory(){
         success: function (data) {
             $(".loading").hide();
             $("#history-chart").empty();
-            renderHistoryList(data.history_list);
+            renderHistoryList(data.historyList);
         },
         error: function (jqXHR, exception) {
             $("#error").val(jqXHR.responseText);
@@ -494,9 +494,9 @@ function updateHistory(){
 
 /**
  * rendering file list in hisotry panel
- * @param history_lists
+ * @param historyList
  */
-function renderHistoryList(history_lists){
+function renderHistoryList(historyList){
     $(".history-links").remove();
     $("#history-form").empty();
 
@@ -505,7 +505,7 @@ function renderHistoryList(history_lists){
                                     <button id="history-input-btn"><i class="fas fa-plus-circle" style="color:#b04b39;"></i></button>
                                 </div>                                
                                <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>`);
-    addAutocomplete(history_lists);
+    addAutocomplete(historyList);
     // add more input box
     $("#history-input-btn").on('click', function(){
         $("#history-form").prepend(`<div class="history-input">
@@ -513,7 +513,7 @@ function renderHistoryList(history_lists){
                                     <button class="history-input-del-btn"><i class="fas fa-minus-circle" style="color:#063535;"></i></button>
                                 </div>`)
 
-        addAutocomplete(history_lists);
+        addAutocomplete(historyList);
 
         // delete input box
         $(".history-input-del-btn").on('click', function(){
@@ -527,7 +527,7 @@ function renderHistoryList(history_lists){
         <div id="history-chart-legend" style="margin-bottom:40px;"></div>`);
 
     // render list of histories
-    $.each(history_lists,function(i, val){
+    $.each(historyList,function(i, val){
         $("#history").append(`
         <div class="history-links">
             <p style="display:inline;">`+val +`</p>
@@ -542,7 +542,7 @@ function renderHistoryList(history_lists){
     });
 
     // history bulk comparison
-    history_bulk_comparison();
+    historyBulkComparison();
 };
 
 /**
@@ -561,7 +561,7 @@ function addAutocomplete(list){
 /**
  * bulk comparison
  */
-function history_bulk_comparison(){
+function historyBulkComparison(){
     $("#history-btn").on('click', function(){
         if (formValidation('history')) {
             var screenNames = [];
@@ -579,7 +579,7 @@ function history_bulk_comparison(){
                     $("#history-chart").empty();
                     $("#history-chart").append(`<h3>Similarity Matrix</h3>`);
                     $("#history-chart").show();
-                    draw_correlation_matrix({
+                    drawCorrelationMatrix({
                         container : '#history-chart',
                         data      : data['correlation_matrix_no_legends'],
                         labels    : screenNames,
@@ -594,8 +594,8 @@ function history_bulk_comparison(){
                                                 </div>`)
 
                     // downloads
-                    front_end_download("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');
-                    front_end_download("#comparison-table-btn", data['comparison_table'], 'Bulk_Personality_Table.csv');
+                    frontendDownload("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');
+                    frontendDownload("#comparison-table-btn", data['comparison_table'], 'Bulk_Personality_Table.csv');
                 },
                 error: function(jqXHR, exception) {
                     $(".loading").hide();
@@ -631,12 +631,12 @@ function deleteRemote(screenName){
 
 /**
  * download button in history panel
- * @param btn_id
+ * @param btnID
  * @param data
  * @param filename
  */
-function front_end_download(btn_id, data, filename){
-    $(btn_id).on('click', function(){
+function frontendDownload(btnID, data, filename){
+    $(btnID).on('click', function(){
         let csvContent = "data:text/csv;charset=utf-8,";
         data.forEach(function(rowArray){
             let row = rowArray.join(",");
@@ -654,7 +654,7 @@ function front_end_download(btn_id, data, filename){
  * bulk comparison draw correlation matrix
  * @param options
  */
-function draw_correlation_matrix(options){
+function drawCorrelationMatrix(options){
     var width, height, top, right, bottom, left;
     width = height = $("#history-chart").width()* 0.55; // %55 percent of the div
     top = right = $("#history-chart").width() * 0.07;
