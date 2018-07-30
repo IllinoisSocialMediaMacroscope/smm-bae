@@ -1,0 +1,12 @@
+/*********************** Header ***********************/
+#header{
+    display:block;
+    margin:50px auto auto auto;
+    max-width:800px;
+    text-align:center;
+    color:white;
+}
+
+#title{
+    font-size: 50px;
+}
