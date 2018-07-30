@@ -14,7 +14,6 @@ router.get('/login/twitter', function(req,res,next){
             console.log(error);
             res.redirect(req.query.currentURL + '?error=' + JSON.stringify(error));
         } else {
-
             req.session.twtOauthRequestToken = oauthToken;
             req.session.twtOauthRequestTokenSecret = oauthTokenSecret;
             req.session.save();

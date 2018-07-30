@@ -497,14 +497,15 @@ function updateHistory(){
  */
 function renderHistoryList(historyList){
     $(".history-links").remove();
-    $("#history-form").empty();
 
+    $("#history-form").empty();
     $("#history-form").append('<div class="history-input">\
                                     <input class="history-input-autocomplete" placeholder="screen name"/>\
                                     <button id="history-input-btn"><i class="fas fa-plus-circle"></i></button>\
                                 </div>\
                                <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>');
     addAutocomplete(historyList);
+
     // add more input box
     $("#history-input-btn").on('click', function(){
         $("#history-form").prepend('<div class="history-input">\
@@ -519,9 +520,6 @@ function renderHistoryList(historyList){
             $(this).parent().remove();
         });
     });
-
-    // add history chart area
-    $("#history").append('<div id="history-chart"></div><div id="history-chart-legend"></div>');
 
     // render list of histories
     $.each(historyList,function(i, val){
