@@ -1,11 +1,9 @@
+/********************** General ***********************/
 body{
     background-color:#46aea8;
     font-family: 'Monda';
     overflow:auto;
     color:#063535;
-}
-i{
-    color:white;
 }
 
 button:focus,
@@ -14,6 +12,120 @@ button:active{
     outline:none;
 }
 
+.modal-body{
+    padding:30px;
+    overflow:auto;
+}
+
+.modal-body .btn{
+    margin:10px;
+}
+
+.loading{
+    text-align:center;
+    margin:50px 50px;
+    display:none;
+}
+
+.row{
+    overflow:hidden;
+}
+
+/* tooltip */
+.tooltip-inner {
+    max-width: 350px;
+    width: 350px;
+    text-align:left;
+}
+
+/*********************** Authorization ***********************/
+#login {
+    width: 40%;
+    background-color: #DEF2F2;
+    padding: 50px;
+    border-radius: 10px;
+    margin: 50px auto;
+    overflow:auto;
+    display:none;
+}
+
+#login h1 i{
+    color:#607D8B;
+    float:right;
+}
+
+#login-instruction{
+    padding:15px;
+}
+
+#login-instruction kbd{
+    background-color: #607D8B;
+    margin-top:25px;
+}
+
+#login-instruction a{
+    display:block;
+}
+
+#twitter-auth,
+#bluemix-auth{
+    margin-top:10px;
+}
+
+#twitter-auth a img,
+#bluemix-auth a img{
+    margin-right:10px;
+    height:30px;
+    width:30px;
+}
+
+#bluemix-personality-username,
+#bluemix-personality-password{
+    margin: 10px auto 10px auto;
+}
+
+/*********************** Search Area ********************/
+#search{
+    display:none;
+    margin:50px auto auto auto;
+    max-width:800px;
+    text-align:center;
+}
+
+#user-search,
+#brand-search,
+#personality-algorithm{
+    margin:10px auto 10px auto;
+}
+
+#user-search input,
+#brand-search input,
+#personality-algorithm select{
+    width:500px;
+    margin-left:20px;
+}
+
+#analyze-btn{
+    max-width:530px;
+    margin:10px auto 10px auto;
+    background:#063535;
+    font-size:20px;
+}
+
+#analyze-btn:hover,
+#history-btn:hover{
+    background: #a0b2b2;
+    color:#063535;
+}
+
+/*********************** Frames ***********************/
+#display {
+    margin: 100px 50px;
+    overflow: auto;
+    display: none;
+}
+
+/*********************** user/brand Personality **********************/
 #twitter-user-container,
 #twitter-brand-container{
     background-color: #def2f1;
@@ -23,14 +135,84 @@ button:active{
     overflow:auto;
 }
 
+.personality-header{
+    padding:20px;
+    background-color:#607d8b59;
+    border-radius:5px;
+    overflow:auto;
+}
+
+.personality-header img{
+    width:60px;
+    border-radius:5px;
+    display:inline;
+}
+
+.word-count{
+    display:inline;
+    vertical-align: baseline;
+}
+
+.number{
+    display:inline;
+    color:#b04b39;
+    font-weight:800;
+    vertical-align: baseline;
+}
+
+.personality.personality,
+.personality.needs,
+.personality.values,
+.personality.consumption-perferences{
+    padding:10px;
+}
+
+.button-group{
+    padding:10px;
+    text-align: center;
+}
+
+.expand-personality-btn{
+    float:right;
+    background:none;
+    border:none;
+}
+
+.personality.personality-big5-scores div{
+    margin:10px 0 20px 0;
+}
+
+.consumption-header-row{
+    background-color:#063535;
+    color:white;
+}
+
+.consumption-table-cell{
+    font-family: Monda;
+}
+
+/********************* Similarity Score ***********************/
+#similarity-metrics{
+    margin:20px auto 20px auto;
+    width:60%;
+}
+
+#similarity-score{
+   font-size:100px;
+    margin:50px 50px;
+}
+
 #comparison{
     background-color: #17252a;
     min-height: 400px;
     padding: 30px;
     border-radius: 10px;
     overflow:auto;
+    text-align:center;
+    color:white;
 }
 
+/******************* History *********************/
 #history{
     background-color: #def2f1;
     min-height: 580px;
@@ -40,39 +222,48 @@ button:active{
     overflow:auto;
 }
 
-#title{
-    font-size: 50px;
-    color: white;
+#history-form{
+    padding:30px;
 }
 
-#bae-description{
-    color:white;
-}
-
-#analyze-btn{
-    max-width:530px;
-    margin:10px auto 10px auto;
-    background:#063535;
-    font-size:20px;
-}
 #history-btn{
     background:#063535;
     width:85%;
 }
-#analyze-btn:hover,
-#history-btn:hover{
-    background: #a0b2b2;
-    color:#063535;
+
+/*plus*/
+.fas.fa-plus-circle{
+    color:#b04b39;
 }
 
+/*minus*/
+.fas.fa-minus-circle{
+    color:#063535;
+}
 .history-links{
     padding:5px;
     display:block;
 }
 
-#similarity-metrics{
-    margin:20px auto 20px auto;
-    width:60%;
+.history-links p{
+    display:inline;
+}
+
+.history-links button,
+.history-links a{
+    float:right;
+    background:none;
+    border:none;
+}
+
+#history-chart{
+    overflow:auto;
+    margin-bottom: 40px;
+    display:block;
+}
+
+#history-chart-legend{
+    margin-bottom:40px;
 }
 
 .history-input-autocomplete{
@@ -108,44 +299,18 @@ button:active{
     margin-left:5px;
 }
 
-#history-chart{
-    overflow:auto;
+.fas.fa-trash-alt,
+.fas.fa-download{
+    color:black;
+    margin-right:10px;
 }
 
-.consumption-header-row{
-    background-color:#063535;
+.fas.fa-file-download{
     color:white;
-}
-.consumption-table-cell{
-    font-family: Monda;
+    margin-right:5px;
 }
 
-/* tooltip */
-.tooltip-inner {
-    max-width: 350px;
-    width: 350px;
-    text-align:left;
-}
 
-.fas.fa-exclamation-circle{
-    color:#607D8B;
-    float:right;
-}
 
-.login {
-    width: 40%;
-    background-color: #DEF2F2;
-    padding: 50px;
-    border-radius: 10px;
-    margin: 50px auto;
-    overflow:auto;
-    display:none;
-}
 
-#login-instruction{
-    padding:15px;
-}
 
-kbd{
-    background-color: #607D8B;
-}
