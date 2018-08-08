@@ -5,7 +5,7 @@ html
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, inital-scale=1")
 
-        <!-- settings -->
+        <!-- ajax and jquery -->
         script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
         script(src="https://code.jquery.com/ui/1.12.1/jquery-ui.js")
         script(src="https://code.jquery.com/jquery-1.12.4.js")
@@ -21,12 +21,12 @@ html
         <!-- fontawesome -->
         link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
             integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
+
         <!-- google chart -->
         script(type="text/javascript", src="https://www.gstatic.com/charts/loader.js")
 
         <!-- google font -->
         link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
-        link(href='https://fonts.googleapis.com/css?family=Nothing You Could Do', rel='stylesheet')
 
         <!-- Count up -->
         script(type="text/javascript", src="javascript/countUp.js")
@@ -42,51 +42,56 @@ html
         script(type="text/javascript", src="https://d3js.org/d3.v5.min.js")
 
         <!-- customized -->
+        link(href="css/header.css", rel="stylesheet")
         link(href="css/index.css", rel="stylesheet")
 
         body
             include header.pug
             include auth.pug
-            div(id="search", style="display:none;margin:50px auto auto auto; max-width:800px; text-align:center;")
-                div(id="user-search", class="controls form-inline", style="margin:10px auto 10px auto;")
-                    i(class="fas fa-user-alt", data-toggle="tooltip", data-placement="left", title="Please make sure this screen name belongs to a twitter user's account.")
-                    input(class="form-control", placeholder="User's screen name", style="width:500px;margin-left:20px;")
-                div(id="brand-search", class="controls form-inline", style="margin:10px auto 10px auto;")
-                    i(class="fas fa-building", data-toggle="tooltip", data-placement="left", title="Please make sure this screen name belongs to a twitter brand's public account.")
-                    input(class="form-control", placeholder="Brand's screen name", style="width:500px;margin-left:20px;")
-                div(id="personality-algorithm", class="controls form-inline", style="margin:10px auto 10px auto;")
-                    i(class="fas fa-wrench", data-toggle="tooltip", data-placement="left", title="Please select a personality analysis algorithms.")
-                    select(class="form-control", style="width:500px;margin-left:20px;")
+
+            div(id="search")
+                div(id="user-search", class="controls form-inline")
+                    i(class="fas fa-user-alt", data-toggle="tooltip", data-placement="left",
+                    title="Please make sure this screen name belongs to a twitter user's account.")
+                    input(class="form-control", placeholder="User's screen name")
+                div(id="brand-search", class="controls form-inline")
+                    i(class="fas fa-building", data-toggle="tooltip", data-placement="left",
+                    title="Please make sure this screen name belongs to a twitter brand's public account.")
+                    input(class="form-control", placeholder="Brand's screen name")
+                div(id="personality-algorithm", class="controls form-inline")
+                    i(class="fas fa-wrench", data-toggle="tooltip", data-placement="left",
+                    title="Please select a personality analysis algorithms.")
+                    select(class="form-control")
                         option(value="none") Please choose ...
                         option(value="IBM-Watson") IBM Watson Personality Insights
                     citation(data-toggle="tooltip", data-placement="right", data-html="true")
                 button(id="analyze-btn", class="btn btn-primary btn-block") Start Analysis
-                div(class="loading", style="text-align:center;margin:50px 50px;display:none;")
+                div(class="loading")
                     img(src="img/bae_loading_md.gif")
 
-            div(id="display", style="margin:100px 50px;overflow:auto;display:none;")
+            div(id="display")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
                     div(id="twitter-user-container")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
                     div(id="twitter-brand-container")
                 div(class="col col-md-4 col-sm-4 col-xs-12")
-                    div(id="comparison" style="text-align:center;")
-                        a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank", style="color:white;")
-                            i(class="fas fa-exclamation-circle", data-toggle="tooltip", data-html="true", data-placement="left",
+                    div(id="comparison")
+                        a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank")
+                            i(class="fas fa-exclamation-circle pull-right", data-toggle="tooltip", data-html="true", data-placement="left",
                             title="Click to find out how to calculate similarity score.")
-                        h1(style="color:#def2f1;") Similarity Score
+                        h1 Similarity Score
                         select(class="form-control", id="similarity-metrics")
                             option(value="none" selected) Please choose...
                             option(value="personality_sim_score") Personality
                             option(value="needs_sim_score") Needs
                             option(value="values_sim_score") Values
                             option(value="consumption_sim_score") Consumption Preference
-                        h1(style="font-size:100px;color:white;margin:50px 50px;", id="similarity-score")
+                        h1(id="similarity-score")
                     div(id="history")
                         h1 History
-                        div(id="history-form", style="padding:30px;")
-                        div(id="history-chart", style="margin-bottom: 40px; display:block;")
-                        div(id="history-chart-legend", style="margin-bottom:40px;")
+                        div(id="history-form")
+                        div(id="history-chart")
+                        div(id="history-chart-legend")
 
             include warning.pug
             include error.pug
