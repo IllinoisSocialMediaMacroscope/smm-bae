@@ -6,10 +6,10 @@ div(id="login")
     div(id="login-instruction")
         kbd Frequently Asked Questions:
         a(href="https://twitter.com/i/flow/signup", target="_blank") How to create a Twitter account?
-        a(href="documentation#create-bluemix", target="_blank") How to create IBM Bluemix account?
-        a(href="documentation#access-watson", target="_blank") How to access IBM Personality Insights?
-        a(href="documentation#find-watson-credential", target="_blank") Where to find your IBM Personality Insights Credentials?
-        a(href="documentation#what-we-do", target="_blank") How do we handle your credentials?
+        a(href="documentation#create-bluemix", target="_blank") How do I create an IBM Cloud account?
+        a(href="documentation#access-watson", target="_blank") How do I access IBM Personality Insights?
+        a(href="documentation#find-watson-credential", target="_blank") Where can I find IBM Personality Insights credentials?
+        a(href="documentation#what-we-do", target="_blank") How are my credentials handled?
     div(id="twitter-auth")
         a(class="btn btn-primary btn-block", target="_blank")
             img(src='img/twitter-sm-logo.png')
@@ -43,8 +43,9 @@ div(id="bluemix-callback", class="modal fade", role="dialog", data-backdrop="sta
                     img(src="img/bluemix-sm-logo.png", width=80)
                     h2 IBM Personality Insights
                 div(id="bluemix-login-notes")
-                    p Please provide your IBM personality insights credentials, which is DIFFERENT than your Bluemix credentials.&nbsp
-                        a(href="documentation", target="_blank") see more...
+                    p Please provide your IBM personality insights credentials, which is DIFFERENT than your IBM Cloud
+                        |  (formerly known as Bluemix) credentials.&nbsp
+                        a(href="documentation#find-watson-credential", target="_blank") see more...
                     input(id="bluemix-personality-username", class="form-control", placeholder="Personality Insights Username")
                     input(id="bluemix-personality-password", type="password", class="form-control", placeholder="Personality Insights Password")
                 button(class="btn btn-primary pull-right", id="bluemix-pin-submit") submit
