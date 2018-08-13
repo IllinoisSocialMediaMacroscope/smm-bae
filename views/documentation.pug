@@ -22,12 +22,15 @@ html
 
         <!-- google font -->
         link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Kaushan Script', rel='stylesheet')
 
         <!-- customized -->
         link(href="css/header.css", rel="stylesheet")
         link(href="css/documentation.css", rel="stylesheet")
+        link(href="css/topbar.css", rel="stylesheet")
 
         body
+            include topbar.pug
             include header.pug
             each section in documentation
                 div(class="section")
