@@ -27,6 +27,8 @@ html
 
         <!-- google font -->
         link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Kaushan Script', rel='stylesheet')
+        link(href="css/topbar.css", rel="stylesheet")
 
         <!-- Count up -->
         script(type="text/javascript", src="javascript/countUp.js")
@@ -46,6 +48,7 @@ html
         link(href="css/index.css", rel="stylesheet")
 
         body
+            include topbar.pug
             include header.pug
             include auth.pug
 

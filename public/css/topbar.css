@@ -1,0 +1,13 @@
+.navbar.navbar-expand-lg{
+    background-color:#46aea8;
+    border-radius:initial;
+}
+
+.navbar-brand{
+    color:white;
+}
+
+#macroscope{
+    font-family: 'Kaushan Script';
+    font-size:22px;
+}
