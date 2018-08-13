@@ -24,8 +24,7 @@ router.post('/update', function(req, res, next){
     }).catch( err =>{
         try{
             var parsedError = JSON.parse(err);
-            if (parsedError.code === 401 && parsedError.error ==='Not Authorized'){
-                console.log('delete bluemix personality username');
+            if (parsedError.code === 401){
                 // this error means personality credentials are invalid
                 delete req.session.bluemixPersonalityUsername;
                 delete req.session.bluemixPersonalityPassword;
