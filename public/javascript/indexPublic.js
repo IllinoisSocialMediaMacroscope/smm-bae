@@ -857,6 +857,8 @@ function checkLoginStatus(){
                 $("#login").hide();
                 $("#search").show();
             }else{
+               console.log(data);
+
                $("#search").hide();
                $("#display").hide();
                $("#login").show();

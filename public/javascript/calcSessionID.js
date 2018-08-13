@@ -15,3 +15,10 @@ for (i=0; i<pathArray.length-1; i++){
     newPath += pathArray[i];
     newPath += "/";
 };
+
+/**
+ * click header redirect to homepage
+ */
+$("#header").find('a').on('click', function(){
+    window.location.replace(newPath);
+});
