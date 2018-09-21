@@ -206,7 +206,7 @@ var deleteRemoteFolder = function(prefix){
 						data.Contents.forEach(function(content) {
 							params.Delete.Objects.push({Key: content.Key});
 						});
-						
+
 						s3.deleteObjects(params, function(err, data) {
 							if(err){
 								console.log('cannot delete err');

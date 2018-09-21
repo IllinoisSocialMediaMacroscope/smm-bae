@@ -2,9 +2,12 @@ var express = require('express');
 var router = express.Router();
 var config = require('../config');
 var path = require('path');
+var fetch = require('node-fetch');
 var appPath = path.dirname(__dirname);
 var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var getMultiRemote = require(path.join(appPath, 'scripts', 'helper_func', 'getRemote.js'));
+var {PythonShell} = require('python-shell');
 
 router.get('/', function(req, res, next){
     res.render('index',{});
@@ -12,16 +15,17 @@ router.get('/', function(req, res, next){
 
 router.post('/update', function(req, res, next){
     var promises = [];
-
-    promises.push( getTimeline(req.body.sessionID, req.body.userScreenName, req.session));
-    promises.push( getTimeline(req.body.sessionID, req.body.brandScreenName, req.session));
+    promises.push( getTimeline(req.body.sessionID, req.body.userScreenName, req.body.algorithm, req.session));
+    promises.push( getTimeline(req.body.sessionID, req.body.brandScreenName, req.body.algorithm, req.session));
     Promise.all(promises).then( results => {
         res.status(200).send(
         {
+            algorithm: req.body.algorithm,
             user:results[0],
             brand:results[1]
         })
     }).catch( err =>{
+        console.log(err);
         try{
             var parsedError = JSON.parse(err);
             if (parsedError.code === 401){
@@ -38,12 +42,12 @@ router.post('/update', function(req, res, next){
 });
 
 router.get('/score', function(req, res, next){
-
     lambdaInvoke('bae_get_sim_score', {
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
-        sessionID: req.query.sessionID
+        sessionID: req.query.sessionID,
+        algorithm: req.query.algorithm
     }).then(score => {
         res.status(200).send(score);
     }).catch(err => {
@@ -59,7 +63,7 @@ router.get('/score', function(req, res, next){
  * @param credentials
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, credentials){
+function getTimeline(sessionID, screenName, algorithm, credentials){
 
     return new Promise((resolve, reject) =>
 
@@ -81,34 +85,65 @@ function getTimeline(sessionID, screenName, credentials){
                     if (files.indexOf(screenName + '_tweets.txt') > -1
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
                         console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
+
                         s3Helper.listFiles(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
-
+                            if (algorithm === 'IBM-Watson'){
+                                var personalityFname = screenName + '_personality.json';
+                            }
+                            else if (algorithm === 'TwitPersonality'){
+                                var personalityFname = screenName + '_twitPersonality.json';
+                            }
+                            else{
+                                reject()
+                            }
                             // 1.1.1.1 if personality has been collected, job done!
-                            if (files.indexOf(screenName + '_personality.json') > -1
-                                && timelines[screenName + '_personality.json']['upToDate']) {
+                            if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
-                                s3Helper.downloadFile(sessionID + '/' + screenName + '/' + screenName + '_personality.json')
+                                s3Helper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
                                     .then( personality =>{
                                         resolve(personality);
-                                }).catch(err =>{
+                                    }).catch(err =>{
                                     reject(err);
-                                })
+                                });
                             }
+
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
-                                lambdaInvoke('bae_get_personality', {
-                                    sessionID: sessionID,
-                                    username: credentials.bluemixPersonalityUsername,
-                                    password: credentials.bluemixPersonalityPassword,
-                                    screen_name: screenName,
-                                    profile_img: user['profile_img']
-                                }).then(personality => {
-                                    resolve(personality);
-                                }).catch(err => {
-                                    reject(err);
-                                })
+                                if (algorithm === 'IBM-Watson') {
+                                    lambdaInvoke('bae_get_personality', {
+                                        sessionID: sessionID,
+                                        username: credentials.bluemixPersonalityUsername,
+                                        password: credentials.bluemixPersonalityPassword,
+                                        screen_name: screenName,
+                                        profile_img: user['profile_img']
+                                    }).then(personality => {
+                                        resolve(personality);
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
+                                }
+                                else if (algorithm === 'TwitPersonality'){
+                                    var options = {
+                                        pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
+                                        pythonOptions: ['-W ignore'],
+                                        scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
+                                        args:['--sessionID', sessionID,
+                                            '--screenName', screenName,
+                                            '--profileImg', user['profile_img']]
+                                    }
+                                    PythonShell.run('predict_personality.py', options, function(err, results){
+                                        if (err) reject(err);
+                                        else{
+                                            getMultiRemote(results[0]).then(personality =>{
+                                                resolve(JSON.parse(personality));
+                                            }).catch(err =>{
+                                                reject(err);
+                                            });
+                                        }
+                                    });
+                                }
                             }
                         }).catch( err => {
                             reject(err);
@@ -125,19 +160,40 @@ function getTimeline(sessionID, screenName, credentials){
                             access_token_secret: credentials.twtAccessTokenSecret,
                             screen_name:screenName
                         }).then( timelines => {
-                            // 1.1.2.1 collect personality, job done
-                            lambdaInvoke('bae_get_personality', {
-                                sessionID: sessionID,
-                                username: credentials.bluemixPersonalityUsername,
-                                password: credentials.bluemixPersonalityPassword,
-                                screen_name: screenName,
-                                profile_img: user['profile_img']
-                            }).then( personality => {
-                                resolve(personality);
-                            }).catch( err =>{
-                                reject(err);
-                            })
 
+                            if (algorithm === 'IBM-Watson') {
+                                lambdaInvoke('bae_get_personality', {
+                                    sessionID: sessionID,
+                                    username: credentials.bluemixPersonalityUsername,
+                                    password: credentials.bluemixPersonalityPassword,
+                                    screen_name: screenName,
+                                    profile_img: user['profile_img']
+                                }).then(personality => {
+                                    resolve(personality);
+                                }).catch(err => {
+                                    reject(err);
+                                })
+                            }
+                            else if (algorithm === 'TwitPersonality'){
+                                var options = {
+                                    pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
+                                    pythonOptions: ['-W ignore'],
+                                    scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
+                                    args:['--sessionID', sessionID,
+                                        '--screenName', screenName,
+                                        '--profileImg', user['profile_img']]
+                                }
+                                PythonShell.run('predict_personality.py', options, function(err, results){
+                                    if (err) reject(err);
+                                    else{
+                                        getMultiRemote(results[0]).then(personality =>{
+                                            resolve(JSON.parse(personality));
+                                        }).catch(err =>{
+                                            reject(err);
+                                        });
+                                    }
+                                });
+                            }
                         }).catch( err => {
                             reject(err);
                         });

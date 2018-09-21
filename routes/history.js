@@ -9,9 +9,35 @@ var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'de
 var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
+    var promiseArr = []
+
+    // loop through folders
     s3Helper.listFolders(req.query.sessionID + '/').then( folders => {
         var folders = Object.keys(folders);
-        res.status(200).send({'historyList': folders});
+
+        folders.forEach( folder =>{
+            promiseArr.push(new Promise((resolve, reject) => {
+
+                // loop through each folder to find its files
+                s3Helper.listFiles(req.query.sessionID + '/' + folder + '/').then( files =>{
+                    var historyListItem = {};
+                    var files = Object.keys(files);
+                    historyListItem[folder] = files;
+
+                    resolve(historyListItem);
+
+                }).catch(err =>{
+                    reject(err);
+                });
+            }));
+        });
+
+        Promise.all(promiseArr).then( results => {
+            res.status(200).send({'historyList': results});
+        }).catch( err => {
+            console.log(err);
+            res.status(500).send(err);
+        });
 
     });
 });
@@ -19,7 +45,8 @@ router.get('/history', function(req, res, next){
 router.post('/history', function(req,res,next){
     lambdaInvoke('bae_bulk_comparison', {
         screen_names: req.body.screenNames,
-        sessionID: req.body.sessionID
+        sessionID: req.body.sessionID,
+        algorithm: req.body.algorithm
     }).then(table => {
         res.status(200).send(table);
     }).catch(err => {
@@ -41,7 +68,7 @@ router.get('/download', function(req,res, next){
                 });
                 res.download(filename);}).catch(err => {res.status(500).send(err);
 
-            })
+            });
         }).catch(err =>{
         res.status(404).send(err);
     })
@@ -53,6 +80,15 @@ router.get('/deleteRemote', function(req,res,next){
             console.log('remove', data);
             res.status(200).send(data);
         }).catch(err => { res.status(404).send(err)} );
+});
+
+router.get('/purgeRemote', function(req,res,next){
+    s3Helper.deleteRemoteFolder(req.query.sessionID + '/').then( values => {
+        res.send({'data':'Successfully purged!'});
+    }).catch( err =>{
+        console.log(err);
+        res.send({ERROR:err});
+    });
 });
 
 /**

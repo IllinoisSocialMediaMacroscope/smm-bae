@@ -26,10 +26,13 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "morgan": "^1.9.0",
+    "node-fetch": "^2.2.0",
     "nodemon": "^1.17.5",
     "oauth": "^0.9.15",
     "progressbar.js": "^1.0.1",
     "pug": "^2.0.3",
+    "python-shell": "^1.0.4",
+    "request": "^2.88.0",
     "rimraf": "^2.6.2"
   }
 }

@@ -26,6 +26,19 @@ $("#personality-algorithm").find('select').on('change', function(){
             More Research References ...</a>")
             .tooltip('fixTitle')
             .tooltip('show');
+        checkIBMStatus();
+    }
+    else if (option === 'TwitPersonality'){
+        $("citation")
+            .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
+            Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018). \
+            The Social Media Macroscope. In Gateways 2018. \
+            <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br></p>\
+            Carducci, Giulio, et al. <a href='http://www.mdpi.com/2078-2489/9/5/127/htm' target='_blank'>TwitPersonality: Computing Personality Traits \
+            from Tweets Using Word Embeddings and Supervised Learning</a>. Information 9.5 (2018): 127")
+            .tooltip('fixTitle')
+            .tooltip('show');
+        $("#analyze-btn").prop('disabled', false);
     }
     else{
         $("citation").attr('data-original-title', "").tooltip('hide');
@@ -71,13 +84,6 @@ $("#twitter-pin-submit").on('click', function(){
 });
 
 /**
- * IBM authorization
- */
-$("#bluemix-auth").find('a').on('click', function(){
-    $("#bluemix-callback").modal('show');
-});
-
-/**
  * save IBM personality username and password
  */
 $("#bluemix-pin-submit").on('click', function(){
@@ -110,6 +116,7 @@ $("#analyze-btn").on('click', function(){
     if (formValidation('update')) {
         var userScreenName = $("#user-search").find('input').val();
         var brandScreenName = $("#brand-search").find('input').val();
+        var algorithm = $("#personality-algorithm").find('select').find(':selected').val();
 
         // loading bar
         $(".loading").show();
@@ -125,6 +132,7 @@ $("#analyze-btn").on('click', function(){
             type: "post",
             data: { "userScreenName": userScreenName,
                 "brandScreenName":brandScreenName,
+                "algorithm":algorithm,
                 "sessionID": sessionID
             },
             success: function (data) {
@@ -140,7 +148,7 @@ $("#analyze-btn").on('click', function(){
 
                 update(data.user, 'user');
                 update(data.brand, 'brand');
-                resetSimScore();
+                resetSimScore(data.algorithm);
                 updateHistory();
             },
             error: function (jqXHR, exception) {
@@ -162,12 +170,11 @@ $("#analyze-btn").on('click', function(){
  * @param role: user or brand
  */
 function update(data, role) {
-
     var promise = new Promise(function(resolve, reject) {
         if (data != undefined) {
             $("#twitter-" + role + "-container").empty();
 
-            if (data.personality.warnings.length > 0){
+            if ('warnings' in data.personality && data.personality.warnings.length > 0){
                 var warningMessage = data.personality.warnings[0].message;
             }else{
                 var warningMessage = "";
@@ -190,37 +197,12 @@ function update(data, role) {
                         </div>\
                     </div>\
                 </div>\
-                <div class="personality personality">\
-                    <h3 class="category"\
-                    data-toggle="tooltip" data-placement="top" \
-                    title="Big Five personality characteristics represent the most widely used model for generally describing \
-                    how a person engages with the world. The model includes five primary dimensions.">Personality</h3>\
-                    <div id="' + role + '-personality-chart"></div>\
-                </div>\
-                <div class="personality needs">\
-                    <h3 class="category" data-toggle="tooltip" data-placement="top" \
-                    title="Needs describe at a high level those aspects of a product that are likely to resonate with the \
-                    author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3>\
-                    <div id="' + role + '-needs-chart"></div>\
-                </div>\
-                <div class="personality values">\
-                    <h3 class="category" data-toggle="tooltip" data-placement="top" \
-                    title="Values describe motivating factors that influence the author\'s decision-making.\
-                    The following describes the five values that the service infers.">Values</h3>\
-                    <div id="' + role + '-values-chart"></div>\
-                </div>\
-                <div class="personality consumption-perferences">\
-                    <h3 class="category"\
-                    data-toggle="tooltip" data-placement="top" \
-                    title="The service groups the more than 40 consumption preferences into eight high-level categories. \
-                    The preferences indicate the author\'s likelihood to prefer different \
-                    products, services, and activities.">Consumption Preference</h3>\
-                    <div id="' + role + '-consumption-chart"></div>\
-                </div>\
+                <div class="personality persona"></div>\
+                <div class="personality needs"></div>\
+                <div class="personality values"></div>\
+                <div class="personality consumption-preferences"></div>\
                 <div class="button-group">\
-                    <a class="btn btn-primary btn-sm" href="download?screenName=' + data.screen_name +'&sessionID=' + sessionID + '" target="_blank">Download</a>\
-                    <a class="btn btn-primary btn-sm" href="https://console.bluemix.net/docs/services/personality-insights/index.html#about" \
-                    role="button" target="_blank">Documentations</a>\
+                    <a class="btn btn-primary btn-block" href="download?screenName=' + data.screen_name +'&sessionID=' + sessionID + '" target="_blank">Download</a>\
                 </div>');
             resolve();
         }
@@ -230,15 +212,13 @@ function update(data, role) {
     })
 
     promise.then(() =>{
-        updatePersonality(data.personality.personality, role);
-        updateConsumptionPreference(data.personality.consumption_preferences, role);
-        updateNeeds(data.personality.needs, role);
-        updateValues(data.personality.values, role);
+        if (data.personality.personality != undefined) updatePersonality(data.personality.personality, role);
+        if (data.personality.consumption_preferences != undefined) updateConsumptionPreference(data.personality.consumption_preferences, role);
+        if (data.personality.needs != undefined) updateNeeds(data.personality.needs, role);
+        if (data.personality.values != undefined) updateValues(data.personality.values, role);
 
         //tooltip
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
+        $(function() { $('[data-toggle="tooltip"]').tooltip()});
     });
 
 };
@@ -249,6 +229,12 @@ function update(data, role) {
  * @param role: user or brand
  */
 function updateNeeds(needs, role){
+    $("#twitter-"+ role + "-container").find(".personality.needs").append(
+        '<h3 class="category" data-toggle="tooltip" data-placement="top" \
+        title="Needs describe at a high level those aspects of a product that are likely to resonate with the \
+        author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3> \
+        <div id="' + role + '-needs-chart"></div>');
+
     var table = [['','percentile']]
     $.each(needs, function(i, content){
         table.push([content['name'],content['percentile']]);
@@ -284,6 +270,12 @@ function updateNeeds(needs, role){
  * @param role
  */
 function updateValues(values, role){
+    $("#twitter-"+ role + "-container").find(".personality.values").append(
+        '<h3 class="category" data-toggle="tooltip" data-placement="top" \
+        title="Values describe motivating factors that influence the author\'s decision-making.\
+        The following describes the five values that the service infers.">Values</h3>\
+        <div id="' + role + '-values-chart"></div>');
+
     var table = [['','percentile']]
     $.each(values, function(i, content){
         table.push([content['name'],content['percentile']]);
@@ -318,51 +310,60 @@ function updateValues(values, role){
  * @param role
  */
 function updatePersonality(personality, role){
+    $("#twitter-"+ role + "-container").find(".personality.persona").append(
+        '<h3 class="category" data-toggle="tooltip" data-placement="top" \
+         title="Big Five personality characteristics represent the most widely used model for generally describing \
+         how a person engages with the world. The model includes five primary dimensions.">Personality</h3>\
+         <div id="' + role + '-personality-chart"></div>');
+
     $.each(personality, function(i, content){
-        $("#" + role + "-personality-chart").append('<div class="personality personality-big5-scores">\
+        $("#" + role + "-personality-chart").append('<div class="personality ' + content['trait_id'] + '">\
                 <h4 class="word-count">' + content['name'] + '&nbsp</h4>\
-                <h4 class="number"\
-                data-toggle="tooltip" title="Normalized scores represent a percentile ranking for each characteristic \
-                that is based on qualities that the service infers from the input text. The service computes normalized \
-                scores by comparing the raw score for the author\'s text with results from a sample population.">'+ (content['percentile'] * 100).toFixed(2)  +'%</h4>\
-                <button class="expand-personality-btn">\
-                    <i class="fas fa-chevron-down"></i>\
-                </button>\
-                <div id="' + role + "-" + content['trait_id'] + '"></div>\
+                <h4 class="number">'+ (content['percentile'] * 100).toFixed(2)  +'%</h4>\
             </div>');
 
-        var table = [['', 'percentile']];
-        $.each(content['children'], function(j,child){
-            table.push([child['name'], child['percentile']])
-        });
+        // if it has children scores
+        if ('children' in content){
+            $("#twitter-"+ role + "-container").find(".personality." + content['trait_id']).append(
+                '<button class="expand-personality-btn">\
+                    <i class="fas fa-chevron-down"></i>\
+                </button>\
+                <div id="' + role + "-" + content['trait_id'] + '"></div>');
 
-        var dataTable = google.visualization.arrayToDataTable(table);
-        var materialOptions = {
-            bars: 'horizontal',
-            legend: { position: 'none' },
-            axes: {
-                y: {
-                    0: {side: 'right'}
-                }
-            },
-            hAxis: { viewWindow:{max:1}, textStyle: {fontName:'Monda'}},
-            vAxis: {textStyle: {fontName:'Monda'}},
-            tooltip: {
-                textStyle: {
-                    color:'black'
-                }
-            },
-            backgroundColor:'transparent',
-            colors:'#2a444b'
-        };
-        var materialChart = new google.charts.Bar(document.getElementById(role + "-" + content['trait_id']));
-        materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
-        google.visualization.events.addListener(materialChart, 'ready', function () {
-            $("#" + role + "-" + content['trait_id']).hide();
-        });
+            var table = [['', 'percentile']];
+            $.each(content['children'], function(j,child){
+                table.push([child['name'], child['percentile']])
+            });
+
+            var dataTable = google.visualization.arrayToDataTable(table);
+            var materialOptions = {
+                bars: 'horizontal',
+                legend: { position: 'none' },
+                axes: {
+                    y: {
+                        0: {side: 'right'}
+                    }
+                },
+                hAxis: { viewWindow:{max:1}, textStyle: {fontName:'Monda'}},
+                vAxis: {textStyle: {fontName:'Monda'}},
+                tooltip: {
+                    textStyle: {
+                        color:'black'
+                    }
+                },
+                backgroundColor:'transparent',
+                colors:'#2a444b'
+            };
+
+            var materialChart = new google.charts.Bar(document.getElementById(role + "-" + content['trait_id']));
+            materialChart.draw(dataTable, google.charts.Bar.convertOptions(materialOptions));
+            google.visualization.events.addListener(materialChart, 'ready', function () {
+                $("#" + role + "-" + content['trait_id']).hide();
+            });
+        }
     });
 
-    $("#" + role + "-personality-chart").find(".expand-personality-btn").on('click',function(){
+    $("#twitter-"+ role + "-container").find(".expand-personality-btn").on('click',function(){
         if ($(this).find('i').hasClass('fa-chevron-down')){
             $(this).find('i').removeClass('fa-chevron-down');
             $(this).find('i').addClass('fa-chevron-up');
@@ -371,7 +372,7 @@ function updatePersonality(personality, role){
             $(this).find('i').removeClass('fa-chevron-up');
         }
         $(this).next().toggle();
-    })
+    });
 
 };
 
@@ -381,6 +382,13 @@ function updatePersonality(personality, role){
  * @param role
  */
 function updateConsumptionPreference(preference, role){
+    $("#twitter-"+ role + "-container").find(".personality.consumption-preferences").append(
+        '<h3 class="category"\
+         data-toggle="tooltip" data-placement="top" \
+         title="The service groups the more than 40 consumption preferences into eight high-level categories. \
+         The preferences indicate the author\'s likelihood to prefer different \
+         products, services, and activities.">Consumption Preference</h3>\
+         <div id="' + role + '-consumption-chart"></div>');
 
     var table = []
     $.each(preference, function(i, content) {
@@ -420,6 +428,18 @@ function updateConsumptionPreference(preference, role){
 $("#similarity-metrics").on('change', function(){
     var option = $(this).find('option').filter(":selected").val();
 
+    // determine which algorithm by looking at the display
+    // if only personality shows and the rest div is empty
+    // it is twitPersonality
+    if ($(".needs").is(':empty')
+        && $(".values").is(':empty')
+        && $(".consumption-preferences").is(':empty')){
+        var algorithm = 'TwitPersonality';
+    }
+    else{
+        var algorithm = 'IBM-Watson';
+    }
+
     if (option === 'none'){
         resetSimScore();
     }else{
@@ -429,6 +449,7 @@ $("#similarity-metrics").on('change', function(){
             data: { "userScreenName": $("#user-screen-name").find('a').text(),
                 "brandScreenName":$("#brand-screen-name").find('a').text(),
                 "sessionID": sessionID,
+                "algorithm": algorithm,
                 "option": option
             },
             success: function (data) {
@@ -454,7 +475,7 @@ function updateSimScore(score){
         useGrouping: true,
         decimal: '.',
     };
-    var sim = new CountUp('similarity-score', 0, score, 2, 4, options);
+    var sim = new CountUp('similarity-score', 0, score, 4, 4, options);
     if (!sim.error) {
         sim.start();
     } else {
@@ -465,9 +486,24 @@ function updateSimScore(score){
 /**
  * reset similarity score to empty whenever refresh or analyze new users
  */
-function resetSimScore() {
+function resetSimScore(algorithm) {
+
+    if (algorithm === 'TwitPersonality'){
+        $("#similarity-metrics").children('option[value="personality_sim_score"]').show();
+        $("#similarity-metrics").children('option[value="needs_sim_score"]').hide();
+        $("#similarity-metrics").children('option[value="values_sim_score"]').hide();
+        $("#similarity-metrics").children('option[value="consumption_sim_score"]').hide();
+    }else if (algorithm === 'IBM-Watson'){
+        $("#similarity-metrics").children('option[value="personality_sim_score"]').show();
+        $("#similarity-metrics").children('option[value="needs_sim_score"]').show();
+        $("#similarity-metrics").children('option[value="values_sim_score"]').show();
+        $("#similarity-metrics").children('option[value="consumption_sim_score"]').show();
+    }
+
     $('#similarity-metrics option:first').prop('selected', true);
     $('#similarity-score').text('');
+
+
 };
 
 /******************************* HISTORY PANEL ********************************/
@@ -492,63 +528,110 @@ function updateHistory(){
 };
 
 /**
+ * seperate historylist(foldername) with different algorithms
+ * the results will be used twice: in history list adding tags to each item
+ * in bulk comparison generate the auto comparison list
+ * hence save it in local storage
+ * @param historyList
+ */
+function seperateByAlgorithm(historyList){
+    var folderNames = {'IBM-Personality':[], 'TwitPersonality':[]};
+    $.each(historyList,function(i, val) {
+        var folderName = Object.keys(val)[0];
+        var fileNames = val[folderName];
+        fileNames.forEach(filename => {
+            if (filename.slice(-17) === '_personality.json') {
+                folderNames['IBM-Personality'].push(folderName);
+            }
+            if (filename.slice(-21) === '_twitPersonality.json') {
+                folderNames['TwitPersonality'].push(folderName);
+            }
+        });
+    });
+    localStorage.setItem('folderNames', JSON.stringify(folderNames));
+}
+
+/**
  * rendering file list in hisotry panel
  * @param historyList
  */
 function renderHistoryList(historyList){
-    $(".history-links").remove();
+    $("#history-links").empty();
+    $("#history-links").append('<div class="personality-header"><h2>History</h2></div>');
 
+    // folderNames = {'IBM':[screenname1, screename2..], 'Twit':[screename1, screename3...]}
+    seperateByAlgorithm(historyList);
+    var folderNames = JSON.parse(localStorage.getItem('folderNames'));
+
+        $.each(historyList,function(i, val){
+        var screenName = Object.keys(val)[0];
+
+        $("#history-links").append('<div class="history-link" value="' + screenName + '">\
+            <p>'+screenName +'</p>\
+            <button onclick="deleteRemote(`'+ screenName + '`);">\
+                <i class="fas fa-trash-alt"/>\
+            </button>\
+            <a href="download?screenName='+screenName +'&sessionID=' + sessionID + '" target="_blank"">\
+                <i class="fas fa-download"/>\
+            </a>\
+          </div>');
+
+        if (folderNames['IBM-Personality'].indexOf(screenName) > -1){
+            $(".history-link[value=" + screenName + "]").append('<kbd class="tag-IBM">IBM</kbd>');
+        }
+        if (folderNames['TwitPersonality'].indexOf(screenName) > -1){
+            $(".history-link[value=" + screenName + "]").append('<kbd class="tag-Twit">TWIT</kbd>');
+        }
+
+    });
+
+    // history bulk comparison
     $("#history-form").empty();
     $("#history-form").append('<div class="history-input">\
-                                    <input class="history-input-autocomplete" placeholder="screen name"/>\
+                                    <select class="history-input-bulk-comparison"></select>\
                                     <button id="history-input-btn"><i class="fas fa-plus-circle"></i></button>\
                                 </div>\
                                <button class="btn btn-primary btn-block" id="history-btn">bulk comparison</button>');
-    addAutocomplete(historyList);
+    var algorithm = $("#history-algorithm input[name=history-algorithm]:checked").val();
+    addBulkComparisonSelection(folderNames[algorithm]);
 
     // add more input box
     $("#history-input-btn").on('click', function(){
         $("#history-form").prepend('<div class="history-input">\
-                                    <input class="history-input-autocomplete" placeholder="screen name"/>\
+                                    <select class="history-input-bulk-comparison"></select>\
                                     <button class="history-input-del-btn"><i class="fas fa-minus-circle"></i></button>\
                                 </div>')
+        var algorithm = $("#history-algorithm input[name=history-algorithm]:checked").val();
+        addBulkComparisonSelection(folderNames[algorithm]);
 
-        addAutocomplete(historyList);
-
-        // delete input box
         $(".history-input-del-btn").on('click', function(){
             $(this).parent().remove();
         });
     });
 
-    // render list of histories
-    $.each(historyList,function(i, val){
-        $("#history").append('<div class="history-links">\
-            <p>'+val +'</p>\
-            <button onclick="deleteRemote('+ val + ');">\
-                <i class="fas fa-trash-alt"/>\
-            </button>\
-            <a href="download?screenName='+val +'&sessionID=' + sessionID + '" target="_blank"">\
-                <i class="fas fa-download"/>\
-            </a>\
-          </div>')
-    });
-
-    // history bulk comparison
     historyBulkComparison();
 };
 
 /**
- * history panel autocomplete screenName
+ * change autocomplete list based on different models
+ */
+$("#history-algorithm input").on('change', function(){
+    updateHistory();
+});
+
+/**
+ * compose history panel bulk comparison screenName lists
  * @param list
  */
-function addAutocomplete(list){
-    $.each(document.getElementsByClassName("history-input-autocomplete"), function(i, val){
-        // if the input hasn't turn into a autocomplete, do that:
-        if ($(val).parent().attr('class') !== 'awesomplete'){
-            new Awesomplete(val, {list: list, autoFirst:true});
-        };
-    })
+function addBulkComparisonSelection(list){
+    $(".history-input-bulk-comparison").each(function(i, obj){
+        if ($(obj).children().length === 0) {
+            $(obj).append('<option>please choose...</option>')
+            $(list).each(function(i, item) {
+                $(obj).append('<option>' + item + '</option>')
+            });
+        }
+    });
 };
 
 /**
@@ -558,14 +641,21 @@ function historyBulkComparison(){
     $("#history-btn").on('click', function(){
         if (formValidation('history')) {
             var screenNames = [];
-            $('.history-input-autocomplete').each(function(){
-                if(screenNames.indexOf($(this).val()) === -1 && $(this).val() !== '') screenNames.push($(this).val());
+            $('.history-input-bulk-comparison').each(function(){
+                if(screenNames.indexOf($(this).val()) === -1
+                    && $(this).val() !== 'please choose...') screenNames.push($(this).val());
             });
+
+            var algorithm = $("#history-algorithm input[name=history-algorithm]:checked").val();
+
             $.ajax({
                 url: "history",
                 type: "post",
-                data: JSON.stringify({ screenNames:screenNames,
-                    "sessionID": sessionID
+                data: JSON.stringify({
+                    screenNames:screenNames,
+                    sessionID: sessionID,
+                    algorithm: algorithm
+
                 }),
                 contentType: "application/json",
                 success: function (data) {
@@ -589,6 +679,12 @@ function historyBulkComparison(){
                     // downloads
                     frontendDownload("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');
                     frontendDownload("#comparison-table-btn", data['comparison_table'], 'Bulk_Personality_Table.csv');
+
+                    // scroll to similarity matrix
+                    console.log( $('#history-chart')[0].scrollHeight);
+                    console.log( $('#history-chart')[0].clientHeight);
+
+                    $('#bulk-comparison').animate({ scrollTop: $('#history-chart').first().offset().top - 10}, 3000);
                 },
                 error: function(jqXHR, exception) {
                     $(".loading").hide();
@@ -804,7 +900,7 @@ function formValidation(whichPerformance){
     else if (whichPerformance === 'history'){
         var count = 0 ;
         var screenNames = [];
-        $('.history-input-autocomplete').each(function(){
+        $('.history-input-bulk-comparison').each(function(){
             if(screenNames.indexOf($(this).val()) === -1 && $(this).val() !== ''){
                 count++;
                 screenNames.push($(this).val());
@@ -853,29 +949,43 @@ function checkLoginStatus(){
         type:'get',
         url:'login/status',
         success:function(data){
-           if (data.twitter && data.bluemix){
+            // twitter must be authorized in order to show search panel
+           if (data.twitter){
                 $("#login").hide();
                 $("#search").show();
-            }else{
+           }else{
                $("#search").hide();
                $("#display").hide();
                $("#login").show();
-
-               if (data.twitter){
-                   $("#twitter-auth").hide();
-                   $("#bluemix-auth").show();
-               }else if (data.bluemix){
-                   $("#twitter-auth").show();
-                   $("#bluemix-auth").hide();
-               }else{
-                   $("#twitter-auth").show();
-                   $("#bluemix-auth").show();
-               }
            }
         },
         error:function(jqXHR, exception) {
             $("#error").val(jqXHR.responseText);
             $("#warning").modal('show');
+        }
+    });
+}
+
+/**
+ * check if IBM credential has been provided
+ */
+function checkIBMStatus(){
+    $.ajax({
+        type:'get',
+        url:'login/status',
+        success:function(data){
+            //  IBM must be authorized in order to select that algorithm
+            if (!data.bluemix){
+                $("#analyze-btn").prop('disabled', true);
+                $("#bluemix-callback").modal('show');
+            }
+            else{
+                $("#analyze-btn").prop('disabled', false);
+            }
+        },
+        error: function(jqXHR, exception){
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('slow');
         }
     });
 }

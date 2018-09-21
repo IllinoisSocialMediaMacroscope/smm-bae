@@ -1,6 +1,18 @@
 nav(class="navbar navbar-expand-lg navbar-light bg-light")
     a(class="navbar-brand", id="macroscope", href="https://socialmediamacroscope.org") Social media macroscope
+    a(class="navbar-brand", href="", id="termination-confirmation") Terminate
     a(class="navbar-brand", href="documentation") Help
-    a(class="navbar-brand", href="mailto:TechServicesAnalytics@mx.uillinois.edu", target="_top") Contact Us
+    a(class="navbar-brand", href="https://socialmediamacroscope.org/feedback/report_problems", target="_blank") Report Problems
 
+div(id="terminate-modal" class="modal fade" role="dialog")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-header")
+                button(class="close" data-dismiss="modal") &times;
+                h2(class="modal-title") Terminate This Session?
+            div(class="modal-body form")
+                p All data associated with this session will no longer be available.
+            div(class="modal-footer")
+                button(class="btn btn-primary",onclick="terminate();") Yes
+                button(class="btn btn-default",data-dismiss="modal") No
 
