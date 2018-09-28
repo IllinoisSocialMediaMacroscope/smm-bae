@@ -108,6 +108,15 @@ $("#bluemix-pin-submit").on('click', function(){
     }
 });
 
+/******************************** Bot or not ************************************/
+/**
+ * call botometer to detect if the user name is a bot or not
+ */
+$(".botometer-icon").on('click', function(){
+    $("#botometer-modal").modal('show');
+});
+
+
 /******************************* START ANALYSIS ********************************/
 /**
  * analyze button (Main function)

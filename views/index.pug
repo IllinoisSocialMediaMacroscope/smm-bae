@@ -48,24 +48,48 @@ html
             include header.pug
             include auth.pug
 
+            div(id="botometer-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false")
+                div(class="modal-dialog")
+                    div(class="modal-content")
+                        div(class="modal-body")
+                            button(class="close" data-dismiss="modal") &times;
+                            div(class="login-header")
+                                img(src="img/botometer-sm-logo.png", width=80)
+                                h2 Botometer
+                            div(class="login-notes")
+                                p We're using the free version of the API which is subject to rate limit.
+                                    | Your daily quota might have exceeded.
+                                p You would like to check if @xxx is a bot?
+                            button(class="btn btn-primary pull-right", id="twitter-pin-submit") check
+
             div(id="search")
-                div(id="user-search", class="controls form-inline")
-                    i(class="fas fa-user-alt", data-toggle="tooltip", data-placement="left",
-                    title="Please make sure this screen name belongs to a twitter user's account.")
-                    input(class="form-control", placeholder="User's screen name")
-                div(id="brand-search", class="controls form-inline")
-                    i(class="fas fa-building", data-toggle="tooltip", data-placement="left",
-                    title="Please make sure this screen name belongs to a twitter brand's public account.")
-                    input(class="form-control", placeholder="Brand's screen name")
-                div(id="personality-algorithm", class="controls form-inline")
-                    i(class="fas fa-wrench", data-toggle="tooltip", data-placement="left",
-                    title="Please select a personality analysis algorithms.")
-                    select(class="form-control")
-                        option(value="none") Please choose ...
-                        option(value="IBM-Watson") IBM Watson Personality Insights
-                        option(value="TwitPersonality") TwitPersonality
-                    citation(data-toggle="tooltip", data-placement="right", data-html="true")
-                button(id="analyze-btn", class="btn btn-primary btn-block" disabled) Start Analysis
+                div(id="user-search", class="row")
+                    div(class="col col-md-10 col-sm-10 col-xs-10")
+                        input(class="form-control", placeholder="User's screen name")
+                    div(class="col col-md-2 col-sm-2 col-xs-2")
+                        img(src="img/botometer-sm-logo.png", data-toggle="tooltip", data-placement="left", title="OSoMe Botometer " +
+                        "checks how likely the account is to be a bot. Higher scores are more bot-like. Click to proceed.", class="botometer-icon")
+
+                div(id="brand-search", class="row")
+                    div(class="col col-md-10 col-sm-10 col-xs-10")
+                        input(class="form-control", placeholder="Brand's screen name")
+                    div(class="col col-md-2 col-sm-2 col-xs-2")
+                        img(src="img/botometer-sm-logo.png", data-toggle="tooltip", data-placement="left", title="OSoMe Botometer " +
+                        "checks how likely the account is to be a bot. Higher scores are more bot-like. Click to proceed.", class="botometer-icon")
+
+                div(id="personality-algorithm", class="row")
+                    div(class="col col-md-10 col-sm-10 col-xs-10")
+                        select(class="form-control")
+                            option(value="none") Please choose ...
+                            option(value="IBM-Watson") IBM Watson Personality Insights
+                            option(value="TwitPersonality") TwitPersonality
+                        citation(data-toggle="tooltip", data-placement="right", data-html="true")
+                    div(class="col col-md-2 col-sm-2 col-xs-2")
+
+                div(class=row)
+                    div(class="col col-md-10 col-sm-10 col-xs-10")
+                        button(id="analyze-btn", class="btn btn-primary btn-block" disabled) Start Analysis
+                    div(class="col col-md-2 col-sm-2 col-xs-2")
                 div(class="loading")
                     img(src="img/bae_loading_md.gif")
 
