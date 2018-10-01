@@ -116,6 +116,17 @@ button:active{
     margin-top:-2px;
 }
 
+#botometer-screen-name{
+    display:inline-block;
+    color:#46aea8;
+    font-weight:bold;
+    font-size:18px;
+}
+
+#botometer-gauge{
+    text-align: -webkit-center;
+}
+
 /*********************** Frames ***********************/
 #display {
     margin: 100px 100px;

@@ -28,6 +28,7 @@ app.use('/', require('./routes/index'));
 app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/history'));
 app.use('/', require('./routes/documentation'));
+app.use('/', require('./routes/checkBot'));
 
 // set server
 var debug = require('debug');

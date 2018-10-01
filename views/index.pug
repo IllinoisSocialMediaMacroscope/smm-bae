@@ -57,10 +57,22 @@ html
                                 img(src="img/botometer-sm-logo.png", width=80)
                                 h2 Botometer
                             div(class="login-notes")
+                                p Botometer is a joint project of the Indiana University Network Science Institute
+                                    |  and the Center for Complex Networks and Systems Research. It checks the activity
+                                    |  of a Twitter account and gives it a score based on how likely the account is to be a bot.
                                 p We're using the free version of the API which is subject to rate limit.
-                                    | Your daily quota might have exceeded.
-                                p You would like to check if @xxx is a bot?
-                            button(class="btn btn-primary pull-right", id="twitter-pin-submit") check
+                                    |  If you receive an error message, your daily quota might have exceeded.
+                                p(style="display:inline-block") Would you like to check&nbsp;
+                                p(id="botometer-screen-name")
+                                p(style="display:inline-block") &nbsp;is a bot?
+                            div(class="loading")
+                                img(src="img/bae_loading_md.gif")
+                            div(id="botometer-display")
+                                p Bot scores are displayed on a 0-to-5 scale with zero being most human-like and five being the most bot-like.
+                                    |  A score in the middle of the scale is a signal that our classifier is uncertain about the classification.
+                                a Download Full Botometer Score Report...
+                                div(id="botometer-gauge")
+                            button(class="btn btn-primary pull-right", id="botometer-button") check
 
             div(id="search")
                 div(id="user-search", class="row")

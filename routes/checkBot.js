@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var path = require('path');
+var appPath = path.dirname(__dirname);
 var config = require('../config');
 var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 
@@ -10,11 +12,13 @@ router.get('/botometer', function(req, res, next){
         consumer_secret: config.twitter.consumerSecret,
         access_token: req.session.twtAccessTokenKey,
         access_token_secret: req.session.twtAccessTokenSecret,
-        screen_name: req.query.screenName
+        screen_name: req.query.screenName.slice(1,)
     }).then(scores => {
-        console.log(scores)
+        console.log(scores);
         res.send(scores);
     }).catch(err => {
         reject(err);
     });
 });
+
+module.exports = router;
