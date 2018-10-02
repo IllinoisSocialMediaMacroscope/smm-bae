@@ -14,7 +14,6 @@ router.get('/botometer', function(req, res, next){
         access_token_secret: req.session.twtAccessTokenSecret,
         screen_name: req.query.screenName.slice(1,)
     }).then(scores => {
-        console.log(scores);
         res.send(scores);
     }).catch(err => {
         reject(err);

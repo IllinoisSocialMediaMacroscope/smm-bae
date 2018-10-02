@@ -125,6 +125,7 @@ button:active{
 
 #botometer-gauge{
     text-align: -webkit-center;
+    margin: 20px;
 }
 
 /*********************** Frames ***********************/

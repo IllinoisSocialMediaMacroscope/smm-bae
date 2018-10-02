@@ -63,7 +63,7 @@ $("#twitter-auth").find('a').on('click', function(){
  * post the pin to retreive Twitteraccess key and token
  */
 $("#twitter-pin-submit").on('click', function(){
-    if (formValidation('twitter-auth')) {
+    if (formValidation(null, 'twitter-auth')) {
         $.ajax({
             type: 'post',
             url: 'login/twitter',
@@ -87,7 +87,7 @@ $("#twitter-pin-submit").on('click', function(){
  * save IBM personality username and password
  */
 $("#bluemix-pin-submit").on('click', function(){
-    if (formValidation('bluemix-auth')){
+    if (formValidation(null, 'bluemix-auth')){
         $.ajax({
             type: 'post',
             url: 'login/bluemix',
@@ -115,13 +115,15 @@ $("#bluemix-pin-submit").on('click', function(){
 $(".botometer-icon").on('click', function(){
 
     var screenName = $(this).parent().prev().find('input').val();
-    $('#botometer-screen-name').text('@' + screenName);
 
-    $("#botometer-modal").modal('show');
-    $("#botometer-modal").find(".login-notes").show();
-    $("#botometer-button").show();
-    $("#botometer-display").hide();
-    $("#botometer-modal").find(".loading").hide();
+    if (formValidation(screenName, 'botometer')){
+        $('#botometer-screen-name').text('@' + screenName);
+        $("#botometer-modal").modal('show');
+        $("#botometer-modal").find(".login-notes").show();
+        $("#botometer-button").show();
+        $("#botometer-display").hide();
+        $("#botometer-modal").find(".loading").hide();
+    }
 });
 
 
@@ -186,7 +188,7 @@ function downloadBotScore(scores){
  * analyze button (Main function)
  */
 $("#analyze-btn").on('click', function(){
-    if (formValidation('update')) {
+    if (formValidation(null, 'update')) {
         var userScreenName = $("#user-search").find('input').val();
         var brandScreenName = $("#brand-search").find('input').val();
         var algorithm = $("#personality-algorithm").find('select').find(':selected').val();
@@ -712,7 +714,7 @@ function addBulkComparisonSelection(list){
  */
 function historyBulkComparison(){
     $("#history-btn").on('click', function(){
-        if (formValidation('history')) {
+        if (formValidation(null, 'history')) {
             var screenNames = [];
             $('.history-input-bulk-comparison').each(function(){
                 if(screenNames.indexOf($(this).val()) === -1
@@ -942,7 +944,7 @@ function drawCorrelationMatrix(options){
  * @param whichPerformance
  * @returns {boolean}
  */
-function formValidation(whichPerformance){
+function formValidation($this, whichPerformance){
     if (whichPerformance === 'update'){
         if ($("#user-search").find('input').val() === ''
             || $("#user-search").find('input').val() === undefined){
@@ -1005,6 +1007,15 @@ function formValidation(whichPerformance){
     else if (whichPerformance === 'twitter-auth'){
         if ($("#twitter-pin").val() === ''){
             $("#modal-message").text('You have to copy-paste the twitter pin!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'botometer'){
+        if (($this) === ''){
+
+            $("#modal-message").text('You must tell Botometer which twitter user you want to check!');
             $("#alert").modal('show');
 
             return false;
