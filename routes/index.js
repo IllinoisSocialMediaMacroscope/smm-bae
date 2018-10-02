@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var config = require('../config');
 var path = require('path');
-var fetch = require('node-fetch');
 var appPath = path.dirname(__dirname);
 var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));

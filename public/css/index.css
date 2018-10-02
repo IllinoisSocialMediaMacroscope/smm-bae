@@ -88,7 +88,7 @@ button:active{
 #search{
     /*display:none;*/
     margin:50px auto 100px auto;
-    max-width:800px;
+    max-width:700px;
     text-align:center;
 }
 
@@ -98,15 +98,7 @@ button:active{
     margin:10px auto 10px auto;
 }
 
-#user-search input,
-#brand-search input,
-#personality-algorithm select{
-    width:500px;
-    margin-left:20px;
-}
-
 #analyze-btn{
-    max-width:530px;
     margin:10px auto 10px auto;
     background:#063535;
     font-size:20px;
@@ -116,6 +108,24 @@ button:active{
 #history-btn:hover{
     background: #a0b2b2;
     color:#063535;
+}
+
+.botometer-icon{
+    float:left;
+    width:40px;
+    margin-top:-2px;
+}
+
+#botometer-screen-name{
+    display:inline-block;
+    color:#46aea8;
+    font-weight:bold;
+    font-size:18px;
+}
+
+#botometer-gauge{
+    text-align: -webkit-center;
+    margin: 20px;
 }
 
 /*********************** Frames ***********************/
