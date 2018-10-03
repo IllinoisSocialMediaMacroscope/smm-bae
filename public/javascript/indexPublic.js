@@ -1087,4 +1087,13 @@ google.charts.setOnLoadCallback(updateConsumptionPreference);
  */
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
+});
+
+$(".botometer-icon").tooltip({
+    container: "#search"
+});
+
+$("citation").tooltip({
+    container:"#personality-algorithm",
+    placement:"left"
 })
