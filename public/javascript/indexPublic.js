@@ -63,7 +63,7 @@ $("#twitter-auth").find('a').on('click', function(){
  * post the pin to retreive Twitteraccess key and token
  */
 $("#twitter-pin-submit").on('click', function(){
-    if (formValidation('twitter-auth')) {
+    if (formValidation(null, 'twitter-auth')) {
         $.ajax({
             type: 'post',
             url: 'login/twitter',
@@ -87,7 +87,7 @@ $("#twitter-pin-submit").on('click', function(){
  * save IBM personality username and password
  */
 $("#bluemix-pin-submit").on('click', function(){
-    if (formValidation('bluemix-auth')){
+    if (formValidation(null, 'bluemix-auth')){
         $.ajax({
             type: 'post',
             url: 'login/bluemix',
@@ -108,12 +108,87 @@ $("#bluemix-pin-submit").on('click', function(){
     }
 });
 
+/******************************** Bot or not ************************************/
+/**
+ * call botometer to detect if the user name is a bot or not
+ */
+$(".botometer-icon").on('click', function(){
+
+    var screenName = $(this).parent().prev().find('input').val();
+
+    if (formValidation(screenName, 'botometer')){
+        $('#botometer-screen-name').text('@' + screenName);
+        $("#botometer-modal").modal('show');
+        $("#botometer-modal").find(".login-notes").show();
+        $("#botometer-button").show();
+        $("#botometer-display").hide();
+        $("#botometer-modal").find(".loading").hide();
+    }
+});
+
+
+$("#botometer-button").on('click', function(){
+
+    $("#botometer-modal").find(".loading").show();
+    $.ajax({
+        url: "botometer",
+        type: "GET",
+        data: {
+            "screenName":$('#botometer-screen-name').text()
+        },
+        success: function (scores) {
+            $("#botometer-modal").find(".login-notes").hide();
+            $("#botometer-button").hide();
+            $("#botometer-display").show();
+            $("#botometer-modal").find(".loading").hide();
+            renderBotScore(scores);
+            downloadBotScore(scores);
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+
+});
+
+function renderBotScore(scores){
+    // draw gauge
+    var data = google.visualization.arrayToDataTable([
+        ['Label', 'Value'],
+        ['Bot Score', scores['display_scores']['english']]
+    ]);
+
+    var options = {
+        min:0,
+        max:5,
+        width: 200,
+        height: 200,
+        redFrom: 3.5, redTo: 5,
+        yellowFrom:1.5, yellowTo: 3.5,
+        greenFrom:0, greenTo:1.5,
+        majorTicks: 0.5
+    };
+
+    var chart = new google.visualization.Gauge(document.getElementById('botometer-gauge'));
+    chart.draw(data, options);
+
+}
+
+function downloadBotScore(scores){
+    // generate downloadable full botometer scores report
+    var a = $("#botometer-display").find('a');
+    var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scores));
+    a.attr('href', 'data:' + data);
+    a.attr('download', scores['user']['screen_name'] + '_botometer_scores.json');
+}
+
 /******************************* START ANALYSIS ********************************/
 /**
  * analyze button (Main function)
  */
 $("#analyze-btn").on('click', function(){
-    if (formValidation('update')) {
+    if (formValidation(null, 'update')) {
         var userScreenName = $("#user-search").find('input').val();
         var brandScreenName = $("#brand-search").find('input').val();
         var algorithm = $("#personality-algorithm").find('select').find(':selected').val();
@@ -639,7 +714,7 @@ function addBulkComparisonSelection(list){
  */
 function historyBulkComparison(){
     $("#history-btn").on('click', function(){
-        if (formValidation('history')) {
+        if (formValidation(null, 'history')) {
             var screenNames = [];
             $('.history-input-bulk-comparison').each(function(){
                 if(screenNames.indexOf($(this).val()) === -1
@@ -869,7 +944,7 @@ function drawCorrelationMatrix(options){
  * @param whichPerformance
  * @returns {boolean}
  */
-function formValidation(whichPerformance){
+function formValidation($this, whichPerformance){
     if (whichPerformance === 'update'){
         if ($("#user-search").find('input').val() === ''
             || $("#user-search").find('input').val() === undefined){
@@ -937,6 +1012,15 @@ function formValidation(whichPerformance){
             return false;
         }
     }
+    else if (whichPerformance === 'botometer'){
+        if (($this) === ''){
+
+            $("#modal-message").text('You must tell Botometer which twitter user you want to check!');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
 
     return true;
 };
@@ -993,7 +1077,8 @@ function checkIBMStatus(){
 /**
  * draw google charts
  */
-google.charts.load('current', {packages: ['corechart', 'bar', 'table']});
+google.charts.load('current', {packages: ['corechart', 'bar', 'table', 'gauge']});
+google.charts.setOnLoadCallback(renderBotScore);
 google.charts.setOnLoadCallback(updatePersonality);
 google.charts.setOnLoadCallback(updateConsumptionPreference);
 
@@ -1002,4 +1087,13 @@ google.charts.setOnLoadCallback(updateConsumptionPreference);
  */
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
+});
+
+$(".botometer-icon").tooltip({
+    container: "#search"
+});
+
+$("citation").tooltip({
+    container:"#personality-algorithm",
+    placement:"left"
 })
