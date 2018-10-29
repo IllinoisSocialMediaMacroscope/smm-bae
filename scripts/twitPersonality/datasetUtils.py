@@ -1,4 +1,3 @@
-# from gensim.models.keyedvectors import KeyedVectors
 import numpy as np
 import os
 
