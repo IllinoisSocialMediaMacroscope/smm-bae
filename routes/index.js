@@ -126,6 +126,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                 else if (algorithm === 'TwitPersonality'){
                                     var options = {
                                         pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
+                                        // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
                                         pythonOptions: ['-W ignore'],
                                         scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
                                         args:['--sessionID', sessionID,
@@ -176,6 +177,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             else if (algorithm === 'TwitPersonality'){
                                 var options = {
                                     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
+                                    // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
                                     pythonOptions: ['-W ignore'],
                                     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
                                     args:['--sessionID', sessionID,

@@ -11,18 +11,19 @@ import argparse
 def calc_tweet_personality(sessionID, screen_name, profile_img):
 
     # load embedding dataset
-    # fixed path goes here
-    dataset_path = "/Users/cwang138/Documents/Macroscope/BAE/scripts/twitPersonality/fastText/wiki-news-300d-1M.vec"
+    curr_path = os.path.dirname(os.path.abspath(__file__))
+
+    dataset_path = curr_path + "/fastText/wiki-news-300d-1M.vec"
     wordDictionary = dsu.parseFastText(dataset_path)
 
     # load predictive models
     models = {}
     for trait in ["O","C","E","A","N"]:
-        models[trait] = joblib.load("/Users/cwang138/Documents/Macroscope/BAE/scripts/twitPersonality/models/model_"+trait+".pkl")
+        models[trait] = joblib.load(curr_path + "/models/model_"+trait+".pkl")
 
     # read tweets
     awsPath = os.path.join(sessionID, screen_name)
-    localPath = os.path.join('/Users/cwang138/Documents/Macroscope/BAE/scripts/twitPersonality/collection', sessionID)
+    localPath = os.path.join(curr_path + '/collection', sessionID)
     if not os.path.exists(localPath):
         try:
             os.makedirs(localPath)

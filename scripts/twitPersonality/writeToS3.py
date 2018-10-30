@@ -4,7 +4,7 @@ import mimetypes
 import json
 
 # set up s3 boto
-with open('config.json', 'r') as f:
+with open('/apps/bae/credentials/config.json', 'r') as f:
     credentials = json.load(f)
 client = boto3.client('s3', aws_access_key_id=credentials['aws']['accessKey']
         , aws_secret_access_key=credentials['aws']['accessKeySecret'])
