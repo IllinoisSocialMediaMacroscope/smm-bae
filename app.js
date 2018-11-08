@@ -25,12 +25,14 @@ app.use(cookieParser());
 
 // paths
 app.use('/', require('./routes/index'));
-//app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/auth'));
 app.use('/', require('./routes/history'));
+app.use('/', require('./routes/documentation'));
+app.use('/', require('./routes/checkBot'));
 
 // set server
 var debug = require('debug');
-var port = normalizePort('8080');
+var port = normalizePort('8001');
 app.set('port', port);
 var server = http.createServer(app);
 server.timeout = 1000*60*10; // 10 minutes

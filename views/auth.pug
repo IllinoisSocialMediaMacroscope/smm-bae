@@ -1,0 +1,47 @@
+div(id="login")
+    h1 Sign In
+        i(class="fas fa-exclamation-circle", data-toggle="tooltip", data-html="true", data-placement="left",
+        title="You must authorize us to access your Twitter account in order to user the tool. " +
+        "Click the buttons below to proceed.")
+    div(id="login-instruction")
+        kbd Frequently Asked Questions:
+        a(href="https://twitter.com/i/flow/signup", target="_blank") How to create a Twitter account?
+        a(href="documentation#create-bluemix", target="_blank") How do I create an IBM Cloud account?
+        a(href="documentation#access-watson", target="_blank") How do I access IBM Personality Insights?
+        a(href="documentation#find-watson-credential", target="_blank") Where can I find IBM Personality Insights credentials?
+        a(href="documentation#what-we-do", target="_blank") How are my credentials handled?
+    div(id="twitter-auth")
+        a(class="btn btn-primary btn-block", target="_blank")
+            img(src='img/twitter-sm-logo.png')
+            | Twitter account
+
+<!-- twitter input popup -->
+div(id="twitter-callback", class="modal fade", role="dialog", data-backdrop="static", data-keyboard="false")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-body")
+                button(class="close" data-dismiss="modal") &times;
+                div(class="login-header")
+                    img(src="img/twitter-sm-logo.png", width=80)
+                    h2 Twitter
+                div(class="login-notes")
+                    p You've granted Twitter access to Social Media Macroscope SMILE! Enter the PIN to complete the authorization process.
+                    input(id="twitter-pin", class="form-control", placeholder="PIN")
+                button(class="btn btn-primary pull-right", id="twitter-pin-submit") submit
+
+<!-- bluemix input popup -->
+div(id="bluemix-callback", class="modal fade", role="dialog", data-backdrop="static", data-keyboard="false")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-body")
+                button(class="close", data-dismiss="modal") &times;
+                div(class="login-header")
+                    img(src="img/bluemix-sm-logo.png", width=80)
+                    h2 IBM Personality Insights
+                div(class="login-notes")
+                    p Please provide your IBM personality insights credentials, which is DIFFERENT than your IBM Cloud
+                        |  (formerly known as Bluemix) credentials.&nbsp
+                        a(href="documentation#find-watson-credential", target="_blank") see more...
+                    input(id="bluemix-personality-username", class="form-control", placeholder="Personality Insights Username")
+                    input(id="bluemix-personality-password", type="password", class="form-control", placeholder="Personality Insights Password")
+                button(class="btn btn-primary pull-right", id="bluemix-pin-submit") submit

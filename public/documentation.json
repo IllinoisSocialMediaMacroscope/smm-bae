@@ -1,0 +1,119 @@
+{
+    "documentation":
+    [
+      {
+        "uri":"create-bluemix",
+        "title":"How do I create an IBM Cloud account?",
+        "content": "You will first need to <a href=\"https://idaas.iam.ibm.com/idaas/mtfim/sps/authsvc?PolicyId=urn:ibm:security:authentication:asf:basicldapuser\" target=\"_blank\"> register/sign-in IBM Cloud platform</a>in order to use BAE. Once you are signed in, you can choose from three payment models offered by IBM Cloud. Start with a free, <a href=\"https://idaas.iam.ibm.com/idaas/mtfim/sps/authsvc?PolicyId=urn:ibm:security:authentication:asf:basicldapuser\" target=\"_blank\"> \"Lite\" account</a>&nbspand upgrade when you are ready. Account upgrades allow for full access through a \"Pay-As-You-Go\" model or you may secure discounted pricing with a subscription. If you are faculty or a student, you may apply a promotional code.",
+        "subs":[
+          {
+            "title":"Create an IBM Cloud account",
+            "content":[],
+            "graphs":["img/create-bluemix0.png", "img/create-bluemix1.png"]
+          },
+          {
+            "title":"Activate the IBM Cloud",
+            "content":[],
+            "graphs":["img/create-bluemix2.png"]
+          },
+          {
+            "title":"Add any Promotional Codes",
+            "content":[],
+            "graphs":["img/add-promo.png"]
+          }
+        ]
+      },
+      {
+        "uri":"bluemix-special-offer",
+        "title":"How can I take advantage of Special Offers from IBM?",
+        "content": "",
+        "subs":[
+          {
+            "title":"What are the Faculty and Student Special Offers?",
+            "content":[
+              "IBM is offering faculty and students the opportunity to access services/service levels which may not otherwise be available through the free, no time limit, public cloud \"Lite\" plan. Those who qualify for and apply an academic code to their IBM Cloud account are entitled to access the free service levels as defined in the Standard pricing plan for each service. A list of services and their details can be found <a href=\"http://mycatalog.mybluemix.net\" target=\"_blank\">here</a>.",
+              "<a href=\"https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=b46379bb-0463-e611-9420-b8ca3a5db7a1\" target=\"_blank\">Faculty codes</a> will set the user's account type to Trial for up to one year (renewable), increase the memory allocation up to 8 GB, and allow up to 40 services to run concurrently.&nbsp<a href=\"https://ibm.onthehub.com/WebStore/OfferingDetails.aspx?o=bb3528b7-2b63-e611-9420-b8ca3a5db7a1\" target=\"_blank\">Student codes</a> will set the users account type to Trial for up to six months (renewable), increase the memory allocation up to 2 GB, and allow up to 10 services to run concurrently."
+            ],
+            "graphs":[]
+          },
+          {
+            "title":"Add a faculty or student promotional code",
+            "content":[],
+            "graphs":[
+              "img/bluemix-special-offer0.png",
+              "img/bluemix-special-offer1.png",
+              "img/bluemix-special-offer2.png",
+              "img/bluemix-special-offer3.png"
+            ]
+          },
+          {
+            "title":"Add a Watson Analytics promotional code",
+            "content":[],
+            "graphs":[
+              "img/access-watson0.png",
+              "img/access-watson1.png",
+              "img/access-watson2.png"
+            ]
+          }
+        ]
+      },
+      {
+        "uri":"access-watson",
+        "title":"How do I access IBM Personality Insights?",
+        "content": "",
+        "subs":[
+          {
+            "title":"What does IBM Personality Insights do?",
+            "content":["<a href=\"https://www.ibm.com/watson/services/personality-insights/\" target=\"_blank\">IBM Personality Insights</a> predicts personality characteristics, needs and values through written text. It is capable of understanding your customers’ habits and preferences on an individual level, and at scale. It uses linguistic analytics to infer an individual's personality characteristics; including Big Five, Needs, and Values. It also looks at a user's inclination to pursue different products, services, and activities such as shopping, music, movies, and more."],
+            "graphs":[]
+          },
+          {
+            "title":"What is the pricing",
+            "content":[],
+            "graphs":["img/personality-pricing.png"]
+          },
+          {
+            "title":"How to get Personality Insights onto the IBM Cloud platform?",
+            "content":[],
+            "graphs":[
+              "img/access-watson3.png",
+              "img/access-watson4.png",
+              "img/access-watson5.png"
+            ]
+          }
+        ]
+      },
+      {
+        "uri":"find-watson-credential",
+        "title":"Where can I find IBM Personality Insights credentials?",
+        "content": "",
+        "subs":[
+          {
+            "title":"Login to IBM Cloud and browse to the Dashboard",
+            "content":[],
+            "graphs":[
+              "img/find-watson-credential0.png",
+              "img/find-watson-credential1.png"
+            ]
+          }
+        ]
+      },
+      {
+        "uri":"what-we-do",
+        "title":"How are my credentials handled?",
+        "content": "",
+        "subs":[
+          {
+            "title":"Your credentials are safe with us",
+            "content":["We temporarily store your credentials in the session at server side for 30 minutes. Since each BAE instance is a standalone \"server\" inside an individual container, your credentials will not be seen by any other person."],
+            "graphs":[]
+          },
+          {
+            "title":"In case of unusual behavior in your account",
+            "content":["If you notice any unusual behaviour with your Personality Insights account, you can regenerate the credentials easily. Just login to IBM Cloud, and locate your Personality Insights instance. In the Service credentials tab, you can manage all of your credentials."],
+            "graphs":["img/regenerate-watson.png"]
+          }
+        ]
+      }
+    ]
+}

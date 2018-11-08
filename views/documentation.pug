@@ -1,0 +1,55 @@
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, inital-scale=1")
+
+        <!-- settings -->
+        script(src="https://code.jquery.com/jquery-1.12.4.js")
+
+        <!-- bootstrap -->
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css",
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", crossorigin="anonymous")
+
+        <!-- fontawesome -->
+        link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
+        integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
+
+        <!-- google font -->
+        link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Kaushan Script', rel='stylesheet')
+
+        <!-- customized -->
+        link(href="css/header.css", rel="stylesheet")
+        link(href="css/documentation.css", rel="stylesheet")
+        link(href="css/topbar.css", rel="stylesheet")
+
+        body
+            include topbar.pug
+            include header.pug
+            each section in documentation
+                div(class="section")
+                    div(class="header1")
+                        h2
+                            a(id=section.uri) #{section.title}
+                            i(class="fas fa-question-circle pull-left")
+                    div(class="content")
+                        p !{section.content}
+                         each sub in section.subs
+                             div(class="header2")
+                                 h3 #{sub.title}
+                                     i(class="fas fa-chevron-down pull-right")
+                                     i(class="far fa-question-circle pull-left")
+                                 div(class="content2")
+                                     each subcontent in sub.content
+                                         p !{subcontent}
+                                     each subgraph in sub.graphs
+                                         img(src=subgraph)
+
+            script(src="javascript/calcSessionID.js")
+            script(src="javascript/documentationPublic.js")
