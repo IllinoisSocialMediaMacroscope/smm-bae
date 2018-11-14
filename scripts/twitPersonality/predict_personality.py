@@ -23,7 +23,8 @@ def calc_tweet_personality(sessionID, screen_name, profile_img):
 
     # read tweets
     awsPath = os.path.join(sessionID, screen_name)
-    localPath = os.path.join(curr_path + '/collection', sessionID)
+    sessionDir = os.environ['SESSIONDIR']
+    localPath = os.path.join(sessionDir + '/collection', sessionID)
     if not os.path.exists(localPath):
         try:
             os.makedirs(localPath)
