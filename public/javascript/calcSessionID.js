@@ -8,8 +8,10 @@
 var pathArray = window.location.pathname.split('/');
 var newPath = "";
 sessionID = "local";
+terminateSessionID = "";
 for (i=0; i<pathArray.length-1; i++){
     if (pathArray[i] === 'weber'){
+        terminateSessionID = pathArray[i+1];
         sessionID = pathArray[i+2];
     }
     newPath += pathArray[i];

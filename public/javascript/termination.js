@@ -30,7 +30,7 @@ function terminate() {
     };
 
     cleanData().then(function () {
-        window.location = "http://socialmediamacroscope.org/tools/bae/stop?sess=" + sessionID;
+        window.location = "http://socialmediamacroscope.org/tools/bae/stop?sess=" + terminateSessionID;
     }).catch(function (error) {
         console.log('oh no', error);
     });
