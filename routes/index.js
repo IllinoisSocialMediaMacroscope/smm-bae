@@ -124,25 +124,27 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                     });
                                 }
                                 else if (algorithm === 'TwitPersonality'){
-                                    var options = {
-                                        pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                        // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                        pythonOptions: ['-W ignore'],
-                                        scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                        args:['--sessionID', sessionID,
-                                            '--screenName', screenName,
-                                            '--profileImg', user['profile_img']]
-                                    }
-                                    PythonShell.run('predict_personality.py', options, function(err, results){
-                                        if (err) reject(err);
-                                        else{
-                                            getMultiRemote(results[0]).then(personality =>{
-                                                resolve(JSON.parse(personality));
-                                            }).catch(err =>{
-                                                reject(err);
-                                            });
-                                        }
-                                    });
+                                    reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
+                                        "and we have to temporarily deprecate it.");
+                                    // var options = {
+                                    //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
+                                    //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
+                                    //     pythonOptions: ['-W ignore'],
+                                    //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
+                                    //     args:['--sessionID', sessionID,
+                                    //         '--screenName', screenName,
+                                    //         '--profileImg', user['profile_img']]
+                                    // }
+                                    // PythonShell.run('predict_personality.py', options, function(err, results){
+                                    //     if (err) reject(err);
+                                    //     else{
+                                    //         getMultiRemote(results[0]).then(personality =>{
+                                    //             resolve(JSON.parse(personality));
+                                    //         }).catch(err =>{
+                                    //             reject(err);
+                                    //         });
+                                    //     }
+                                    // });
                                 }
                             }
                         }).catch( err => {
@@ -175,25 +177,27 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                 })
                             }
                             else if (algorithm === 'TwitPersonality'){
-                                var options = {
-                                    pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                    // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                    pythonOptions: ['-W ignore'],
-                                    scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                    args:['--sessionID', sessionID,
-                                        '--screenName', screenName,
-                                        '--profileImg', user['profile_img']]
-                                }
-                                PythonShell.run('predict_personality.py', options, function(err, results){
-                                    if (err) reject(err);
-                                    else{
-                                        getMultiRemote(results[0]).then(personality =>{
-                                            resolve(JSON.parse(personality));
-                                        }).catch(err =>{
-                                            reject(err);
-                                        });
-                                    }
-                                });
+                                reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
+                                    "and we have to temporarily deprecate it.");
+                                // var options = {
+                                //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
+                                //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
+                                //     pythonOptions: ['-W ignore'],
+                                //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
+                                //     args:['--sessionID', sessionID,
+                                //         '--screenName', screenName,
+                                //         '--profileImg', user['profile_img']]
+                                // }
+                                // PythonShell.run('predict_personality.py', options, function(err, results){
+                                //     if (err) reject(err);
+                                //     else{
+                                //         getMultiRemote(results[0]).then(personality =>{
+                                //             resolve(JSON.parse(personality));
+                                //         }).catch(err =>{
+                                //             reject(err);
+                                //         });
+                                //     }
+                                // });
                             }
                         }).catch( err => {
                             reject(err);
