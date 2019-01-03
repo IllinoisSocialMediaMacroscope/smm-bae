@@ -12,14 +12,14 @@ router.get('/history', function(req, res, next){
     var promiseArr = []
 
     // loop through folders
-    s3Helper.listFolders(req.query.sessionID + '/').then( folders => {
+    s3Helper.listFolders(sessionID + '/').then( folders => {
         var folders = Object.keys(folders);
 
         folders.forEach( folder =>{
             promiseArr.push(new Promise((resolve, reject) => {
 
                 // loop through each folder to find its files
-                s3Helper.listFiles(req.query.sessionID + '/' + folder + '/').then( files =>{
+                s3Helper.listFiles(sessionID + '/' + folder + '/').then( files =>{
                     var historyListItem = {};
                     var files = Object.keys(files);
                     historyListItem[folder] = files;
@@ -45,7 +45,7 @@ router.get('/history', function(req, res, next){
 router.post('/history', function(req,res,next){
     lambdaInvoke('bae_bulk_comparison', {
         screen_names: req.body.screenNames,
-        sessionID: req.body.sessionID,
+        sessionID: sessionID,
         algorithm: req.body.algorithm
     }).then(table => {
         res.status(200).send(table);
@@ -55,7 +55,7 @@ router.post('/history', function(req,res,next){
 });
 
 router.get('/download', function(req,res, next){
-   s3Helper.downloadFolder(req.query.sessionID + '/' + req.query.screenName +'/')
+   s3Helper.downloadFolder(sessionID + '/' + req.query.screenName +'/')
         .then( fnames =>{
             var filename = 'downloads/BAE-' + req.query.screenName + '.zip';
             zipDownloads(filename,'downloads/'+req.query.screenName, req.query.screenName).then(() => {
@@ -75,7 +75,7 @@ router.get('/download', function(req,res, next){
 });
 
 router.get('/deleteRemote', function(req,res,next){
-    s3Helper.deleteRemoteFolder(req.query.sessionID + '/' + req.query.screenName + '/')
+    s3Helper.deleteRemoteFolder(sessionID + '/' + req.query.screenName + '/')
         .then(data =>{
             console.log('remove', data);
             res.status(200).send(data);
@@ -83,7 +83,7 @@ router.get('/deleteRemote', function(req,res,next){
 });
 
 router.get('/purgeRemote', function(req,res,next){
-    s3Helper.deleteRemoteFolder(req.query.sessionID + '/').then( values => {
+    s3Helper.deleteRemoteFolder(sessionID + '/').then( values => {
         res.send({'data':'Successfully purged!'});
     }).catch( err =>{
         console.log(err);

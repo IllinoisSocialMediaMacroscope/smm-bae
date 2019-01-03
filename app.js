@@ -81,3 +81,8 @@ function onListening(){
     var bind = typeof addr === 'string' ? 'pipe '+addr : 'port '+addr.port;
     debug('Listening on ' + bind);
 }
+
+/**
+ * read user name from environment file and set it global
+ */
+sessionID = process.env.USER || 'local';

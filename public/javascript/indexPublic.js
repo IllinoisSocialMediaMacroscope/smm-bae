@@ -211,8 +211,7 @@ $("#analyze-btn").on('click', function(){
             type: "post",
             data: { "userScreenName": userScreenName,
                 "brandScreenName":brandScreenName,
-                "algorithm":algorithm,
-                "sessionID": sessionID
+                "algorithm":algorithm
             },
             success: function (data) {
                 // loading bar
@@ -281,7 +280,7 @@ function update(data, role) {
                 <div class="personality values"></div>\
                 <div class="personality consumption-preferences"></div>\
                 <div class="button-group">\
-                    <a class="btn btn-primary btn-block" href="download?screenName=' + data.screen_name +'&sessionID=' + sessionID + '" target="_blank">Download</a>\
+                    <a class="btn btn-primary btn-block" href="download?screenName=' + data.screen_name + '" target="_blank">Download</a>\
                 </div>');
             resolve();
         }
@@ -527,7 +526,6 @@ $("#similarity-metrics").on('change', function(){
             type: "GET",
             data: { "userScreenName": $("#user-screen-name").find('a').text(),
                 "brandScreenName":$("#brand-screen-name").find('a').text(),
-                "sessionID": sessionID,
                 "algorithm": algorithm,
                 "option": option
             },
@@ -593,7 +591,7 @@ function updateHistory(){
     $.ajax({
         url: "history",
         type: "GET",
-        data: { "sessionID": sessionID },
+        data: {},
         success: function (data) {
             $(".loading").hide();
             $("#history-chart").empty();
@@ -650,7 +648,7 @@ function renderHistoryList(historyList){
             <button onclick="deleteRemote(`'+ screenName + '`);">\
                 <i class="fas fa-trash-alt"/>\
             </button>\
-            <a href="download?screenName='+screenName +'&sessionID=' + sessionID + '" target="_blank"">\
+            <a href="download?screenName='+screenName + '" target="_blank"">\
                 <i class="fas fa-download"/>\
             </a>\
           </div>');
@@ -732,7 +730,6 @@ function historyBulkComparison(){
                 type: "post",
                 data: JSON.stringify({
                     screenNames:screenNames,
-                    sessionID: sessionID,
                     algorithm: algorithm
 
                 }),
@@ -783,9 +780,7 @@ function deleteRemote(screenName){
     $.ajax({
         url: "deleteRemote",
         type: "get",
-        data: { "screenName": screenName,
-            "sessionID": sessionID
-        },
+        data: { "screenName": screenName},
         success: function (data) {
             $(".loading").hide();
             updateHistory();

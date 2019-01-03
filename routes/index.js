@@ -14,8 +14,8 @@ router.get('/', function(req, res, next){
 
 router.post('/update', function(req, res, next){
     var promises = [];
-    promises.push( getTimeline(req.body.sessionID, req.body.userScreenName, req.body.algorithm, req.session));
-    promises.push( getTimeline(req.body.sessionID, req.body.brandScreenName, req.body.algorithm, req.session));
+    promises.push( getTimeline(sessionID, req.body.userScreenName, req.body.algorithm, req.session));
+    promises.push( getTimeline(sessionID, req.body.brandScreenName, req.body.algorithm, req.session));
     Promise.all(promises).then( results => {
         res.status(200).send(
         {
@@ -45,7 +45,7 @@ router.get('/score', function(req, res, next){
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
-        sessionID: req.query.sessionID,
+        sessionID: sessionID,
         algorithm: req.query.algorithm
     }).then(score => {
         res.status(200).send(score);
