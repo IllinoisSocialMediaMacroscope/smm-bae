@@ -15,15 +15,19 @@ $("#personality-algorithm").find('select').on('change', function(){
     if (option === 'IBM-Watson'){
         $("citation")
             .attr('data-original-title', "<p><b>Please cite it in your work using the citation below:</b><br><br>\
+            Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (Forthcoming, 2019). – \
+            Are we who we follow? Analyzing human personality and brand following on Twitter. \
+            International Journal of Advertising, Special issue entitled, \
+            \"New Trends in Digital and Social Media Advertising\".<br><br>\
             Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018). \
             The Social Media Macroscope. In Gateways 2018. \
-            <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br></p>\
+            <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br>\
             Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
             and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 \
             Tweets to Know you: A New Model to Predict Personality with Social Media.\
             </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.<br><br>\
             <a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>\
-            More Research References ...</a>")
+            More Research References ...</a></p>")
             .tooltip('fixTitle')
             .tooltip('show');
         checkIBMStatus();
