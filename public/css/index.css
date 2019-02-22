@@ -43,6 +43,10 @@ button:active{
     color: black;
 }
 
+.tooltip.left{
+    margin-left: -20px;
+}
+
 .tooltip.left > .tooltip-arrow{
     border-left-color: white;
 }

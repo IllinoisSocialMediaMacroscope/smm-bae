@@ -38,16 +38,14 @@ router.post('/login/twitter',function(req,res,next){
 });
 
 router.post('/login/bluemix',function(req,res,next){
-    if (req.body.bluemixPersonalityUsername !== undefined && req.body.bluemixPersonalityUsername !== ''
-        && req.body.bluemixPersonalityPassword !== undefined && req.body.bluemixPersonalityPassword !== ''){
+    if (req.body.bluemixPersonalityApikey !== undefined && req.body.bluemixPersonalityApikey !== ''){
 
-        req.session.bluemixPersonalityUsername = req.body.bluemixPersonalityUsername;
-        req.session.bluemixPersonalityPassword = req.body.bluemixPersonalityPassword;
+        req.session.bluemixPersonalityApikey = req.body.bluemixPersonalityApikey;
         req.session.save();
         res.status(200).send({redirectUrl: req.body.currentURL});
     }
     else{
-        res.status(500).send('You have to provide a valid username/password!');
+        res.status(500).send('You have to provide a API key');
     }
 });
 
@@ -57,7 +55,7 @@ router.get('/login/status', function(req,res,next){
     if (req.session.twtAccessTokenKey !== undefined && req.session.twtAccessTokenSecret !== undefined){
         loginStatus['twitter'] = true;
     }
-    if (req.session.bluemixPersonalityUsername !== undefined && req.session.bluemixPersonalityPassword !== undefined){
+    if (req.session.bluemixPersonalityApikey !== undefined){
         loginStatus['bluemix'] = true;
     }
 

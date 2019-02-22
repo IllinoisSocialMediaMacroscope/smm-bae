@@ -24,13 +24,11 @@ router.post('/update', function(req, res, next){
             brand:results[1]
         })
     }).catch( err =>{
-        console.log(err);
         try{
             var parsedError = JSON.parse(err);
             if (parsedError.code === 401){
                 // this error means personality credentials are invalid
-                delete req.session.bluemixPersonalityUsername;
-                delete req.session.bluemixPersonalityPassword;
+                delete req.session.bluemixPersonalityApikey;
             }
         }catch(e){
             console.log(e);
@@ -111,10 +109,9 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
                                 if (algorithm === 'IBM-Watson') {
-                                    lambdaInvoke('bae_get_personality', {
+                                    lambdaInvoke('bae_get_personality_dev', {
                                         sessionID: sessionID,
-                                        username: credentials.bluemixPersonalityUsername,
-                                        password: credentials.bluemixPersonalityPassword,
+                                        apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
                                         profile_img: user['profile_img']
                                     }).then(personality => {
@@ -164,10 +161,9 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                         }).then( timelines => {
 
                             if (algorithm === 'IBM-Watson') {
-                                lambdaInvoke('bae_get_personality', {
+                                lambdaInvoke('bae_get_personality_dev', {
                                     sessionID: sessionID,
-                                    username: credentials.bluemixPersonalityUsername,
-                                    password: credentials.bluemixPersonalityPassword,
+                                    apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,
                                     profile_img: user['profile_img']
                                 }).then(personality => {
