@@ -11,41 +11,20 @@ $(document).ready(function(){
  * select personality algorithm and show citations
  */
 $("#personality-algorithm").find('select').on('change', function(){
+    $("#custom-citation").empty();
     var option = $(this).find('option').filter(":selected").val();
     if (option === 'IBM-Watson'){
-        $("citation")
-            .attr('data-original-title', "<p><b>Please cite these works below if you are going to use our tool for published research.</b><br><br>\
-                Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (2019). Are we who we follow? Computationally analyzing \
-                human personality and brand following on Twitter. International Journal of Advertising, 0(0), 1–20. \
-                <a href='https://doi.org/10.1080/02650487.2019.1575106' target='_blank'>\
-                https://doi.org/10.1080/02650487.2019.1575106</a> Access to a free pre-print version of the article can be found \
-                <a href='https://www.researchgate.net/publication/330542500_Are_we_who_we_follow_Computationally_analyzing_human_personality_and_brand_following_on_Twitter' \
-                    target='_blank'>HERE</a><br><br>\
-                Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018). \
-                The Social Media Macroscope. In Gateways 2018. \
-                <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br>\
-                Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, \
-                and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25 \
-                Tweets to Know you: A New Model to Predict Personality with Social Media.\
-                </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.<br><br>\
-                <a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>\
-                More Research References ...</a></p>")
-            .tooltip('fixTitle')
-            .tooltip('show');
+        $("#custom-citation").append("<p><i class=\"fas fa-paperclip\"></i> Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018)." +
+            " The Social Media Macroscope. In Gateways 2018." +
+            " <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a></p>" +
+            " <p><i class=\"fas fa-paperclip\"></i> Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju," +
+            " and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25" +
+            " Tweets to Know you: A New Model to Predict Personality with Social Media." +
+            " </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.</p>" +
+            "<p><a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>" +
+            "More Research References ...</a></p>")
         checkIBMStatus();
     }
-    // else if (option === 'TwitPersonality'){
-    //     $("citation")
-    //         .attr('data-original-title', "<p><b>Please cite these works below if you are going to use our tool for published research.</b><br><br>\
-    //         Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018). \
-    //         The Social Media Macroscope. In Gateways 2018. \
-    //         <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a><br><br></p>\
-    //         Carducci, Giulio, et al. <a href='http://www.mdpi.com/2078-2489/9/5/127/htm' target='_blank'>TwitPersonality: Computing Personality Traits \
-    //         from Tweets Using Word Embeddings and Supervised Learning</a>. Information 9.5 (2018): 127")
-    //         .tooltip('fixTitle')
-    //         .tooltip('show');
-    //     $("#analyze-btn").prop('disabled', false);
-    // }
     else{
         $("citation").attr('data-original-title', "").tooltip('hide');
     }

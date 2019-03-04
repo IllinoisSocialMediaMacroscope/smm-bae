@@ -11,9 +11,18 @@
     font-size: 50px;
 }
 
-#description{
+.description{
     text-align: left;
     margin: auto auto;
     width: 90%;
     padding: 20px;
+}
+
+#citation{
+    text-align:left;
+    margin: auto auto;
+    width: 90%;
+    padding: 50px;
+    box-shadow: 0 0 40px #607d8b59;
+    border-radius:10px;
 }
