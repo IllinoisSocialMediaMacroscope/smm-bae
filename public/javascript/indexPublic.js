@@ -2,6 +2,18 @@
  * scroll down and focus on login
  */
 $(document).ready(function(){
+
+    $("#citation").empty()
+    $("#citation").append(
+        "<h4>Please cite these works below if you are going to use our tool for published research.</h4><br><br>" +
+        "<p><i class='fas fa-paperclip'></i> Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (2019). Are we who we follow? Computationally analyzing " +
+        "human personality and brand following on Twitter. International Journal of Advertising, 0(0), 1–20. " +
+        "<a href='https://doi.org/10.1080/02650487.2019.1575106' target='_blank'>" +
+        "https://doi.org/10.1080/02650487.2019.1575106</a> Access to a free pre-print version of the article can be found " +
+        "<a href='https://www.researchgate.net/publication/330542500_Are_we_who_we_follow_Computationally_analyzing_human_personality_and_brand_following_on_Twitter'" +
+        "target='_blank'>HERE</a>" +
+        "<div id=\"custom-citation\"></div>")
+
     $("#login").fadeIn(2000);
     $('html, body').animate({ scrollTop: ($('#login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
