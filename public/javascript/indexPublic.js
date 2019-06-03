@@ -179,6 +179,55 @@ function downloadBotScore(scores){
     a.attr('download', scores['user']['screen_name'] + '_botometer_scores.json');
 }
 
+/******************************* USERNAME PROMPT ******************************/
+function delay(callback, ms) {
+    var timer = 0;
+    return function() {
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            callback.apply(context, args);
+        }, ms || 0);
+    };
+}
+
+$("#search").find('input').click(function(){
+    $(this).siblings(".prompt").show();
+});
+
+$("#search").find('input').keyup(delay(function() {
+    var $prompt = $(this).siblings(".prompt");
+    if ($(this).val() !== ""){
+        $.ajax({
+            url: "prompt",
+            type: "post",
+            data: {"screenName": $(this).val()},
+            success: function (data) {
+                $prompt.empty();
+                $(data).each(function(i, user){
+                    $prompt.append('<div class="prompt-user">' +
+                        '<img class="prompt-img" src="'+ user.profile_image_url + '"/>' +
+                        '<p class="prompt-screen-name">' + user.screen_name + '</p>' +
+                        '<p class="prompt-user-name">' + user.name + '</p>' +
+                        '<p class="prompt-user-description">' + user.description + '</p></div>')
+                });
+
+                $(".prompt-user").on("click", function(){
+                    $(this).parent().parent().find("input").val($(this).find(".prompt-screen-name").text());
+                    $prompt.hide();
+                });
+            },
+            error: function (jqXHR, exception) {
+                $("#error").val(jqXHR.responseText);
+                $("#warning").modal('show');
+            }
+        });
+    }
+    else{
+        $prompt.empty();
+    }
+
+}, 300));
 /******************************* START ANALYSIS ********************************/
 /**
  * analyze button (Main function)

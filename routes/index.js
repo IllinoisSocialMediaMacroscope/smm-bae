@@ -5,8 +5,7 @@ var path = require('path');
 var appPath = path.dirname(__dirname);
 var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
-var getMultiRemote = require(path.join(appPath, 'scripts', 'helper_func', 'getRemote.js'));
-var {PythonShell} = require('python-shell');
+
 
 router.get('/', function(req, res, next){
     res.render('index',{});

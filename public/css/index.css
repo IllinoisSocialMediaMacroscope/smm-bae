@@ -120,7 +120,7 @@ button:active{
 #user-search,
 #brand-search,
 #personality-algorithm{
-    margin:10px auto 10px auto;
+    margin:20px auto 20px auto;
 }
 
 #analyze-btn{
@@ -151,6 +151,49 @@ button:active{
 #botometer-gauge{
     text-align: -webkit-center;
     margin: 20px;
+}
+
+/*********************** Prompt ***********************/
+.prompt{
+    background: white;
+    text-align: left;
+    max-height: 300px;
+    overflow:auto;
+    border-radius: 5px;
+}
+
+.prompt-user{
+    padding: 8px 15px;
+}
+.prompt-user:hover,
+.prompt-user:focus,
+.prompt-user:checked{
+    background:#eeeeee;
+}
+
+.prompt-img{
+    border-radius:50px;
+    width:30px;
+    margin:0 10px 0 10px;
+}
+
+.prompt-screen-name{
+    display:inline;
+    font-size:15px;
+    font-weight: bold;
+}
+
+.prompt-user-name{
+    margin-left:2px;
+    display:inline;
+    color:green;
+    font-style:italic;
+}
+
+.prompt-user-description{
+    font-size:12px;
+    color:#777777;
+    margin-left:50px;
 }
 
 /*********************** Frames ***********************/
