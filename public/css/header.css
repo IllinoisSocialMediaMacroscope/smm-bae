@@ -1,8 +1,8 @@
 /*********************** Header ***********************/
 #header{
     display:block;
-    margin:50px auto auto auto;
-    max-width:800px;
+    margin:50px auto;
+    max-width:850px;
     text-align:center;
     color:white;
 }
@@ -16,13 +16,4 @@
     margin: auto auto;
     width: 90%;
     padding: 20px;
-}
-
-#citation{
-    text-align:left;
-    margin: auto auto;
-    width: 90%;
-    padding: 50px;
-    box-shadow: 0 0 40px #607d8b59;
-    border-radius:10px;
 }

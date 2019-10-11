@@ -41,6 +41,7 @@ html
 
         <!-- customized -->
         link(href="css/header.css", rel="stylesheet")
+        link(href="css/auth.css", rel="stylesheet")
         link(href="css/index.css", rel="stylesheet")
 
         body
@@ -48,69 +49,23 @@ html
             include header.pug
             include auth.pug
 
-            div(id="botometer-modal" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false")
-                div(class="modal-dialog")
-                    div(class="modal-content")
-                        div(class="modal-body")
-                            button(class="close" data-dismiss="modal") &times;
-                            div(class="login-header")
-                                img(src="img/botometer-sm-logo.png", width=80)
-                                h2 Botometer
-                            div(class="login-notes")
-                                p
-                                    a(href="https://botometer.iuni.iu.edu/#!/", target="_blank")  Botometer
-                                    |  checks the activity of a Twitter account and gives it a score based on
-                                    |  <b>how likely the account is to be a bot</b>.
-                                    |  BAE is using the free version of the API which is subject to rate limit of 2000
-                                    |  requests per day shared among all the BAE users.
-                                    |  If you receive an error message, the quota for the current date might have exceeded.
-                                p(style="display:inline-block") Would you like to check&nbsp;
-                                p(id="botometer-screen-name")
-                                p(style="display:inline-block") &nbsp;is a bot?
-                            div(class="loading")
-                                img(src="img/bae_loading_md.gif")
-                            div(id="botometer-display")
-                                p Bot scores are displayed on a <b>0-to-5 scale</b> with zero being most human-like and five being the most bot-like.
-                                    |  A score in the middle of the scale is a signal that our classifier is uncertain about the classification.
-                                a Download Full Botometer Score Report...
-                                div(id="botometer-gauge")
-                            button(class="btn btn-primary pull-right", id="botometer-button") check
-
-            div(id="search")
-                div(id="personality-algorithm", class="row")
-                    div(class="col col-md-10 col-sm-10 col-xs-10")
-                        select(class="form-control")
-                            option(value="none") Please choose ...
-                            option(value="IBM-Watson") IBM Watson Personality Insights
-                    div(class="col col-md-2 col-sm-2 col-xs-2")
-                div(id="user-search", class="row")
-                    div(class="col col-md-10 col-sm-10 col-xs-10")
-                        input(class="form-control", placeholder="screen name, or search User screen name with keywords...")
-                        div(class="prompt")
-                    div(class="col col-md-2 col-sm-2 col-xs-2")
-                        img(src="img/botometer-sm-logo.png", data-toggle="tooltip", data-placement="right", title="OSoMe Botometer " +
-                        "checks how likely the account is to be a bot. Higher scores are more bot-like. Click to proceed.", class="botometer-icon")
-
-                div(id="brand-search", class="row")
-                    div(class="col col-md-10 col-sm-10 col-xs-10")
-                        input(class="form-control", placeholder="screen name, or search User screen name with keywords...")
-                        div(class="prompt")
-                    div(class="col col-md-2 col-sm-2 col-xs-2")
-                        img(src="img/botometer-sm-logo.png", data-toggle="tooltip", data-placement="right", title="OSoMe Botometer " +
-                        "checks how likely the account is to be a bot. Higher scores are more bot-like. Click to proceed.", class="botometer-icon")
-
-                div(class=row)
-                    div(class="col col-md-10 col-sm-10 col-xs-10")
-                        button(id="analyze-btn", class="btn btn-primary btn-block" disabled) Start Analysis
-                    div(class="col col-md-2 col-sm-2 col-xs-2")
-                div(class="loading")
-                    img(src="img/bae_loading_md.gif")
-
             div(id="display")
-                div(id="comparison")
+                div(class="row", id="selected-accounts")
+                    h1 Selected Accounts
+                    div(class="col col-md-4 col-sm-4 col-xs-12", id="user-account")
+                        h4(class="personality-header")
+                        a(class="btn btn-primary btn-block", target="_blank") download
+                    div(class="col col-md-1 col-sm-1 col-xs-12 vertical-centered")
+                        h4 AND
+                    div(class="col col-md-4 col-sm-4 col-xs-12", id="brand-account")
+                        h4(class="personality-header")
+                        a(class="btn btn-primary btn-block", target="_blank") download
+                    div(class="col col-md-2 col-sm-2 col-xs-12 vertical-centered")
+                        a(id="run-another") Run another analysis
+                div(class="row", id="comparison")
                     div(class="col col-md-3 col-sm-3 col-xs-12")
                         select(class="form-control", id="similarity-metrics")
-                            option(value="none" selected) Please choose...
+                            option(value="none" selected) Choose one characteristic...
                             option(value="personality_sim_score") Personality
                             option(value="needs_sim_score") Needs
                             option(value="values_sim_score") Values
@@ -118,17 +73,16 @@ html
                     div(class="col col-md-4 col-sm-4 col-xs-12")
                         h2(style="float:right;font-size:50px;") Similarity:
                     div(class="col col-md-4 col-sm-4 col-xs-12")
-                        h2(id="similarity-score")
+                        h2(id="similarity-score") 0.0000
                     div(class="col col-md-1 col-sm-1 col-xs-1")
                         a(href="https://en.wikipedia.org/wiki/Cosine_similarity", target="_blank")
                             i(class="fas fa-exclamation-circle pull-right", data-toggle="tooltip", data-html="true", data-placement="left",
                             title="Click to find out how to calculate similarity score.")
-
                 div(id="twitter-container")
                     div(class="col col-md-6 col-sm-6 col-xs-12")
-                        div(id="twitter-user-container")
+                        div(id="user-container")
                     div(class="col col-md-6 col-sm-6 col-xs-12")
-                        div(id="twitter-brand-container")
+                        div(id="brand-container")
 
                 div(id="history")
                     div(class="col col-md-4 col-sm-4 col-xs-12")
@@ -142,9 +96,6 @@ html
                                 label(class="radio-inline")
                                     input(type="radio", name="history-algorithm", value="IBM-Personality", checked)
                                     | IBM Personality
-                                //label(class="radio-inline")
-                                //    input(type="radio", name="history-algorithm", value="TwitPersonality")
-                                //    | Twit Personality
                             div(id="history-form")
                             div(id="history-chart")
                             div(id="history-chart-legend")
@@ -154,5 +105,7 @@ html
 
             script(src="javascript/calcSessionID.js")
             script(src="javascript/termination.js")
+            script(src="javascript/auth.js")
+            script(src="javascript/formValidation.js")
             script(src="javascript/indexPublic.js")
 

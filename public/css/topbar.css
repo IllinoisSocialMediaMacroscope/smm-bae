@@ -1,13 +1,14 @@
 .navbar.navbar-expand-lg{
     background-color:#46aea8;
     border-radius:initial;
+    top:10px;
 }
 
 .navbar-brand{
     color:white;
 }
 
-#macroscope{
-    font-family: 'Kaushan Script';
-    font-size:22px;
+#termination-confirmation{
+    border: 1.5px solid #ffffff;
+    border-radius: 5px;
 }

@@ -6,7 +6,7 @@ body{
     font-size:14px;
 }
 
-img{
+.section img{
     width:80%;
     margin:25px auto 25px auto;
     display:block;

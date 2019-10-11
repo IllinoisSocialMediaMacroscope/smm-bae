@@ -1,0 +1,64 @@
+doctype html
+html
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, inital-scale=1")
+
+        <!-- settings -->
+        script(src="https://code.jquery.com/jquery-1.12.4.js")
+
+        <!-- bootstrap -->
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", crossorigin="anonymous")
+        link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css",
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp", crossorigin="anonymous")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", crossorigin="anonymous")
+
+        <!-- fontawesome -->
+        link(rel="stylesheet", href="https://use.fontawesome.com/releases/v5.0.13/css/all.css",
+        integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp", crossorigin="anonymous")
+
+        <!-- google font -->
+        link(href='https://fonts.googleapis.com/css?family=Monda', rel='stylesheet')
+        link(href='https://fonts.googleapis.com/css?family=Kaushan Script', rel='stylesheet')
+
+        <!-- customized -->
+        link(href="css/documentation.css", rel="stylesheet")
+        link(href="css/header.css", rel="stylesheet")
+        link(href="css/topbar.css", rel="stylesheet")
+        link(href="css/auth.css", rel="stylesheet")
+
+        body
+            include topbar.pug
+            include header.pug
+
+            div(class="login")
+                div(class="login-background")
+                    h1 Please Cite
+                    p Please cite these works below if you are going to use our tool for published research.
+                    div(id="citation-content")
+                        p Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (1819). Are we who we follow? Computationally analyzing
+                            | human personality and brand following on Twitter. International Journal of Advertising, 0(0), 1–18.
+                            | <a href="https://doi.org/10.1080/02650487.1819.1575106" target="_blank">
+                            | https://doi.org/10.1080/02650487.1819.1575106</a> (Access to a free pre-print version of the article
+                            | can be found <a href="https://www.researchgate.net/publication/330542500_Are_we_who_we_follow_Computationally_analyzing_human_personality_and_brand_following_on_Twitter"
+                            | target="_blank">HERE</a>)
+                        p Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (1818).
+                            | The Social Media Macroscope. In Gateways 1818.
+                            | <a href="https://doi.org/10.6084/m9.figshare.6855269.v2" target="_blank">https://doi.org/10.6084/m9.figshare.6855269.v2</a>
+                        p Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, and Vibha Sinha.
+                            | <a href="https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681" target="_blank">25 Tweets to
+                            | Know you: A New Model to Predict Personality with Social Media.</a> AAAI Publications, Eleventh
+                            | International AAAI Conference on Web and Social Media (1817): pp. 472-475.
+                        p <a href="https://console.bluemix.net/docs/services/personality-insights/references.html#references"
+                            | target="_blank">More Research References ...</a>
+            script.
+                $(document).ready(function () {
+                    $('html, body').animate({scrollTop: ($('.login').first().offset().top - 10)}, 3000);
+                    checkLoginStatus();
+                });
+
+            script(src="javascript/calcSessionID.js")
+            script(src="javascript/termination.js")

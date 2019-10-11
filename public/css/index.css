@@ -63,96 +63,6 @@ button:active{
     border-top-color: white;
 }
 
-/*********************** Authorization ***********************/
-#login {
-    width: 40%;
-    background-color: #DEF2F2;
-    padding: 50px;
-    border-radius: 10px;
-    margin: 50px auto;
-    overflow:auto;
-    display:none;
-}
-
-#login h1 i{
-    color:#607D8B;
-    float:right;
-}
-
-#login-instruction{
-    padding:15px;
-}
-
-#login-instruction kbd{
-    background-color: #607D8B;
-    margin-top:25px;
-}
-
-#login-instruction a{
-    display:block;
-}
-
-#twitter-auth,
-#bluemix-auth{
-    margin-top:10px;
-}
-
-#twitter-auth a img,
-#bluemix-auth a img{
-    margin-right:10px;
-    height:30px;
-    width:30px;
-}
-
-#bluemix-personality-username,
-#bluemix-personality-password{
-    margin: 10px auto 10px auto;
-}
-
-/*********************** Search Area ********************/
-#search{
-    /*display:none;*/
-    margin:50px auto 100px auto;
-    max-width:700px;
-    text-align:center;
-}
-
-#user-search,
-#brand-search,
-#personality-algorithm{
-    margin:20px auto 20px auto;
-}
-
-#analyze-btn{
-    margin:10px auto 10px auto;
-    background:#063535;
-    font-size:20px;
-}
-
-#analyze-btn:hover,
-#history-btn:hover{
-    background: #a0b2b2;
-    color:#063535;
-}
-
-.botometer-icon{
-    float:left;
-    width:40px;
-    margin-top:-2px;
-}
-
-#botometer-screen-name{
-    display:inline-block;
-    color:#46aea8;
-    font-weight:bold;
-    font-size:18px;
-}
-
-#botometer-gauge{
-    text-align: -webkit-center;
-    margin: 20px;
-}
-
 /*********************** Prompt ***********************/
 .prompt{
     background: white;
@@ -206,13 +116,15 @@ button:active{
 /*********************** user/brand Personality **********************/
 #twitter-container,
 #history,
-#comparison{
+#comparison,
+#selected-accounts{
     border-radius: 10px;
     overflow:auto;
     margin-top:15px;
 }
 
-#comparison{
+#comparison,
+#selected-accounts{
     background-color: #17252a;
     min-height: 100px;
     margin:15px 15px;
@@ -220,8 +132,24 @@ button:active{
     color:white;
 }
 
-#twitter-user-container,
-#twitter-brand-container,
+#selected-accounts{
+    background-color: #DEF2F2;
+    color: #17252a;
+}
+
+.vertical-centered{
+    padding:20px 0;
+    text-align: center;
+}
+
+#run-another{
+    text-decoration: underline;
+    cursor: grab;
+    font-size: 20px;
+}
+
+#user-container,
+#brand-container,
 #history-links,
 #bulk-comparison{
     background-color: #def2f1;

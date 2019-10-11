@@ -2,232 +2,10 @@
  * scroll down and focus on login
  */
 $(document).ready(function(){
-
-    $("#citation").empty()
-    $("#citation").append(
-        "<h4>Please cite these works below if you are going to use our tool for published research.</h4><br><br>" +
-        "<p><i class='fas fa-paperclip'></i> Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (2019). Are we who we follow? Computationally analyzing " +
-        "human personality and brand following on Twitter. International Journal of Advertising, 0(0), 1–20. " +
-        "<a href='https://doi.org/10.1080/02650487.2019.1575106' target='_blank'>" +
-        "https://doi.org/10.1080/02650487.2019.1575106</a> Access to a free pre-print version of the article can be found " +
-        "<a href='https://www.researchgate.net/publication/330542500_Are_we_who_we_follow_Computationally_analyzing_human_personality_and_brand_following_on_Twitter'" +
-        "target='_blank'>HERE</a>" +
-        "<div id=\"custom-citation\"></div>")
-
-    $("#login").fadeIn(2000);
-    $('html, body').animate({ scrollTop: ($('#login').first().offset().top - 10)}, 3000);
+    $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
 });
 
-/**
- * select personality algorithm and show citations
- */
-$("#personality-algorithm").find('select').on('change', function(){
-    $("#custom-citation").empty();
-    var option = $(this).find('option').filter(":selected").val();
-    if (option === 'IBM-Watson'){
-        $("#custom-citation").append("<p><i class=\"fas fa-paperclip\"></i> Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (2018)." +
-            " The Social Media Macroscope. In Gateways 2018." +
-            " <a href='https://doi.org/10.6084/m9.figshare.6855269.v2' target='_blank'>https://doi.org/10.6084/m9.figshare.6855269.v2</a></p>" +
-            " <p><i class=\"fas fa-paperclip\"></i> Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju," +
-            " and Vibha Sinha. <a href='https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681' target='_blank'>25" +
-            " Tweets to Know you: A New Model to Predict Personality with Social Media." +
-            " </a> AAAI Publications, Eleventh International AAAI Conference on Web and Social Media (2017): pp. 472-475.</p>" +
-            "<p><a href='https://console.bluemix.net/docs/services/personality-insights/references.html#references' target='_blank'>" +
-            "More Research References ...</a></p>")
-        checkIBMStatus();
-    }
-    else{
-        $("citation").attr('data-original-title', "").tooltip('hide');
-    }
-})
-
-/******************************* AUTHORIZATION ********************************/
-/**
- * whenever error modal shows, check if credential is valid or not
- */
-$('#warning').on('shown.bs.modal', function (e) { checkLoginStatus(); });
-
-/**
- * Twitter authorization
- */
-$("#twitter-auth").find('a').on('click', function(){
-    $(this).attr('href', 'login/twitter?currentURL=' + newPath);
-    $("#twitter-callback").modal('show');
-});
-
-/**
- * post the pin to retreive Twitteraccess key and token
- */
-$("#twitter-pin-submit").on('click', function(){
-    if (formValidation(null, 'twitter-auth')) {
-        $.ajax({
-            type: 'post',
-            url: 'login/twitter',
-            data: {
-                currentURL:newPath,
-                twtPin: $("#twitter-pin").val()
-            },
-            success: function (data) {
-                window.location.replace(data.redirectUrl);
-            },
-            error: function (jqXHR, exception) {
-                $("#twitter-callback").modal('hide');
-                $("#error").val(jqXHR.responseText);
-                $("#warning").modal('show');
-            }
-        });
-    }
-});
-
-/**
- * save IBM personality username and password
- */
-$("#bluemix-pin-submit").on('click', function(){
-    if (formValidation(null, 'bluemix-auth')){
-        $.ajax({
-            type: 'post',
-            url: 'login/bluemix',
-            data: {
-                currentURL:newPath,
-                bluemixPersonalityApikey: $("#bluemix-personality-apikey").val(),
-            },
-            success: function (data) {
-                window.location.replace(data.redirectUrl);
-            },
-            error: function (jqXHR, exception) {
-                $("#twitter-callback").modal('hide');
-                $("#error").val(jqXHR.responseText);
-                $("#warning").modal('show');
-            }
-        });
-    }
-});
-
-/******************************** Bot or not ************************************/
-/**
- * call botometer to detect if the user name is a bot or not
- */
-$(".botometer-icon").on('click', function(){
-
-    var screenName = $(this).parent().prev().find('input').val();
-
-    if (formValidation(screenName, 'botometer')){
-        $('#botometer-screen-name').text('@' + screenName);
-        $("#botometer-modal").modal('show');
-        $("#botometer-modal").find(".login-notes").show();
-        $("#botometer-button").show();
-        $("#botometer-display").hide();
-        $("#botometer-modal").find(".loading").hide();
-    }
-});
-
-
-$("#botometer-button").on('click', function(){
-
-    $("#botometer-modal").find(".loading").show();
-    $.ajax({
-        url: "botometer",
-        type: "GET",
-        data: {
-            "screenName":$('#botometer-screen-name').text()
-        },
-        success: function (scores) {
-            $("#botometer-modal").find(".login-notes").hide();
-            $("#botometer-button").hide();
-            $("#botometer-display").show();
-            $("#botometer-modal").find(".loading").hide();
-            renderBotScore(scores);
-            downloadBotScore(scores);
-        },
-        error: function (jqXHR, exception) {
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
-
-});
-
-function renderBotScore(scores){
-    // draw gauge
-    var data = google.visualization.arrayToDataTable([
-        ['Label', 'Value'],
-        ['Bot Score', scores['display_scores']['english']]
-    ]);
-
-    var options = {
-        min:0,
-        max:5,
-        width: 200,
-        height: 200,
-        redFrom: 3.5, redTo: 5,
-        yellowFrom:1.5, yellowTo: 3.5,
-        greenFrom:0, greenTo:1.5,
-        majorTicks: 0.5
-    };
-
-    var chart = new google.visualization.Gauge(document.getElementById('botometer-gauge'));
-    chart.draw(data, options);
-
-}
-
-function downloadBotScore(scores){
-    // generate downloadable full botometer scores report
-    var a = $("#botometer-display").find('a');
-    var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scores));
-    a.attr('href', 'data:' + data);
-    a.attr('download', scores['user']['screen_name'] + '_botometer_scores.json');
-}
-
-/******************************* USERNAME PROMPT ******************************/
-function delay(callback, ms) {
-    var timer = 0;
-    return function() {
-        var context = this, args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-            callback.apply(context, args);
-        }, ms || 0);
-    };
-}
-
-$("#search").find('input').click(function(){
-    $(this).siblings(".prompt").show();
-});
-
-$("#search").find('input').keyup(delay(function() {
-    var $prompt = $(this).siblings(".prompt");
-    if ($(this).val() !== ""){
-        $.ajax({
-            url: "prompt",
-            type: "post",
-            data: {"screenName": $(this).val()},
-            success: function (data) {
-                $prompt.empty();
-                $(data).each(function(i, user){
-                    $prompt.append('<div class="prompt-user">' +
-                        '<img class="prompt-img" src="'+ user.profile_image_url + '"/>' +
-                        '<p class="prompt-screen-name">' + user.screen_name + '</p>' +
-                        '<p class="prompt-user-name">' + user.name + '</p>' +
-                        '<p class="prompt-user-description">' + user.description + '</p></div>')
-                });
-
-                $(".prompt-user").on("click", function(){
-                    $(this).parent().parent().find("input").val($(this).find(".prompt-screen-name").text());
-                    $prompt.hide();
-                });
-            },
-            error: function (jqXHR, exception) {
-                $("#error").val(jqXHR.responseText);
-                $("#warning").modal('show');
-            }
-        });
-    }
-    else{
-        $prompt.empty();
-    }
-
-}, 300));
 /******************************* START ANALYSIS ********************************/
 /**
  * analyze button (Main function)
@@ -236,39 +14,39 @@ $("#analyze-btn").on('click', function(){
     if (formValidation(null, 'update')) {
         var userScreenName = $("#user-search").find('input').val();
         var brandScreenName = $("#brand-search").find('input').val();
-        var algorithm = $("#personality-algorithm").find('select').find(':selected').val();
+        var algorithm = "IBM-Watson";
 
         // loading bar
         $(".loading").show();
         $("#analyze-btn").hide();
 
-        //focus on loading bar
-        $('html, body').animate({
-            scrollTop: ($('.loading').first().offset().top - 10)
-        }, 1000);
-
         $.ajax({
             url: "update",
             type: "post",
-            data: { "userScreenName": userScreenName,
+            data: {
+                "userScreenName": userScreenName,
                 "brandScreenName":brandScreenName,
                 "algorithm":algorithm
             },
             success: function (data) {
-                // loading bar
-                $(".loading").hide();
-                $("#analyze-btn").show();
-
-                //focus on display containers
-                $("#display").show();
-                $('html, body').animate({
-                    scrollTop: ($('#display').first().offset().top - 10)
-                }, 1000);
-
+                // place results but do not show
+                $("#display").hide();
                 update(data.user, 'user');
                 update(data.brand, 'brand');
                 resetSimScore(data.algorithm);
                 updateHistory();
+
+                // loading bar
+                $(".loading").hide();
+                $("#analyze-btn").show();
+
+                // update the flow
+                flowEffect({"authorization":"done", "ibmkey":"done", "search":"done", "citation":"on"});
+
+                // focus on the see result button
+                $('html, body').animate({
+                    scrollTop: ($('#see-result').first().offset().top - 10)
+                }, 1000);
             },
             error: function (jqXHR, exception) {
                 // loading bar
@@ -281,6 +59,44 @@ $("#analyze-btn").on('click', function(){
         });
     }
 });
+
+$("#see-result").on('click', function(){
+    // update the flow
+    flowEffect({"authorization":"done", "ibmkey":"done", "search":"on", "citation":"off"});
+
+    //focus on display containers
+    $("#display").show();
+    $('html, body').animate({
+        scrollTop: ($('#display').first().offset().top - 10)
+    }, 1000);
+});
+
+$("#run-another").on('click', function(){
+    $('html, body').animate({
+        scrollTop: ($('.login').first().offset().top - 10)
+    }, 1000);
+    $("#user-search input").val("");
+    $("#brand-search input").val("");
+
+    resetAll();
+});
+
+function resetAll(){
+    $("#user-container").empty();
+    $("#brand-container").empty();
+
+    resetSimScore('IBM-Watson');
+    $("#history-links").empty();
+    $("#history-form").empty();
+    $("#history-chart").empty();
+
+    $("#user-account h4").text("");
+    $("#brand-account h4").text("");
+    $("#user-account a").attr("href", "");
+    $("#brand-account a").attr("href", "");
+
+    $("#display").hide();
+}
 
 /**
  * update the main personality panel
@@ -291,7 +107,7 @@ $("#analyze-btn").on('click', function(){
 function update(data, role) {
     var promise = new Promise(function(resolve, reject) {
         if (data != undefined) {
-            $("#twitter-" + role + "-container").empty();
+            $("#" + role + "-container").empty();
 
             if ('warnings' in data.personality && data.personality.warnings.length > 0){
                 var warningMessage = data.personality.warnings[0].message;
@@ -299,7 +115,7 @@ function update(data, role) {
                 var warningMessage = "";
             }
 
-            $("#twitter-"+ role + "-container").append(
+            $("#"+ role + "-container").append(
                 '<div class="personality-header">\
                     <i class="fas fa-exclamation-circle pull-right"\
                         data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
@@ -319,16 +135,15 @@ function update(data, role) {
                 <div class="personality persona"></div>\
                 <div class="personality needs"></div>\
                 <div class="personality values"></div>\
-                <div class="personality consumption-preferences"></div>\
-                <div class="button-group">\
-                    <a class="btn btn-primary btn-block" href="download?screenName=' + data.screen_name + '" target="_blank">Download</a>\
-                </div>');
+                <div class="personality consumption-preferences"></div>');
+            $("#" + role + "-account h4").text(data.screen_name);
+            $("#" + role + "-account a").attr("href", "download?screenName=" + data.screen_name);
             resolve();
         }
         else{
             reject();
         }
-    })
+    });
 
     promise.then(() =>{
         if (data.personality.personality != undefined) updatePersonality(data.personality.personality, role);
@@ -340,7 +155,7 @@ function update(data, role) {
         $(function() { $('[data-toggle="tooltip"]').tooltip()});
     });
 
-};
+}
 
 /**
  * update the Needs barchart
@@ -348,7 +163,7 @@ function update(data, role) {
  * @param role: user or brand
  */
 function updateNeeds(needs, role){
-    $("#twitter-"+ role + "-container").find(".personality.needs").append(
+    $("#"+ role + "-container").find(".personality.needs").append(
         '<h3 class="category" data-toggle="tooltip" data-placement="top" \
         title="Needs describe at a high level those aspects of a product that are likely to resonate with the \
         author of the input text. The following describes the twelve needs that the service evaluates.">Needs</h3> \
@@ -389,7 +204,7 @@ function updateNeeds(needs, role){
  * @param role
  */
 function updateValues(values, role){
-    $("#twitter-"+ role + "-container").find(".personality.values").append(
+    $("#"+ role + "-container").find(".personality.values").append(
         '<h3 class="category" data-toggle="tooltip" data-placement="top" \
         title="Values describe motivating factors that influence the author\'s decision-making.\
         The following describes the five values that the service infers.">Values</h3>\
@@ -429,7 +244,7 @@ function updateValues(values, role){
  * @param role
  */
 function updatePersonality(personality, role){
-    $("#twitter-"+ role + "-container").find(".personality.persona").append(
+    $("#"+ role + "-container").find(".personality.persona").append(
         '<h3 class="category" data-toggle="tooltip" data-placement="top" \
          title="Big Five personality characteristics represent the most widely used model for generally describing \
          how a person engages with the world. The model includes five primary dimensions.">Personality</h3>\
@@ -443,7 +258,7 @@ function updatePersonality(personality, role){
 
         // if it has children scores
         if ('children' in content){
-            $("#twitter-"+ role + "-container").find(".personality." + content['trait_id']).append(
+            $("#"+ role + "-container").find(".personality." + content['trait_id']).append(
                 '<button class="expand-personality-btn">\
                     <i class="fas fa-chevron-down"></i>\
                 </button>\
@@ -482,7 +297,7 @@ function updatePersonality(personality, role){
         }
     });
 
-    $("#twitter-"+ role + "-container").find(".expand-personality-btn").on('click',function(){
+    $("#"+ role + "-container").find(".expand-personality-btn").on('click',function(){
         if ($(this).find('i').hasClass('fa-chevron-down')){
             $(this).find('i').removeClass('fa-chevron-down');
             $(this).find('i').addClass('fa-chevron-up');
@@ -501,7 +316,7 @@ function updatePersonality(personality, role){
  * @param role
  */
 function updateConsumptionPreference(preference, role){
-    $("#twitter-"+ role + "-container").find(".personality.consumption-preferences").append(
+    $("#"+ role + "-container").find(".personality.consumption-preferences").append(
         '<h3 class="category"\
          data-toggle="tooltip" data-placement="top" \
          title="The service groups the more than 40 consumption preferences into eight high-level categories. \
@@ -509,7 +324,7 @@ function updateConsumptionPreference(preference, role){
          products, services, and activities.">Consumption Preference</h3>\
          <div id="' + role + '-consumption-chart"></div>');
 
-    var table = []
+    var table = [];
     $.each(preference, function(i, content) {
         $.each(content['consumption_preferences'], function (j, child) {
             if (child['score'] == 1) {
@@ -619,7 +434,7 @@ function resetSimScore(algorithm) {
     }
 
     $('#similarity-metrics option:first').prop('selected', true);
-    $('#similarity-score').text('');
+    $('#similarity-score').text('0.0000');
 
 
 };
@@ -974,142 +789,6 @@ function drawCorrelationMatrix(options){
         .text(function(d, i) { return d; });
 };
 
-/******************************* HELPER FUNCTIONS ********************************/
-/**
- * frontend validation
- * @param whichPerformance
- * @returns {boolean}
- */
-function formValidation($this, whichPerformance){
-    if (whichPerformance === 'update'){
-        if ($("#user-search").find('input').val() === ''
-            || $("#user-search").find('input').val() === undefined){
-
-            $("#modal-message").text('You have to provide screen name of the user.');
-            $("#alert").modal('show');
-            return false;
-        }
-
-        if ($("#brand-search").find('input').val() === ''
-            || $("#brand-search").find('input').val() === undefined){
-
-            $("#modal-message").text('You have to provide screen name of the brand.');
-            $("#alert").modal('show');
-
-            return false;
-        }
-
-        if ($("#personality-algorithm").find('select').find('option').filter(":selected").val() === 'none'
-            || $("#personality-algorithm").find('select').find('option').filter(":selected").val() === undefined){
-
-            $("#modal-message").text('You have to select the algorithm for personality analysis.');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'history'){
-        var count = 0 ;
-        var screenNames = [];
-        $('.history-input-bulk-comparison').each(function(){
-            if(screenNames.indexOf($(this).val()) === -1 && $(this).val() !== ''){
-                count++;
-                screenNames.push($(this).val());
-            }
-        });
-
-        if (screenNames.length < 2){
-            $("#modal-message").text('You have to provide at least 2 different screen names to compare!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'bluemix-auth'){
-        if ($("#bluemix-personality-username").val() === ''){
-            $("#modal-message").text('You have to provide a valid IBM personality insight Username!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-
-        if ($("#bluemix-personality-password").val() === ''){
-            $("#modal-message").text('You have to provide a valid IBM personality insight Password!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'twitter-auth'){
-        if ($("#twitter-pin").val() === ''){
-            $("#modal-message").text('You have to copy-paste the twitter pin!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-    else if (whichPerformance === 'botometer'){
-        if (($this) === ''){
-
-            $("#modal-message").text('You must tell Botometer which twitter user you want to check!');
-            $("#alert").modal('show');
-
-            return false;
-        }
-    }
-
-    return true;
-};
-
-/**
- * check if twitter and ibm credentials already exists
- */
-function checkLoginStatus(){
-    $.ajax({
-        type:'get',
-        url:'login/status',
-        success:function(data){
-            // twitter must be authorized in order to show search panel
-           if (!data.twitter){
-               $("#search").hide();
-               $("#display").hide();
-               $("#login").show();
-           }
-           else{
-               $("#login").hide();
-               $("#search").show();
-           }
-        },
-        error:function(jqXHR, exception) {
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('show');
-        }
-    });
-}
-
-/**
- * check if IBM credential has been provided
- */
-function checkIBMStatus(){
-    $.ajax({
-        type:'get',
-        url:'login/status',
-        success:function(data){
-            //  IBM must be authorized in order to select that algorithm
-            if (!data.bluemix){
-                $("#analyze-btn").prop('disabled', true);
-                $("#bluemix-callback").modal('show');
-            }
-            else{
-                $("#analyze-btn").prop('disabled', false);
-            }
-        },
-        error: function(jqXHR, exception){
-            $("#error").val(jqXHR.responseText);
-            $("#warning").modal('slow');
-        }
-    });
-}
 
 /**
  * draw google charts
@@ -1125,12 +804,3 @@ google.charts.setOnLoadCallback(updateConsumptionPreference);
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 });
-
-$(".botometer-icon").tooltip({
-    container: "#search"
-});
-
-$("citation").tooltip({
-    container:"#personality-algorithm",
-    placement:"left"
-})

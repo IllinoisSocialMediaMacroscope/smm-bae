@@ -11,4 +11,4 @@ $(".header2").on('click',function(){
     }
 
     $(this).find(".content2").toggle();
-})
+});

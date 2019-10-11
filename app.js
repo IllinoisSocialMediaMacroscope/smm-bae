@@ -30,6 +30,7 @@ app.use('/', require('./routes/history'));
 app.use('/', require('./routes/documentation'));
 app.use('/', require('./routes/checkBot'));
 app.use('/', require('./routes/userPrompt'));
+app.use('/', require('./routes/citation'));
 
 // set server
 var debug = require('debug');

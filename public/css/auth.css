@@ -1,0 +1,123 @@
+.login {
+    display: block;
+    margin: 50px auto;
+    max-width: 800px;
+}
+
+.flow{
+    width: 90%;
+    margin: 50px auto;
+    overflow:auto;
+    display:block;
+}
+
+.flow i{
+    margin:0 5px;
+    display:none;
+}
+
+.flowgrid.off{
+    border: 2px solid #ffffff;
+    border-radius: 10px;
+    width: 25%;
+    cursor:auto;
+    pointer-events: none;
+    color:#ffffff;
+}
+
+.flowgrid.on{
+    border: 2px solid #ffffff;
+    border-radius: 10px;
+    background: #ffffff;
+    color:#063535;
+    width: 25%;
+    cursor:auto;
+    pointer-events: none;
+}
+
+.login-background{
+    background-color: #DEF2F2;
+    margin:auto auto;
+    padding: 50px;
+    width: 90%;
+    border-radius: 10px;
+    overflow:auto;
+}
+
+.login h1 i{
+    color:#607D8B;
+    float:right;
+}
+
+.login-instruction{
+    padding:15px;
+}
+
+.login-instruction a{
+    display:block;
+}
+
+#ibmkey,
+#search,
+#citation{
+    display:none;
+}
+
+#twitter-auth,
+#bluemix-auth{
+    margin-top:10px;
+}
+
+#bluemix-auth input,
+#user-search input,
+#brand-search input{
+    display:inline;
+    width: 80%;
+    border-radius: 2px 0px 0px 2px;
+}
+
+#bluemix-auth button,
+#user-search button,
+#brand-search button{
+    display:inline;
+    width:20%;
+    border-radius: 0px 2px 2px 0px;
+}
+
+/*********************** Search Area ********************/
+#user-search,
+#brand-search{
+    margin:20px auto;
+}
+
+#analyze-btn{
+    margin:10px auto 10px auto;
+    background:#063535;
+    font-size:20px;
+}
+
+#analyze-btn:hover,
+#history-btn:hover{
+    background: #a0b2b2;
+    color:#063535;
+}
+
+#botometer-screen-name{
+    display:inline-block;
+    color:#46aea8;
+    font-weight:bold;
+    font-size:18px;
+}
+
+#botometer-gauge{
+    text-align: -webkit-center;
+    margin: 20px;
+}
+
+#citation-content{
+    margin: 25px;
+    padding: 25px;
+    background: #ffffff;
+    box-shadow: 0 0 40px #607d8b59;
+    border-radius:10px;
+}
