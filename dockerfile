@@ -16,4 +16,3 @@ COPY ./oauth.js ./node_modules/oauth/lib
 # start the server
 EXPOSE 8001
 CMD ["npm", "start"]
-
