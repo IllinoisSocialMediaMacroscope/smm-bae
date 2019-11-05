@@ -3,10 +3,10 @@ var router = express.Router();
 var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
-var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var connectToRabbitMQ = require(path.join(appPath, 'scripts', 'helper_func', 'rabbitmqSender.js'));
 
 router.post('/prompt', function(req, res) {
-    lambdaInvoke('bae_screen_name_prompt', {
+    connectToRabbitMQ('bae_screen_name_prompt', {
         consumer_key: config.twitter.consumerKey,
         consumer_secret: config.twitter.consumerSecret,
         access_token: req.session.twtAccessTokenKey,
