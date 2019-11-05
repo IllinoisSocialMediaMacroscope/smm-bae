@@ -60,6 +60,6 @@ router.get('/login/status', function(req,res,next){
     }
 
     res.status(200).send(loginStatus);
-})
+});
 
 module.exports = router;

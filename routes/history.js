@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
-var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
 var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'deleteDir.js'));
 var archiver = require('archiver');
 
@@ -43,7 +43,7 @@ router.get('/history', function(req, res, next){
 });
 
 router.post('/history', function(req,res,next){
-    lambdaInvoke('bae_bulk_comparison', {
+    connectToRabbitMQ('bae_bulk_comparison', {
         screen_names: req.body.screenNames,
         sessionID: sessionID,
         algorithm: req.body.algorithm

@@ -3,7 +3,7 @@ var router = express.Router();
 var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
-var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
 
 
@@ -38,7 +38,7 @@ router.post('/update', function(req, res, next){
 });
 
 router.get('/score', function(req, res, next){
-    lambdaInvoke('bae_get_sim_score', {
+    connectToRabbitMQ('bae_get_sim_score', {
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
@@ -50,7 +50,7 @@ router.get('/score', function(req, res, next){
         res.status(500).send(err);
     });
 
-})
+});
 
 /**
  * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
@@ -64,7 +64,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
     return new Promise((resolve, reject) =>
 
         // 1. check if username exist
-        lambdaInvoke('bae_check_screen_name', {
+        connectToRabbitMQ('bae_check_screen_name', {
             consumer_key: config.twitter.consumerKey,
             consumer_secret: config.twitter.consumerSecret,
             access_token: credentials.twtAccessTokenKey,
@@ -108,7 +108,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
                                 if (algorithm === 'IBM-Watson') {
-                                    lambdaInvoke('bae_get_personality_dev', {
+                                    connectToRabbitMQ('bae_get_personality', {
                                         sessionID: sessionID,
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
@@ -122,25 +122,6 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                 else if (algorithm === 'TwitPersonality'){
                                     reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                         "and we have to temporarily deprecate it.");
-                                    // var options = {
-                                    //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                    //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                    //     pythonOptions: ['-W ignore'],
-                                    //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                    //     args:['--sessionID', sessionID,
-                                    //         '--screenName', screenName,
-                                    //         '--profileImg', user['profile_img']]
-                                    // }
-                                    // PythonShell.run('predict_personality.py', options, function(err, results){
-                                    //     if (err) reject(err);
-                                    //     else{
-                                    //         getMultiRemote(results[0]).then(personality =>{
-                                    //             resolve(JSON.parse(personality));
-                                    //         }).catch(err =>{
-                                    //             reject(err);
-                                    //         });
-                                    //     }
-                                    // });
                                 }
                             }
                         }).catch( err => {
@@ -150,7 +131,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
 
                     // 1.1.2 if timeline hasn't been collected, collect timeline
                     else {
-                        lambdaInvoke('bae_collect_timeline', {
+                        connectToRabbitMQ('bae_collect_timeline', {
                             sessionID: sessionID,
                             consumer_key: config.twitter.consumerKey,
                             consumer_secret: config.twitter.consumerSecret,
@@ -160,7 +141,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                         }).then( timelines => {
 
                             if (algorithm === 'IBM-Watson') {
-                                lambdaInvoke('bae_get_personality_dev', {
+                                connectToRabbitMQ('bae_get_personality', {
                                     sessionID: sessionID,
                                     apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,
@@ -174,25 +155,6 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             else if (algorithm === 'TwitPersonality'){
                                 reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                     "and we have to temporarily deprecate it.");
-                                // var options = {
-                                //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                //     pythonOptions: ['-W ignore'],
-                                //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                //     args:['--sessionID', sessionID,
-                                //         '--screenName', screenName,
-                                //         '--profileImg', user['profile_img']]
-                                // }
-                                // PythonShell.run('predict_personality.py', options, function(err, results){
-                                //     if (err) reject(err);
-                                //     else{
-                                //         getMultiRemote(results[0]).then(personality =>{
-                                //             resolve(JSON.parse(personality));
-                                //         }).catch(err =>{
-                                //             reject(err);
-                                //         });
-                                //     }
-                                // });
                             }
                         }).catch( err => {
                             reject(err);

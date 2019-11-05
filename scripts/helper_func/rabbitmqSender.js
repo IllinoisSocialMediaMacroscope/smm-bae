@@ -24,7 +24,7 @@ function connectToRabbitMQ(queue, msg) {
                         }
                         setTimeout(function() {
                             connection.close();
-                        }, 60*1000*5); // time out in 5 minutes
+                        }, 500); // time out in 5 minutes
                     }, {
                         noAck: true
                     });
