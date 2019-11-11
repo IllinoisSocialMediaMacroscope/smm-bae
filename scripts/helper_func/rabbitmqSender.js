@@ -3,7 +3,7 @@ var amqp = require('amqplib/callback_api');
 function connectToRabbitMQ(queue, msg) {
 
     return new Promise((resolve, reject) => {
-        amqp.connect('amqp://localhost', function (error0, connection) {
+        amqp.connect('amqp://rabbitmq:5672', function (error0, connection) {
             if (error0) reject(error0);
 
             connection.createChannel(function (error1, channel) {
