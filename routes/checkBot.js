@@ -6,7 +6,7 @@ var connectToRabbitMQ = require(path.join(appPath, 'scripts', 'helper_func', 'ra
 
 router.get('/botometer', function(req, res){
     connectToRabbitMQ('bae_botometer', {
-        mashape_key: rocess.env.MASHAPE_APIKEY,
+        mashape_key: process.env.MASHAPE_APIKEY,
         consumer_key: process.env.TWITTER_CONSUMER_KEY,
         consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
         access_token: req.session.twtAccessTokenKey,
