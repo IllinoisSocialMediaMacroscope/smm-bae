@@ -1,11 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var OAuth1 = require('oauth').OAuth;
-var config = require('../config.json');
 
 var consumer = new OAuth1(
     "https://twitter.com/oauth/request_token", "https://twitter.com/oauth/access_token",
-    config.twitter.consumerKey, config.twitter.consumerSecret, "1.0", "http://localhost:8001/login/twitter/callback", "HMAC-SHA1");
+    process.env.TWITTER_CONSUMER_KEY, process.env.TWITTER_CONSUMER_SECRET, "1.0", "http://localhost:8001/login/twitter/callback", "HMAC-SHA1");
 
 router.get('/login/twitter', function(req,res,next){
     // patch the oauth library node_modules/oauth/lib/oauth.js, line 540 add: extraParams["oauth_callback"]===undefined

@@ -1,10 +1,9 @@
 var AWS = require('aws-sdk');
-var config = require('../../config');
 var mime = require('mime');
 
 AWS.config.update({
-	accessKeyId: config.aws.accessKey,
-	secretAccessKey:config.aws.accessKeySecret });
+	accessKeyId: process.env.AWS_ACCESSKEY,
+	secretAccessKey: process.env.AWS_ACCESSKEYSECRET});
 	
 var s3 = new AWS.S3();
 var fs = require('fs');

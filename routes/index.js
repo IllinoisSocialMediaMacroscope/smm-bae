@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
@@ -65,8 +64,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
 
         // 1. check if username exist
         connectToRabbitMQ('bae_check_screen_name', {
-            consumer_key: config.twitter.consumerKey,
-            consumer_secret: config.twitter.consumerSecret,
+            consumer_key: process.env.TWITTER_CONSUMER_KEY,
+            consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
             access_token: credentials.twtAccessTokenKey,
             access_token_secret: credentials.twtAccessTokenSecret,
             screen_name:screenName })
@@ -133,8 +132,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                     else {
                         connectToRabbitMQ('bae_collect_timeline', {
                             sessionID: sessionID,
-                            consumer_key: config.twitter.consumerKey,
-                            consumer_secret: config.twitter.consumerSecret,
+                            consumer_key: process.env.TWITTER_CONSUMER_KEY,
+                            consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
                             access_token: credentials.twtAccessTokenKey,
                             access_token_secret: credentials.twtAccessTokenSecret,
                             screen_name:screenName
