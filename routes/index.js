@@ -3,7 +3,7 @@ var router = express.Router();
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
-var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
 
 
 router.get('/', function(req, res, next){
@@ -73,7 +73,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
-                s3Helper.listFiles(sessionID +'/' + screenName).then( timelines => {
+                localStorageHelper.listFiles(sessionID +'/' + screenName).then( timelines => {
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
@@ -81,7 +81,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
                         console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
 
-                        s3Helper.listFiles(sessionID +'/' + screenName).then( personalities => {
+                        localStorageHelper.listFiles(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
                             if (algorithm === 'IBM-Watson'){
                                 var personalityFname = screenName + '_personality.json';
@@ -96,7 +96,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
-                                s3Helper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
+                                localStorageHelper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
                                     .then( personality =>{
                                         resolve(personality);
                                     }).catch(err =>{
