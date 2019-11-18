@@ -8,27 +8,27 @@ var path = require('path');
  * @param remoteKey
  * @returns {Promise<any>}
  */
-function uploadToLocal(localFile, remoteKey){
-
-    // return new Promise((resolve, reject) =>{
-    //     var buffer = fs.readFileSync(localFile);
-    //     var param = {Bucket:'macroscope-bae',
-    //         Key: remoteKey,
-    //         Body: buffer,
-    //         ContentType:mime.getType(localFile)
-    //     };
-    //     s3.upload(param, function(err,data){
-    //         if (err){
-    //             console.log(err);
-    //             reject(err);
-    //         }else{
-    //             var fileURL = s3.getSignedUrl('getObject',{Bucket:'macroscope-bae',Key:remoteKey, Expires:604800});
-    //             resolve(fileURL);
-    //         }
-    //     });
-    // })
-
-}
+// function uploadToLocal(localFile, remoteKey){
+//
+//     // return new Promise((resolve, reject) =>{
+//     //     var buffer = fs.readFileSync(localFile);
+//     //     var param = {Bucket:'macroscope-bae',
+//     //         Key: remoteKey,
+//     //         Body: buffer,
+//     //         ContentType:mime.getType(localFile)
+//     //     };
+//     //     s3.upload(param, function(err,data){
+//     //         if (err){
+//     //             console.log(err);
+//     //             reject(err);
+//     //         }else{
+//     //             var fileURL = s3.getSignedUrl('getObject',{Bucket:'macroscope-bae',Key:remoteKey, Expires:604800});
+//     //             resolve(fileURL);
+//     //         }
+//     //     });
+//     // })
+//
+// }
 
 /**
  * list all the folder names in local path
@@ -48,7 +48,7 @@ function listFolders(prefix){
                     else {
                         var folders = [];
                         for (var i = 0, length = items.length; i < length; i++) {
-                            folders.push(items[i].Key.split('/').slice(-1)[0])
+                            folders.push(items[i].split('/').slice(-1)[0])
                         }
                         resolve(folders);
                     }
@@ -76,7 +76,7 @@ function listFiles(prefix){
                     else {
                         var folderObj = {};
                         for (var i = 0, length = items.length; i < length; i++) {
-                            var filename = items[i].Key.split('/').slice(-1)[0];
+                            var filename = items[i].split('/').slice(-1)[0];
                             var fileStats = fs.statSync(path.join(prefixPath, items[i]));
                             var lastModified = new Date(fileStats.mtime);
                             var monthFromToday = new Date();
@@ -141,4 +141,4 @@ function downloadFile(fname){
 }
 
 
-module.exports = {uploadToS3, listFolders, listFiles, deleteRemoteFolder, downloadFile};
+module.exports = {listFolders, listFiles, downloadFile};
