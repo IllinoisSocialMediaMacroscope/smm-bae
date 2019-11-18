@@ -1,4 +1,5 @@
 var fs = require('fs');
+var rmdir = require('rimraf');
 var path = require('path');
 
 /**
@@ -35,25 +36,26 @@ function uploadToLocal(localFile, remoteKey){
  * @returns {Promise<any>}
  */
 function listFolders(prefix){
-    // return new Promise((resolve,reject) =>{
-    //     s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix, Delimiter:'/'},function(err,data){
-    //         if (err){
-    //             console.log(err);
-    //             reject(err);
-    //         }
-    //
-    //         folderObj = {};
-    //         var fileList = data.CommonPrefixes;
-    //         if (fileList !== []){
-    //             for (var i=0, length=fileList.length; i< length; i++){
-    //                 var folderID = fileList[i].Prefix.split('/').slice(-2)[0];
-    //                 folderObj[folderID] = fileList[i].Prefix;
-    //             }
-    //         }
-    //         resolve(folderObj);
-    //     });
-    // });
 
+    var prefixPath = path.join("/tmp", prefix);
+    return new Promise((resolve, reject) =>{
+
+        fs.stat(prefixPath, function(statError, stats){
+            if (statError) reject(statError);
+            else {
+                fs.readdir(prefixPath, function (readdirError, items) {
+                    if (readdirError) reject(readdirError);
+                    else {
+                        var folders = [];
+                        for (var i = 0, length = items.length; i < length; i++) {
+                            folders.push(items[i].Key.split('/').slice(-1)[0])
+                        }
+                        resolve(folders);
+                    }
+                });
+            }
+        });
+    });
 }
 
 /**
@@ -101,45 +103,23 @@ function listFiles(prefix){
  * @param prefix
  * @returns {Promise<any>}
  */
-var deleteRemoteFolder = function(prefix){
-
-    // return new Promise((resolve,reject) =>{
-    //     s3.listObjectsV2({Bucket:'macroscope-bae',Prefix:prefix},function(err,data){
-    //         if (err){
-    //             // if not exist
-    //             console.log('cannot list error' + err);
-    //             resolve(err);
-    //         }else{
-    //             if (data.KeyCount === 0){
-    //                 console.log('There is no data in the folder you specified!');
-    //                 resolve();
-    //             }else{
-    //                 if (!data.IsTruncated){
-    //                     params = { Bucket: 'macroscope-bae',
-    //                         Delete:{ Objects:[] }
-    //                     };
-    //                     data.Contents.forEach(function(content) {
-    //                         params.Delete.Objects.push({Key: content.Key});
-    //                     });
-    //
-    //                     s3.deleteObjects(params, function(err, data) {
-    //                         if(err){
-    //                             console.log('cannot delete err');
-    //                             reject(err);
-    //                         }else{
-    //                             resolve(data);
-    //                         }
-    //                     });
-    //                 }else{
-    //                     reject('You have more than 1000 items in your folders, we cannot download or delete that many files. ' +
-    //                         'Please contact the administrator: TechServicesAnalytics@mx.uillinois.edu with your sessionID.');
-    //                 }
-    //             }
-    //         }
-    //     })
-    // });
-
-};
+function deleteLocalFolder(prefix) {
+    var prefixPath = path.join("/tmp", prefix);
+    return new Promise(function(resolve, reject){
+        if (fs.existsSync(prefixPath)){
+            rmdir(prefixPath,function(error){
+                if (error){
+                    console.log(error);
+                    reject(error);
+                }else{
+                    resolve('success');
+                }
+            });
+        }else{
+            resolve('That local folder does not exist!');
+        }
+    });
+}
 
 /**
  * download all the file given filename

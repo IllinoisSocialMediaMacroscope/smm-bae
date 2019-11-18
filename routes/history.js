@@ -3,23 +3,20 @@ var router = express.Router();
 var fs = require('fs');
 var path = require('path');
 var appPath = path.dirname(__dirname);
-var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
 var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
-var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'deleteDir.js'));
 var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
-    var promiseArr = []
+    var promiseArr = [];
 
     // loop through folders
-    s3Helper.listFolders(sessionID + '/').then( folders => {
-        var folders = Object.keys(folders);
-
+    localStorageHelper.listFolders(sessionID + '/').then( folders => {
         folders.forEach( folder =>{
             promiseArr.push(new Promise((resolve, reject) => {
 
                 // loop through each folder to find its files
-                s3Helper.listFiles(sessionID + '/' + folder + '/').then( files =>{
+                localStorageHelper.listFiles(sessionID + '/' + folder + '/').then( files =>{
                     var historyListItem = {};
                     var files = Object.keys(files);
                     historyListItem[folder] = files;
@@ -55,27 +52,25 @@ router.post('/history', function(req,res,next){
 });
 
 router.get('/download', function(req,res, next){
-   s3Helper.downloadFolder(sessionID + '/' + req.query.screenName +'/')
-        .then( fnames =>{
-            var filename = 'downloads/BAE-' + req.query.screenName + '.zip';
-            zipDownloads(filename,'downloads/'+req.query.screenName, req.query.screenName).then(() => {
-                res.on('finish', function(){
-                    deleteLocalFolders('downloads').then(data => {
-                        console.log(data);
-                    }).catch(err =>{
-                        console.log(err);
-                    })
-                });
-                res.download(filename);}).catch(err => {res.status(500).send(err);
+    // create a place to hold the the downloaded files
+    if (!fs.existsSync('downloads')) fs.mkdirSync('downloads');
+    var downloadPath = '/tmp/' + sessionID + '/' + req.query.screenName +'/';
+    var filename = 'downloads/BAE-' + req.query.screenName + '.zip';
+    zipDownloads(filename,downloadPath, req.query.screenName).then(() => {
+        res.on('finish', function(){
+            localStorageHelper.deleteLocalFolders('downloads').then(data => {
+                console.log(data);
+            }).catch(err =>{
+                console.log(err);
+            })
+        });
+        res.download(filename);}).catch(err => {res.status(500).send(err);
 
-            });
-        }).catch(err =>{
-        res.status(404).send(err);
-    })
+    });
 });
 
 router.get('/deleteRemote', function(req,res,next){
-    s3Helper.deleteRemoteFolder(sessionID + '/' + req.query.screenName + '/')
+    localStorageHelper.deleteLocalFolders(sessionID + '/' + req.query.screenName + '/')
         .then(data =>{
             console.log('remove', data);
             res.status(200).send(data);
@@ -83,7 +78,7 @@ router.get('/deleteRemote', function(req,res,next){
 });
 
 router.get('/purgeRemote', function(req,res,next){
-    s3Helper.deleteRemoteFolder(sessionID + '/').then( values => {
+    localStorageHelper.deleteLocalFolders(sessionID + '/').then( values => {
         res.send({'data':'Successfully purged!'});
     }).catch( err =>{
         console.log(err);
