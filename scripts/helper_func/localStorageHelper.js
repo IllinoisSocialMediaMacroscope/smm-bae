@@ -5,34 +5,6 @@ var archiver = require('archiver');
 
 
 /**
- * upload local files destination
- * @param localFile
- * @param remoteKey
- * @returns {Promise<any>}
- */
-// function uploadToLocal(localFile, remoteKey){
-//
-//     // return new Promise((resolve, reject) =>{
-//     //     var buffer = fs.readFileSync(localFile);
-//     //     var param = {Bucket:'macroscope-bae',
-//     //         Key: remoteKey,
-//     //         Body: buffer,
-//     //         ContentType:mime.getType(localFile)
-//     //     };
-//     //     s3.upload(param, function(err,data){
-//     //         if (err){
-//     //             console.log(err);
-//     //             reject(err);
-//     //         }else{
-//     //             var fileURL = s3.getSignedUrl('getObject',{Bucket:'macroscope-bae',Key:remoteKey, Expires:604800});
-//     //             resolve(fileURL);
-//     //         }
-//     //     });
-//     // })
-//
-// }
-
-/**
  * list all the folder names in local path
  * @param prefix
  * @returns {Promise<any>}
@@ -41,9 +13,8 @@ function listFolders(prefix){
 
     var prefixPath = path.join("/tmp", prefix);
     return new Promise((resolve, reject) =>{
-
-        fs.stat(prefixPath, function(statError, stats){
-            if (statError) reject(statError);
+        fs.access(prefixPath, function(statError, stats){
+            if (statError) resolve([]);
             else {
                 fs.readdir(prefixPath, function (readdirError, items) {
                     if (readdirError) reject(readdirError);
@@ -74,8 +45,8 @@ function listFiles(prefix){
     var prefixPath = path.join("/tmp", prefix);
     return new Promise((resolve, reject) =>{
 
-        fs.stat(prefixPath, function(statError, stats){
-            if (statError) reject(statError);
+        fs.access(prefixPath, function(statError, stats){
+            if (statError) resolve({});
             else {
                 fs.readdir(prefixPath, function (readdirError, items) {
                     if (readdirError) reject(readdirError);
