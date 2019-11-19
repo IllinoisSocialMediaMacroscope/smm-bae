@@ -1,11 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var fs = require('fs');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
 var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
-var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
     var promiseArr = [];
@@ -52,20 +50,22 @@ router.post('/history', function(req,res,next){
 });
 
 router.get('/download', function(req,res, next){
-    // create a place to hold the the downloaded files
-    if (!fs.existsSync('downloads')) fs.mkdirSync('downloads');
-    var downloadPath = '/tmp/' + sessionID + '/' + req.query.screenName +'/';
-    var filename = 'downloads/BAE-' + req.query.screenName + '.zip';
-    zipDownloads(filename,downloadPath, req.query.screenName).then(() => {
+    var prefix = sessionID + '/' + req.query.screenName +'/';
+    var filename = 'BAE-' + req.query.screenName + '.zip';
+    localStorageHelper.zipDownloads(prefix, filename, req.query.screenName)
+    .then((downloadable) => {
         res.on('finish', function(){
-            localStorageHelper.deleteLocalFolders('downloads').then(data => {
-                console.log(data);
-            }).catch(err =>{
+            localStorageHelper.deleteLocalFile(downloadable)
+            .then()
+            .catch(err =>{
                 console.log(err);
+                res.status(500).send(err)
             })
         });
-        res.download(filename);}).catch(err => {res.status(500).send(err);
-
+        res.download(downloadable);
+    })
+    .catch(err => {
+        res.status(500).send(err);
     });
 });
 
@@ -85,39 +85,5 @@ router.get('/purgeRemote', function(req,res,next){
         res.send({ERROR:err});
     });
 });
-
-/**
- * zip the downloaded forder to one file
- * @param filename
- * @param zipfolder
- * @param screenName
- * @returns {Promise<any>}
- */
-function zipDownloads(filename,zipfolder, screenName){
-
-    return new Promise((resolve,reject) => {
-
-        var archive = archiver('zip', {
-            // Sets the compression level
-            zlib: { level: 9 }
-        });
-
-        var fileOutput = fs.createWriteStream(filename);
-        fileOutput.on('close',function(){
-            resolve(archive.pointer() + ' total bytes');
-        });
-
-        archive.on('error',function(err){
-            console.log(err);
-            reject(err);
-        });
-
-        archive.pipe(fileOutput);
-        archive.directory(zipfolder, screenName);
-
-        archive.finalize();
-    });
-
-}
 
 module.exports = router;

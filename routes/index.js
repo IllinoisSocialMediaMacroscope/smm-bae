@@ -96,7 +96,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
-                                localStorageHelper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
+                                localStorageHelper.parseFile(sessionID + '/' + screenName + '/' + personalityFname)
                                     .then( personality =>{
                                         resolve(personality);
                                     }).catch(err =>{

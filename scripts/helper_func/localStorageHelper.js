@@ -1,6 +1,8 @@
 var fs = require('fs');
 var rmdir = require('rimraf');
 var path = require('path');
+var archiver = require('archiver');
+
 
 /**
  * upload local files destination
@@ -48,7 +50,11 @@ function listFolders(prefix){
                     else {
                         var folders = [];
                         for (var i = 0, length = items.length; i < length; i++) {
-                            folders.push(items[i].split('/').slice(-1)[0])
+                            // need check if it is a folder and not a file;
+                            // to make sure folder is not hidden
+                            if (fs.lstatSync(path.join(prefixPath,items[i])).isDirectory() && !items[i].startsWith(".")){
+                                folders.push(items[i]);
+                            }
                         }
                         resolve(folders);
                     }
@@ -76,18 +82,22 @@ function listFiles(prefix){
                     else {
                         var folderObj = {};
                         for (var i = 0, length = items.length; i < length; i++) {
-                            var filename = items[i].split('/').slice(-1)[0];
-                            var fileStats = fs.statSync(path.join(prefixPath, items[i]));
-                            var lastModified = new Date(fileStats.mtime);
-                            var monthFromToday = new Date();
-                            monthFromToday.setMonth(monthFromToday.getMonth() - 1);
-                            monthFromToday.setHours(0, 0, 0);
-                            monthFromToday.setMilliseconds(0);
-                            var upToDate = +lastModified > +monthFromToday;
+                            // need check if it is a file and not a folder;
+                            // to make sure filename does not include hidden files
+                            if (fs.lstatSync(path.join(prefixPath,items[i])).isFile() && !items[i].startsWith(".")){
+                                var filename = items[i];
+                                var fileStats = fs.statSync(path.join(prefixPath, filename));
+                                var lastModified = new Date(fileStats.mtime);
+                                var monthFromToday = new Date();
+                                monthFromToday.setMonth(monthFromToday.getMonth() - 1);
+                                monthFromToday.setHours(0, 0, 0);
+                                monthFromToday.setMilliseconds(0);
+                                var upToDate = +lastModified > +monthFromToday;
 
-                            folderObj[filename] = {};
-                            folderObj[filename]['lastModified'] = lastModified;
-                            folderObj[filename]['upToDate'] = upToDate;
+                                folderObj[filename] = {};
+                                folderObj[filename]['lastModified'] = lastModified;
+                                folderObj[filename]['upToDate'] = upToDate;
+                            }
                         }
 
                         resolve(folderObj);
@@ -103,7 +113,7 @@ function listFiles(prefix){
  * @param prefix
  * @returns {Promise<any>}
  */
-function deleteLocalFolder(prefix) {
+function deleteLocalFolders(prefix) {
     var prefixPath = path.join("/tmp", prefix);
     return new Promise(function(resolve, reject){
         if (fs.existsSync(prefixPath)){
@@ -121,12 +131,26 @@ function deleteLocalFolder(prefix) {
     });
 }
 
+function deleteLocalFile(filepath) {
+    return new Promise(function(resolve, reject){
+        if (fs.existsSync(filepath)){
+            fs.unlink(filepath, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        }
+        else{
+            resolve('That local folder does not exist!');
+        }
+    });
+}
+
 /**
  * download all the file given filename
  * @param fname
  * @returns {Promise<any>}
  */
-function downloadFile(fname){
+function parseFile(fname){
     var fnamePath = path.join("/tmp", fname);
     return new Promise((resolve,reject) => {
         fs.readFile(fnamePath, function(err, data){
@@ -141,4 +165,39 @@ function downloadFile(fname){
 }
 
 
-module.exports = {listFolders, listFiles, downloadFile};
+/**
+ *
+ * @param prefix
+ * @param filename
+ * @param screenName
+ * @returns {Promise<any>}
+ */
+function zipDownloads(prefix, filename, screenName){
+    var zipfolder = path.join('/tmp', prefix);
+    return new Promise((resolve,reject) => {
+
+        var archive = archiver('zip', {
+            // Sets the compression level
+            zlib: { level: 9 }
+        });
+
+        var fileOutput = fs.createWriteStream(path.join(zipfolder, filename));
+        fileOutput.on('close',function(){
+            resolve(path.join(zipfolder, filename));
+        });
+
+        archive.on('error',function(err){
+            console.log(err);
+            reject(err);
+        });
+
+        archive.pipe(fileOutput);
+        archive.directory(zipfolder, screenName);
+
+        archive.finalize();
+    });
+
+}
+
+
+module.exports = {listFolders, listFiles, deleteLocalFolders, deleteLocalFile, zipDownloads, parseFile};
