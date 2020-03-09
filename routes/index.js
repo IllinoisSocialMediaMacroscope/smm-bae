@@ -4,6 +4,7 @@ var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
 var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var batchInvoke = require(path.join(appPath, 'scripts', 'helper_func', 'batchHelper.js'));
 var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
 
 
@@ -49,8 +50,7 @@ router.get('/score', function(req, res, next){
     }).catch(err => {
         res.status(500).send(err);
     });
-
-})
+});
 
 /**
  * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
@@ -59,7 +59,7 @@ router.get('/score', function(req, res, next){
  * @param credentials
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, algorithm, credentials){
+function getTimeline(sessionID, screenName, algorithm, credentials, email=null, sessionURL=null){
 
     return new Promise((resolve, reject) =>
 
@@ -90,8 +90,11 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             else if (algorithm === 'TwitPersonality'){
                                 var personalityFname = screenName + '_twitPersonality.json';
                             }
+                            else if (algorithm === 'UtkuPersonality'){
+                                var personalityFname = screenName + '_utku_personality_average.json';
+                            }
                             else{
-                                reject()
+                                reject();
                             }
                             // 1.1.1.1 if personality has been collected, job done!
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
@@ -141,6 +144,28 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                     //         });
                                     //     }
                                     // });
+                                }
+                                else if (algorithm === 'UtkuPersonality') {
+                                    var jobName = sessionID + '_' + screenName;
+
+                                    // set default batch command
+                                    var command = [
+                                        "python3.6",
+                                        "/scripts/batch_function.py",
+                                        "--sessionID", sessionID,
+                                        "--screen_name", screenName,
+                                        "--email", email,
+                                        "--sessionURL", sessionURL
+                                    ];
+                                    batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                        jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
+                                        resolve(data);
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
+                                }
+                                else{
+                                    reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                                 }
                             }
                         }).catch( err => {
@@ -193,6 +218,28 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                 //         });
                                 //     }
                                 // });
+                            }
+                            else if (algorithm === 'UtkuPersonality') {
+                                var jobName = sessionID + '_' + screenName;
+
+                                // set default batch command
+                                var command = [
+                                    "python3.6",
+                                    "/scripts/batch_function.py",
+                                    "--sessionID", sessionID,
+                                    "--screen_name", screenName,
+                                    "--email", email,
+                                    "--sessionURL", sessionURL
+                                ];
+                                batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                    jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
+                                    resolve(data);
+                                }).catch(err => {
+                                    reject(err);
+                                });
+                            }
+                            else{
+                                reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                             }
                         }).catch( err => {
                             reject(err);
