@@ -9,7 +9,7 @@ var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'de
 var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
-    var promiseArr = []
+    var promiseArr = [];
 
     // loop through folders
     s3Helper.listFolders(sessionID + '/').then( folders => {

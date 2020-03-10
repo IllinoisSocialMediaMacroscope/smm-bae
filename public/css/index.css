@@ -284,6 +284,12 @@ button:active{
 }
 
 .tag-Twit{
+    background-color:#b4cbcf;
+    font-size:x-small;
+    margin:3px;
+}
+
+.tag-Pamuksuz{
     background-color:#063535;
     font-size:x-small;
     margin:3px;

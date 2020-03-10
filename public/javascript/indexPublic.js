@@ -4,6 +4,7 @@
 $(document).ready(function(){
     $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
+    updateHistory();
 });
 
 /******************************* START ANALYSIS ********************************/
@@ -504,7 +505,7 @@ function updateHistory(){
  * @param historyList
  */
 function seperateByAlgorithm(historyList){
-    var folderNames = {'IBM-Personality':[], 'TwitPersonality':[]};
+    var folderNames = {'IBM-Personality':[], 'TwitPersonality':[], 'Pamuksuz-Personality':[]};
     $.each(historyList,function(i, val) {
         var folderName = Object.keys(val)[0];
         var fileNames = val[folderName];
@@ -514,6 +515,9 @@ function seperateByAlgorithm(historyList){
             }
             if (filename.slice(-21) === '_twitPersonality.json') {
                 folderNames['TwitPersonality'].push(folderName);
+            }
+            if (filename.slice(-30) === '_utku_personality_average.json') {
+                folderNames['Pamuksuz-Personality'].push(folderName);
             }
         });
     });
@@ -545,11 +549,15 @@ function renderHistoryList(historyList){
             </a>\
           </div>');
 
+        console.log(folderNames);
         if (folderNames['IBM-Personality'].indexOf(screenName) > -1){
             $(".history-link[value=" + screenName + "]").append('<kbd class="tag-IBM">IBM</kbd>');
         }
         if (folderNames['TwitPersonality'].indexOf(screenName) > -1){
             $(".history-link[value=" + screenName + "]").append('<kbd class="tag-Twit">TWIT</kbd>');
+        }
+        if (folderNames['Pamuksuz-Personality'].indexOf(screenName) > -1){
+            $(".history-link[value=" + screenName + "]").append('<kbd class="tag-Pamuksuz">Pamuksuz</kbd>');
         }
 
     });

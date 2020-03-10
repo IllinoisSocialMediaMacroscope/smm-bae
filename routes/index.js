@@ -26,7 +26,7 @@ router.post('/update', function (req, res, next) {
     }).catch(err => {
         try {
             var parsedError = JSON.parse(err);
-            if (parsedError.code === 401) {
+            if (req.body.algorithm === "IBM-Watson" && parsedError.code === 401) {
                 // this error means personality credentials are invalid
                 delete req.session.bluemixPersonalityApikey;
             }
@@ -98,7 +98,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                 var personalityFname = screenName + '_utku_personality_average.json';
                             }
                             else {
-                                reject();
+                                reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                             }
                             // 1.1.1.1 if personality has been collected, job done!
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
