@@ -5,6 +5,12 @@
  */
 function formValidation($this, whichPerformance){
     if (whichPerformance === 'update'){
+        if ($("#algorithm option:selected").val() === 'none'){
+            $("#modal-message").text('You have to select a brand personality algorithm.');
+            $("#alert").modal('show');
+            return false;
+        }
+
         if ($("#user-search").find('input').val() === ''
             || $("#user-search").find('input').val() === undefined){
 
@@ -17,6 +23,17 @@ function formValidation($this, whichPerformance){
             || $("#brand-search").find('input').val() === undefined){
 
             $("#modal-message").text('You have to provide screen name of the brand.');
+            $("#alert").modal('show');
+
+            return false;
+        }
+    }
+    else if (whichPerformance === 'batch'){
+        if ($("#email").val() === ""
+            || $("#email").val() === undefined
+            || $("#email").val().indexOf("@") == -1){
+            $("#modal-message").text('You have to provide valid email address ' +
+                'so that we can inform you when computation is finished.');
             $("#alert").modal('show');
 
             return false;

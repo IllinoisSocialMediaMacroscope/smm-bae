@@ -14,49 +14,85 @@ $("#analyze-btn").on('click', function(){
     if (formValidation(null, 'update')) {
         var userScreenName = $("#user-search").find('input').val();
         var brandScreenName = $("#brand-search").find('input').val();
-        var algorithm = "IBM-Watson";
+        var algorithm = $("#algorithm option:selected").val();
 
-        // loading bar
-        $(".loading").show();
-        $("#analyze-btn").hide();
+        if (algorithm === "IBM-Watson") {
+            // loading bar
+            $(".loading").show();
+            $("#analyze-btn").hide();
+
+            $.ajax({
+                url: "update",
+                type: "post",
+                data: {
+                    "userScreenName": userScreenName,
+                    "brandScreenName": brandScreenName,
+                    "algorithm": algorithm
+                },
+                success: function (data) {
+                    // place results but do not show
+                    $("#display").hide();
+                    update(data.user, 'user');
+                    update(data.brand, 'brand');
+                    resetSimScore(data.algorithm);
+                    updateHistory();
+
+                    // loading bar
+                    $(".loading").hide();
+                    $("#analyze-btn").show();
+
+                    // update the flow
+                    flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
+
+                    // focus on the see result button
+                    $('html, body').animate({
+                        scrollTop: ($('#see-result').first().offset().top - 10)
+                    }, 1000);
+                },
+                error: function (jqXHR, exception) {
+                    // loading bar
+                    $(".loading").hide();
+                    $("#analyze-btn").show();
+
+                    $("#error").val(jqXHR.responseText);
+                    $("#warning").modal('show');
+                }
+            });
+        }
+        else if (algorithm === "Pamuksuz-Personality") {
+            $("#batch").modal('show');
+        }
+    }
+});
+
+/**
+ * batch modal button submit on click
+ */
+$("#batch").find("button").on('click', function(){
+    if (formValidation(null, 'batch')) {
+        var userScreenName = $("#user-search").find('input').val();
+        var brandScreenName = $("#brand-search").find('input').val();
+        var algorithm = $("#algorithm option:selected").val();
+        var email = $("#email").val();
 
         $.ajax({
             url: "update",
             type: "post",
             data: {
                 "userScreenName": userScreenName,
-                "brandScreenName":brandScreenName,
-                "algorithm":algorithm
+                "brandScreenName": brandScreenName,
+                "algorithm": algorithm,
+                "email": email,
+                "sessionURL": sessionURL
             },
             success: function (data) {
-                // place results but do not show
-                $("#display").hide();
-                update(data.user, 'user');
-                update(data.brand, 'brand');
-                resetSimScore(data.algorithm);
-                updateHistory();
-
-                // loading bar
-                $(".loading").hide();
-                $("#analyze-btn").show();
-
-                // update the flow
-                flowEffect({"authorization":"done", "ibmkey":"done", "search":"done", "citation":"on"});
-
-                // focus on the see result button
-                $('html, body').animate({
-                    scrollTop: ($('#see-result').first().offset().top - 10)
-                }, 1000);
+                console.log(data);
             },
             error: function (jqXHR, exception) {
-                // loading bar
-                $(".loading").hide();
-                $("#analyze-btn").show();
-
                 $("#error").val(jqXHR.responseText);
                 $("#warning").modal('show');
             }
-        });
+        })
     }
 });
 

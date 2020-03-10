@@ -94,7 +94,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                             else if (algorithm === 'TwitPersonality') {
                                 var personalityFname = screenName + '_twitPersonality.json';
                             }
-                            else if (algorithm === 'PamuksuzPersonality') {
+                            else if (algorithm === 'Pamuksuz-Personality') {
                                 var personalityFname = screenName + '_utku_personality_average.json';
                             }
                             else {
@@ -149,7 +149,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     //     }
                                     // });
                                 }
-                                else if (algorithm === 'PamuksuzPersonality') {
+                                else if (algorithm === 'Pamuksuz-Personality') {
                                     if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
                                     var jobName = sessionID + '_' + screenName;
 
@@ -224,7 +224,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                 //     }
                                 // });
                             }
-                            else if (algorithm === 'PamuksuzPersonality') {
+                            else if (algorithm === 'Pamuksuz-Personality') {
                                 if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
                                 var jobName = sessionID + '_' + screenName;
 
