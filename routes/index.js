@@ -3,34 +3,34 @@ var router = express.Router();
 var config = require('../config');
 var path = require('path');
 var appPath = path.dirname(__dirname);
-var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelper.js'));
+var lambdaInvoke = require(path.join(appPath, 'scripts', 'helper_func', 'lambdaHelper.js'));
 var batchInvoke = require(path.join(appPath, 'scripts', 'helper_func', 'batchHelper.js'));
-var s3Helper = require(path.join(appPath, 'scripts','helper_func', 's3Helper.js'));
+var s3Helper = require(path.join(appPath, 'scripts', 'helper_func', 's3Helper.js'));
 
 
-router.get('/', function(req, res, next){
-    res.render('index',{});
+router.get('/', function (req, res, next) {
+    res.render('index', {});
 });
 
-router.post('/update', function(req, res, next){
+router.post('/update', function (req, res, next) {
     var promises = [];
-    promises.push( getTimeline(sessionID, req.body.userScreenName, req.body.algorithm, req.session));
-    promises.push( getTimeline(sessionID, req.body.brandScreenName, req.body.algorithm, req.session));
-    Promise.all(promises).then( results => {
+    promises.push(getTimeline(sessionID, req.body.userScreenName, req.body.algorithm, req.session, req.body.email, req.body.sessionURL));
+    promises.push(getTimeline(sessionID, req.body.brandScreenName, req.body.algorithm, req.session, req.body.email, req.body.sessionURL));
+    Promise.all(promises).then(results => {
         res.status(200).send(
-        {
-            algorithm: req.body.algorithm,
-            user:results[0],
-            brand:results[1]
-        })
-    }).catch( err =>{
-        try{
+            {
+                algorithm: req.body.algorithm,
+                user: results[0],
+                brand: results[1]
+            })
+    }).catch(err => {
+        try {
             var parsedError = JSON.parse(err);
-            if (parsedError.code === 401){
+            if (parsedError.code === 401) {
                 // this error means personality credentials are invalid
                 delete req.session.bluemixPersonalityApikey;
             }
-        }catch(e){
+        } catch (e) {
             console.log(e);
         }
 
@@ -38,7 +38,7 @@ router.post('/update', function(req, res, next){
     });
 });
 
-router.get('/score', function(req, res, next){
+router.get('/score', function (req, res, next) {
     lambdaInvoke('bae_get_sim_score', {
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
@@ -56,10 +56,13 @@ router.get('/score', function(req, res, next){
  * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
  * @param sessionID
  * @param screenName
+ * @param algorithm
  * @param credentials
+ * @param email
+ * @param sessionURL
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, algorithm, credentials, email=null, sessionURL=null){
+function getTimeline(sessionID, screenName, algorithm, credentials, email = null, sessionURL = null) {
 
     return new Promise((resolve, reject) =>
 
@@ -69,31 +72,32 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
             consumer_secret: config.twitter.consumerSecret,
             access_token: credentials.twtAccessTokenKey,
             access_token_secret: credentials.twtAccessTokenSecret,
-            screen_name:screenName })
-        .then( user => {
+            screen_name: screenName
+        })
+        .then(user => {
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
-                s3Helper.listFiles(sessionID +'/' + screenName).then( timelines => {
+                s3Helper.listFiles(sessionID + '/' + screenName).then(timelines => {
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
                     if (files.indexOf(screenName + '_tweets.txt') > -1
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
-                        console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
+                        console.log({message: 'Timeline has already been collected and it is within on month of date range!'});
 
-                        s3Helper.listFiles(sessionID +'/' + screenName).then( personalities => {
+                        s3Helper.listFiles(sessionID + '/' + screenName).then(personalities => {
                             var files = Object.keys(personalities);
-                            if (algorithm === 'IBM-Watson'){
+                            if (algorithm === 'IBM-Watson') {
                                 var personalityFname = screenName + '_personality.json';
                             }
-                            else if (algorithm === 'TwitPersonality'){
+                            else if (algorithm === 'TwitPersonality') {
                                 var personalityFname = screenName + '_twitPersonality.json';
                             }
-                            else if (algorithm === 'UtkuPersonality'){
+                            else if (algorithm === 'PamuksuzPersonality') {
                                 var personalityFname = screenName + '_utku_personality_average.json';
                             }
-                            else{
+                            else {
                                 reject();
                             }
                             // 1.1.1.1 if personality has been collected, job done!
@@ -101,9 +105,9 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
                                 s3Helper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
-                                    .then( personality =>{
-                                        resolve(personality);
-                                    }).catch(err =>{
+                                .then(personality => {
+                                    resolve(personality);
+                                }).catch(err => {
                                     reject(err);
                                 });
                             }
@@ -122,7 +126,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                         reject(err);
                                     });
                                 }
-                                else if (algorithm === 'TwitPersonality'){
+                                else if (algorithm === 'TwitPersonality') {
                                     reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                         "and we have to temporarily deprecate it.");
                                     // var options = {
@@ -145,7 +149,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                     //     }
                                     // });
                                 }
-                                else if (algorithm === 'UtkuPersonality') {
+                                else if (algorithm === 'PamuksuzPersonality') {
+                                    if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
                                     var jobName = sessionID + '_' + screenName;
 
                                     // set default batch command
@@ -164,11 +169,11 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                         reject(err);
                                     });
                                 }
-                                else{
+                                else {
                                     reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                                 }
                             }
-                        }).catch( err => {
+                        }).catch(err => {
                             reject(err);
                         })
                     }
@@ -181,8 +186,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                             consumer_secret: config.twitter.consumerSecret,
                             access_token: credentials.twtAccessTokenKey,
                             access_token_secret: credentials.twtAccessTokenSecret,
-                            screen_name:screenName
-                        }).then( timelines => {
+                            screen_name: screenName
+                        }).then(timelines => {
 
                             if (algorithm === 'IBM-Watson') {
                                 lambdaInvoke('bae_get_personality_dev', {
@@ -196,7 +201,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                     reject(err);
                                 })
                             }
-                            else if (algorithm === 'TwitPersonality'){
+                            else if (algorithm === 'TwitPersonality') {
                                 reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                     "and we have to temporarily deprecate it.");
                                 // var options = {
@@ -219,7 +224,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                 //     }
                                 // });
                             }
-                            else if (algorithm === 'UtkuPersonality') {
+                            else if (algorithm === 'PamuksuzPersonality') {
+                                if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
                                 var jobName = sessionID + '_' + screenName;
 
                                 // set default batch command
@@ -238,14 +244,14 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
                                     reject(err);
                                 });
                             }
-                            else{
+                            else {
                                 reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                             }
-                        }).catch( err => {
+                        }).catch(err => {
                             reject(err);
                         });
                     }
-                }).catch( err => {
+                }).catch(err => {
                     console.log(err);
                     reject(err);
                 })
@@ -255,10 +261,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email=null, 
             else {
                 reject('User screen name: ' + screenName + ' does not exist!');
             }
-        }).catch( err => {
+        }).catch(err => {
             console.log(err);
             reject(err);
-    }));
+        }));
 }
 
 module.exports = router;

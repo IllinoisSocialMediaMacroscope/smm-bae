@@ -85,6 +85,7 @@
 }
 
 /*********************** Search Area ********************/
+#select-algorithm,
 #user-search,
 #brand-search{
     margin:20px auto;
