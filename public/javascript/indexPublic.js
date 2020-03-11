@@ -195,6 +195,63 @@ function update(data, role) {
 }
 
 /**
+ * similary function but in history preview modal
+ * @param data
+ */
+function historyPreviewRender(data) {
+    $("#IBM-preview-container").empty();
+    $("#Pamuksuz-preview-container").empty();
+
+    if (data['IBM-Personality'] !== undefined) {
+        var IBMData = data['IBM-Personality'];
+        var promise = new Promise(function (resolve, reject) {
+            if ('warnings' in IBMData.personality && IBMData.personality.warnings.length > 0) {
+                var warningMessage = IBMData.personality.warnings[0].message;
+            } else {
+                var warningMessage = "";
+            }
+
+            $("#IBM-preview-container").append(
+                '<div class="personality-header">\
+                    <i class="fas fa-exclamation-circle pull-right"\
+                        data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
+                    <div class="row">\
+                        <div class="col col-md-3 col-sm-3 col-xs-3">\
+                            <img src="' + IBMData.profile_img + '"/>\
+                        </div>\
+                        <div class="col col-md-9 col-sm-9 col-xs-9">\
+                            <h4 id="preview-screen-name">\
+                                <a target="_blank" href="https://twitter.com/' + IBMData.screen_name + '">' + IBMData.screen_name + '</a>\
+                            </h4>\
+                            <h4 class="word-count">Word Count: </h4>\
+                            <h4 class="number">' + IBMData.personality.word_count + '</h4>\
+                        </div>\
+                    </div>\
+                </div>\
+                <div class="personality persona"></div>\
+                <div class="personality needs"></div>\
+                <div class="personality values"></div>\
+                <div class="personality consumption-preferences"></div>');
+            $("#account h4").text(IBMData.screen_name);
+            $("#account a").attr("href", "download?screenName=" + IBMData.screen_name);
+            resolve();
+        });
+
+        promise.then(() => {
+            // if (IBMData.personality.personality != undefined) updatePersonality(IBMData.personality.personality, role);
+            // if (IBMData.personality.consumption_preferences != undefined) updateConsumptionPreference(IBMData.personality.consumption_preferences, role);
+            // if (IBMData.personality.needs != undefined) updateNeeds(IBMData.personality.needs, role);
+            // if (IBMData.personality.values != undefined) updateValues(IBMData.personality.values, role);
+
+            //tooltip
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+        });
+    }
+}
+
+/**
  * update the Needs barchart
  * @param needs
  * @param role: user or brand
@@ -597,6 +654,8 @@ function previewHistory(e, screenName){
             screenName: screenName
         },
         success: function (data) {
+            historyPreviewRender(data);
+            $("#history-preview").modal("show");
         },
         error: function (jqXHR, exception) {
             $("#error").val(jqXHR.responseText);
