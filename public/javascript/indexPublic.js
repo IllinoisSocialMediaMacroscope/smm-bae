@@ -499,9 +499,6 @@ function updateHistory(){
 
 /**
  * seperate historylist(foldername) with different algorithms
- * the results will be used twice: in history list adding tags to each item
- * in bulk comparison generate the auto comparison list
- * hence save it in local storage
  * @param historyList
  */
 function seperateByAlgorithm(historyList){
@@ -521,7 +518,7 @@ function seperateByAlgorithm(historyList){
             }
         });
     });
-    localStorage.setItem('folderNames', JSON.stringify(folderNames));
+    return folderNames;
 }
 
 /**
@@ -533,23 +530,22 @@ function renderHistoryList(historyList){
     $("#history-links").append('<div class="personality-header"><h2>History</h2></div>');
 
     // folderNames = {'IBM':[screenname1, screename2..], 'Twit':[screename1, screename3...]}
-    seperateByAlgorithm(historyList);
-    var folderNames = JSON.parse(localStorage.getItem('folderNames'));
+    var folderNames = seperateByAlgorithm(historyList);
 
-        $.each(historyList,function(i, val){
+    $.each(historyList,function(i, val){
+
         var screenName = Object.keys(val)[0];
 
         $("#history-links").append('<div class="history-link" value="' + screenName + '">\
-            <p>'+screenName +'</p>\
+            <a class="preview" onclick="previewHistory(event, `'+ screenName +'`)">'+screenName +'</a>\
             <button onclick="deleteRemote(`'+ screenName + '`);">\
                 <i class="fas fa-trash-alt"/>\
             </button>\
-            <a href="download?screenName='+screenName + '" target="_blank"">\
+            <a class="download" href="download?screenName='+screenName + '" target="_blank"">\
                 <i class="fas fa-download"/>\
             </a>\
           </div>');
 
-        console.log(folderNames);
         if (folderNames['IBM-Personality'].indexOf(screenName) > -1){
             $(".history-link[value=" + screenName + "]").append('<kbd class="tag-IBM">IBM</kbd>');
         }
@@ -577,7 +573,7 @@ function renderHistoryList(historyList){
         $("#history-form").prepend('<div class="history-input">\
                                     <select class="history-input-bulk-comparison"></select>\
                                     <button class="history-input-del-btn"><i class="fas fa-minus-circle"></i></button>\
-                                </div>')
+                                </div>');
         var algorithm = $("#history-algorithm input[name=history-algorithm]:checked").val();
         addBulkComparisonSelection(folderNames[algorithm]);
 
@@ -588,6 +584,28 @@ function renderHistoryList(historyList){
 
     historyBulkComparison();
 };
+
+/**
+ * history list onclick preview result
+ */
+function previewHistory(e, screenName){
+    e.preventDefault();
+    $.ajax({
+        url: "preview",
+        type: "GET",
+        data: {
+            screenName: screenName
+        },
+        success: function (data) {
+        },
+        error: function (jqXHR, exception) {
+            $("#error").val(jqXHR.responseText);
+            $("#warning").modal('show');
+        }
+    });
+
+
+}
 
 /**
  * change autocomplete list based on different models
@@ -603,7 +621,7 @@ $("#history-algorithm input").on('change', function(){
 function addBulkComparisonSelection(list){
     $(".history-input-bulk-comparison").each(function(i, obj){
         if ($(obj).children().length === 0) {
-            $(obj).append('<option>please choose...</option>')
+            $(obj).append('<option>please choose...</option>');
             $(list).each(function(i, item) {
                 $(obj).append('<option>' + item + '</option>')
             });
@@ -626,7 +644,7 @@ function historyBulkComparison(){
             var algorithm = $("#history-algorithm input[name=history-algorithm]:checked").val();
 
             $.ajax({
-                url: "history",
+                url: "bulk-comparison",
                 type: "post",
                 data: JSON.stringify({
                     screenNames:screenNames,
@@ -646,11 +664,11 @@ function historyBulkComparison(){
                         end_color : '#b04b39'
                     });
                     $("#history-chart").append('<div class="button-group">\
-                                                <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-file-download"></i>\
+                                                <button class="btn btn-primary btn-sm" id="similarity-matrix-btn"><i class="fas fa-download"></i>\
                                                     Similarity</button>\
-                                                <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-file-download"></i>\
+                                                <button class="btn btn-primary btn-sm" id="comparison-table-btn"><i class="fas fa-download"></i>\
                                                     Personality</button>\
-                                                </div>')
+                                                </div>');
 
                     // downloads
                     frontendDownload("#similarity-matrix-btn", data['correlation_matrix'], 'Bulk_Similarity_Matrix.csv');

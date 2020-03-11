@@ -42,7 +42,45 @@ router.get('/history', function(req, res, next){
     });
 });
 
-router.post('/history', function(req,res,next){
+router.get('/preview', function(req, res, next){
+    var screenName = req.query.screenName;
+    s3Helper.listFiles(sessionID + '/' + screenName).then(personalities => {
+        var promises = [];
+        if (screenName + '_personality.json' in personalities) {
+            var IBMPersonality = screenName + '_personality.json';
+            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + IBMPersonality));
+        }
+        else{
+            // push empty promise to resever the spot
+            promises.push(new Promise((resolve,reject) => {resolve();}));
+        }
+
+        if (screenName + '_utku_personality_average.json' in personalities) {
+            var UtkuPersonality = screenName + '_utku_personality_average.json';
+            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + UtkuPersonality));
+        }
+        else{
+            // push empty promise to resever the spot
+            promises.push(new Promise((resolve,reject) => {resolve();}));
+        }
+
+        //TODO if twitPersonality algorithm in it then do the same for twitPersonality algorithm
+
+        Promise.all(promises).then(results => {
+            res.status(200).send({
+                "IBM-Personality": results[0],
+                "Pamuksuz-Personality": results[1]
+            });
+        }).catch(err => {
+            res.status(500).send(err);
+        });
+    })
+    .catch(listFileErr =>{
+        res.status(500).send(listFileErr);
+    })
+});
+
+router.post('/bulk-comparison', function(req,res,next){
     lambdaInvoke('bae_bulk_comparison', {
         screen_names: req.body.screenNames,
         sessionID: sessionID,
