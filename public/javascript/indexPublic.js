@@ -142,66 +142,18 @@ function resetAll(){
  * @param role: user or brand
  */
 function update(data, role) {
-    var promise = new Promise(function(resolve, reject) {
-        if (data != undefined) {
-            $("#" + role + "-container").empty();
-
-            if ('warnings' in data.personality && data.personality.warnings.length > 0){
-                var warningMessage = data.personality.warnings[0].message;
-            }else{
-                var warningMessage = "";
-            }
-
-            $("#"+ role + "-container").append(
-                '<div class="personality-header">\
-                    <i class="fas fa-exclamation-circle pull-right"\
-                        data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
-                    <div class="row">\
-                        <div class="col col-md-3 col-sm-3 col-xs-3">\
-                            <img src="' + data.profile_img + '"/>\
-                        </div>\
-                        <div class="col col-md-9 col-sm-9 col-xs-9">\
-                            <h4 id="' + role +  '-screen-name">\
-                                <a target="_blank" href="https://twitter.com/' + data.screen_name +'">' + data.screen_name + '</a>\
-                            </h4>\
-                            <h4 class="word-count">Word Count: </h4>\
-                            <h4 class="number">' + data.personality.word_count + '</h4>\
-                        </div>\
-                    </div>\
-                </div>\
-                <div class="personality persona"></div>\
-                <div class="personality needs"></div>\
-                <div class="personality values"></div>\
-                <div class="personality consumption-preferences"></div>');
-            $("#" + role + "-account h4").text(data.screen_name);
-            $("#" + role + "-account a").attr("href", "download?screenName=" + data.screen_name);
-            resolve();
-        }
-        else{
-            reject();
-        }
-    });
-
-    promise.then(() =>{
-        if (data.personality.personality != undefined) updatePersonality(data.personality.personality, role);
-        if (data.personality.consumption_preferences != undefined) updateConsumptionPreference(data.personality.consumption_preferences, role);
-        if (data.personality.needs != undefined) updateNeeds(data.personality.needs, role);
-        if (data.personality.values != undefined) updateValues(data.personality.values, role);
-
-        //tooltip
-        $(function() { $('[data-toggle="tooltip"]').tooltip()});
-    });
-
+    // decide what kind of data it is
+    IBMPreviewRender(data['IBM-Personality'], 'IBM-preview');
+    PamuksuzPreviewRender(data['Pamuksuz-Personality'], 'Pamuksuz-preview');
 }
 
 /**
  * similary function but in history preview modal
  * @param data
  */
-function IBMHistoryPreviewRender(data, role) {
-    $("#IBM-preview-container").empty();
-    if (data['IBM-Personality'] !== undefined) {
-        var IBMData = data['IBM-Personality'];
+function IBMPreviewRender(IBMData, role) {
+    $("#" + role + "-container").empty();
+    if (IBMData !== undefined) {
         var promise = new Promise(function (resolve, reject) {
             if ('warnings' in IBMData.personality && IBMData.personality.warnings.length > 0) {
                 var warningMessage = IBMData.personality.warnings[0].message;
@@ -232,31 +184,30 @@ function IBMHistoryPreviewRender(data, role) {
     }
 }
 
-function PamuksuzHistoryPreviewRender(data, role) {
+function PamuksuzPreviewRender(PamuksuzData, role) {
     $("#" + role + "-container").empty();
-    if (data['Pamuksuz-Personality'] !== undefined) {
-        var PamuksuzData = data['Pamuksuz-Personality'];
+    if (PamuksuzData !== undefined) {
         $("#" + role + "-container").append(
             '<h1>Pamuksuz Personality</h1>\
             <div class="personality persona">\
                 <div class="personality">\
-                    <h4 class="word-count">sophistication</h4>\
+                    <h4 class="word-count">Sophistication</h4>\
                     <h4 class="number">' + PamuksuzData['sophistication'].toFixed(4) + '</h4>\
                 </div>\
                 <div class="personality">\
-                    <h4 class="word-count">excitement</h4>\
+                    <h4 class="word-count">Excitement</h4>\
                     <h4 class="number">' + PamuksuzData['excitement'].toFixed(4) + '</h4>\
                 </div>\
                 <div class="personality">\
-                    <h4 class="word-count">sincerity</h4>\
+                    <h4 class="word-count">Sincerity</h4>\
                     <h4 class="number">' + PamuksuzData['sincerity'].toFixed(4) + '</h4>\
                 </div>\
                 <div class="personality">\
-                    <h4 class="word-count">competence</h4>\
+                    <h4 class="word-count">Competence</h4>\
                     <h4 class="number">' + PamuksuzData['competence'].toFixed(4) + '</h4>\
                 </div>\
                 <div class="personality">\
-                    <h4 class="word-count">ruggedness</h4>\
+                    <h4 class="word-count">Ruggedness</h4>\
                     <h4 class="number">' + PamuksuzData['ruggedness'].toFixed(4) + '</h4>\
                 </div>\
             </div>'
@@ -668,8 +619,8 @@ function previewHistory(e, screenName){
             screenName: screenName
         },
         success: function (data) {
-            IBMHistoryPreviewRender(data, 'IBM-preview');
-            PamuksuzHistoryPreviewRender(data, 'Pamuksuz-preview');
+            IBMPreviewRender(data['IBM-Personality'], 'IBM-preview');
+            PamuksuzPreviewRender(data['Pamuksuz-Personality'], 'Pamuksuz-preview');
             $("#history-preview").modal("show");
         },
         error: function (jqXHR, exception) {
