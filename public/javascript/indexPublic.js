@@ -239,23 +239,23 @@ function PamuksuzHistoryPreviewRender(data, role) {
         $("#" + role + "-container").append(
             '<h1>Pamuksuz Personality</h1>\
             <div class="personality persona">\
-                <div>\
+                <div class="personality">\
                     <h4 class="word-count">sophistication</h4>\
                     <h4 class="number">' + PamuksuzData['sophistication'].toFixed(4) + '</h4>\
                 </div>\
-                <div>\
+                <div class="personality">\
                     <h4 class="word-count">excitement</h4>\
                     <h4 class="number">' + PamuksuzData['excitement'].toFixed(4) + '</h4>\
                 </div>\
-                <div>\
+                <div class="personality">\
                     <h4 class="word-count">sincerity</h4>\
                     <h4 class="number">' + PamuksuzData['sincerity'].toFixed(4) + '</h4>\
                 </div>\
-                <div>\
+                <div class="personality">\
                     <h4 class="word-count">competence</h4>\
                     <h4 class="number">' + PamuksuzData['competence'].toFixed(4) + '</h4>\
                 </div>\
-                <div>\
+                <div class="personality">\
                     <h4 class="word-count">ruggedness</h4>\
                     <h4 class="number">' + PamuksuzData['ruggedness'].toFixed(4) + '</h4>\
                 </div>\
