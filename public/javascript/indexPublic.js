@@ -33,9 +33,9 @@ $("#analyze-btn").on('click', function(){
                 success: function (data) {
                     // place results but do not show
                     $("#display").hide();
-                    update(data.user, 'user');
-                    update(data.brand, 'brand');
-                    resetSimScore(data.algorithm);
+                    IBMPreviewRender(data.user, 'user');
+                    IBMPreviewRender(data.brand, 'brand');
+                    resetSimScore(algorithm);
                     updateHistory();
 
                     // loading bar
@@ -87,7 +87,37 @@ $("#batch").find("button").on('click', function(){
                 "sessionURL": sessionURL
             },
             success: function (data) {
-                console.log(data);
+                // place results but do not show
+                $("#display").hide();
+
+                if ('sophistication' in data.user
+                    && 'excitement' in data.user
+                    && 'sincerity' in data.user
+                    && 'competence' in data.user
+                    && 'ruggedness' in data.user
+                    && 'sophistication' in data.brand
+                    && 'excitement' in data.brand
+                    && 'sincerity' in data.brand
+                    && 'competence' in data.brand
+                    && 'ruggedness' in data.brand
+                ){
+                    $("#batch").modal('hide');
+                    PamuksuzPreviewRender(data.user, 'user');
+                    PamuksuzPreviewRender(data.brand, 'brand');
+                }
+                else{
+                    console.log(data);
+                    // show the job success modal
+                }
+                resetSimScore(algorithm);
+
+                // update the flow
+                flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
+
+                // focus on the see result button
+                $('html, body').animate({
+                    scrollTop: ($('#see-result').first().offset().top - 10)
+                }, 1000);
             },
             error: function (jqXHR, exception) {
                 $("#error").val(jqXHR.responseText);
@@ -135,17 +165,6 @@ function resetAll(){
     $("#display").hide();
 }
 
-/**
- * update the main personality panel
- * related to $("#analyze-btn").on('click', function()
- * @param data
- * @param role: user or brand
- */
-function update(data, role) {
-    // decide what kind of data it is
-    IBMPreviewRender(data['IBM-Personality'], 'IBM-preview');
-    PamuksuzPreviewRender(data['Pamuksuz-Personality'], 'Pamuksuz-preview');
-}
 
 /**
  * similary function but in history preview modal
@@ -420,14 +439,11 @@ function updateConsumptionPreference(preference, role){
  */
 $("#similarity-metrics").on('change', function(){
     var option = $(this).find('option').filter(":selected").val();
-
-    // determine which algorithm by looking at the display
-    // if only personality shows and the rest div is empty
-    // it is twitPersonality
-    if ($(".needs").is(':empty')
-        && $(".values").is(':empty')
-        && $(".consumption-preferences").is(':empty')){
-        var algorithm = 'TwitPersonality';
+    if ($(this).children('option[value="needs_sim_score"]').is(':hidden') &&
+        $(this).children('option[value="values_sim_score"]').is(':hidden') &&
+        $(this).children('option[value="consumption_sim_score"]').is(':hidden')
+    ){
+        var algorithm = 'Pamuksuz-Personality';
     }
     else{
         var algorithm = 'IBM-Watson';
@@ -479,23 +495,22 @@ function updateSimScore(score){
  * reset similarity score to empty whenever refresh or analyze new users
  */
 function resetSimScore(algorithm) {
-
-    if (algorithm === 'TwitPersonality'){
-        $("#similarity-metrics").children('option[value="personality_sim_score"]').show();
-        $("#similarity-metrics").children('option[value="needs_sim_score"]').hide();
-        $("#similarity-metrics").children('option[value="values_sim_score"]').hide();
-        $("#similarity-metrics").children('option[value="consumption_sim_score"]').hide();
-    }else if (algorithm === 'IBM-Watson'){
+    if (algorithm === 'IBM-Watson'){
         $("#similarity-metrics").children('option[value="personality_sim_score"]').show();
         $("#similarity-metrics").children('option[value="needs_sim_score"]').show();
         $("#similarity-metrics").children('option[value="values_sim_score"]').show();
         $("#similarity-metrics").children('option[value="consumption_sim_score"]').show();
     }
+    else{
+        $("#similarity-metrics").children('option[value="personality_sim_score"]').show();
+        $("#similarity-metrics").children('option[value="needs_sim_score"]').hide();
+        $("#similarity-metrics").children('option[value="values_sim_score"]').hide();
+        $("#similarity-metrics").children('option[value="consumption_sim_score"]').hide();
+    }
+
 
     $('#similarity-metrics option:first').prop('selected', true);
     $('#similarity-score').text('0.0000');
-
-
 };
 
 /******************************* HISTORY PANEL ********************************/
