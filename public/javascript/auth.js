@@ -83,7 +83,7 @@ function checkLoginStatus() {
                 flowEffect(panels)
             }
             else {
-                panels["ibmkey"] = "c";
+                panels["ibmkey"] = "done";
                 panels["authorization"] = "done";
                 panels["search"] = "on";
                 flowEffect(panels)
