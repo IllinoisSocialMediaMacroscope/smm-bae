@@ -83,7 +83,7 @@ function checkLoginStatus() {
                 flowEffect(panels)
             }
             else {
-                panels["ibmkey"] = "done";
+                panels["ibmkey"] = "c";
                 panels["authorization"] = "done";
                 panels["search"] = "on";
                 flowEffect(panels)
@@ -96,9 +96,37 @@ function checkLoginStatus() {
     });
 }
 
+/**
+ * IBM bluemix skip providing credentials
+ * @param panels
+ */
+$("#bluemix-skip").find('a').on('click', function(e){
+    e.preventDefault();
+    flowEffect({"authorization": "done", "ibmkey": "off", "search": "on", "citation": "off"});
+});
+
+/**
+ * when select IBM as algorithm; re-check if the credential is present;
+ */
+$("#algorithm").on("change", function () {
+    var algorithm = $(this).find('option').filter(":selected").val();
+    if (algorithm === "IBM-Watson") checkLoginStatus();
+});
+
 function flowEffect(panels) {
     $.each(panels, function (key, val) {
-        val === "done" ? $("#" + key + "-flow").find("i").show() : $("#" + key + "-flow").find("i").hide()
+        if (val === "done"){
+            $("#" + key + "-flow").find("i").show();
+            if ($("#" + key + "-flow").find("i").hasClass("fa-times-circle")){
+                $("#" + key + "-flow").find(".fas.fa-times-circle").hide();
+            }
+        }
+        else{
+            $("#" + key + "-flow").find("i").hide();
+            if ($("#" + key + "-flow").find("i").hasClass("fa-times-circle")){
+                $("#" + key + "-flow").find(".fas.fa-times-circle").show();
+            }
+        }
         val === "on" ? $("#" + key + "-flow").attr("class", "btn flowgrid on")
             : $("#" + key + "-flow").attr("class", "btn flowgrid off")
         val === "on" ? $("#" + key).show() : $("#" + key).hide();
@@ -177,7 +205,7 @@ function downloadBotScore(scores) {
 }
 
 /**
- *  USERNAME PROMP
+ *  USERNAME PROMPT
  */
 function delay(callback, ms) {
     var timer = 0;

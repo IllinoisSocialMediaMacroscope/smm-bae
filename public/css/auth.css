@@ -64,9 +64,18 @@
 }
 
 #twitter-auth,
-#bluemix-auth{
+#bluemix-auth,
+#bluemix-skip{
     margin-top:10px;
 }
+
+#bluemix-skip a{
+    color: #063535;
+    text-decoration: underline;
+    float: right;
+    font-size: 15px;
+}
+
 
 #bluemix-auth input,
 #user-search input,

@@ -7,6 +7,7 @@ div(class="login")
         div(class="btn flowgrid off", id="ibmkey-flow")
             p step 2
                 i(class="fas fa-check-circle")
+                i(class="fas fa-times-circle")
             h4 IBM key
         div(class="btn flowgrid off", id="search-flow")
             p step 3
@@ -42,6 +43,8 @@ div(class="login")
             button(class="btn btn-primary pull-right", id="bluemix-pin-submit")
                 img(src="img/bluemix-sm-logo.png" width=18)
                 | Submit
+        div(id="bluemix-skip")
+            a(href="") skip
 
     div(class="login-background", id="search")
         h1 Algorithms and Accounts
