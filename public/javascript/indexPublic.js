@@ -33,8 +33,8 @@ $("#analyze-btn").on('click', function(){
                 success: function (data) {
                     // place results but do not show
                     $("#display").hide();
-                    IBMPreviewRender(data.user, 'user');
-                    IBMPreviewRender(data.brand, 'brand');
+                    IBMPreviewRender(userScreenName, data.user, 'user');
+                    IBMPreviewRender(brandScreenName, data.brand, 'brand');
                     resetSimScore(algorithm);
                     updateHistory();
 
@@ -102,8 +102,8 @@ $("#batch").find("button").on('click', function(){
                     && 'ruggedness' in data.brand
                 ){
                     $("#batch").modal('hide');
-                    PamuksuzPreviewRender(data.user, 'user');
-                    PamuksuzPreviewRender(data.brand, 'brand');
+                    PamuksuzPreviewRender(userScreenName, data.user, 'user');
+                    PamuksuzPreviewRender(brandScreenName, data.brand, 'brand');
                 }
                 else{
                     console.log(data);
@@ -159,6 +159,8 @@ function resetAll(){
 
     $("#user-account h4").text("");
     $("#brand-account h4").text("");
+    $("#user-account p").text("");
+    $("#brand-account p").text("");
     $("#user-account a").attr("href", "");
     $("#brand-account a").attr("href", "");
 
@@ -170,7 +172,7 @@ function resetAll(){
  * similary function but in history preview modal
  * @param data
  */
-function IBMPreviewRender(IBMData, role) {
+function IBMPreviewRender(screenName, IBMData, role) {
     $("#" + role + "-container").empty();
     if (IBMData !== undefined) {
         var promise = new Promise(function (resolve, reject) {
@@ -186,6 +188,11 @@ function IBMPreviewRender(IBMData, role) {
                 <div class="personality needs"></div>\
                 <div class="personality values"></div>\
                 <div class="personality consumption-preferences"></div>');
+
+            $("#" + role + "-account h4").text(screenName);
+            $("#" + role + "-account p").text('IBM Personality Insights').attr("value", "IBM-Watson");
+            $("#" + role + "-account a").attr("href", "download?screenName=" + screenName);
+
             resolve();
         });
 
@@ -203,7 +210,7 @@ function IBMPreviewRender(IBMData, role) {
     }
 }
 
-function PamuksuzPreviewRender(PamuksuzData, role) {
+function PamuksuzPreviewRender(screenName, PamuksuzData, role) {
     $("#" + role + "-container").empty();
     if (PamuksuzData !== undefined) {
         $("#" + role + "-container").append(
@@ -231,6 +238,10 @@ function PamuksuzPreviewRender(PamuksuzData, role) {
                 </div>\
             </div>'
         );
+
+        $("#" + role + "-account h4").text(screenName);
+        $("#" + role + "-account p").text('Pamuksuz Brand Personality ML Model').attr("value", "Pamuksuz-Personality");
+        $("#" + role + "-account a").attr("href", "download?screenName=" + screenName);
     }
 }
 
@@ -439,15 +450,7 @@ function updateConsumptionPreference(preference, role){
  */
 $("#similarity-metrics").on('change', function(){
     var option = $(this).find('option').filter(":selected").val();
-    if ($(this).children('option[value="needs_sim_score"]').is(':hidden') &&
-        $(this).children('option[value="values_sim_score"]').is(':hidden') &&
-        $(this).children('option[value="consumption_sim_score"]').is(':hidden')
-    ){
-        var algorithm = 'Pamuksuz-Personality';
-    }
-    else{
-        var algorithm = 'IBM-Watson';
-    }
+    var algorithm = $("#selected-accounts").find("#user-account").find('.personality-description').attr('value');
 
     if (option === 'none'){
         resetSimScore();
@@ -455,8 +458,9 @@ $("#similarity-metrics").on('change', function(){
         $.ajax({
             url: "score",
             type: "GET",
-            data: { "userScreenName": $("#user-screen-name").find('a').text(),
-                "brandScreenName":$("#brand-screen-name").find('a').text(),
+            data: {
+                "userScreenName": $("#selected-accounts").find("#user-account").find('h4').text(),
+                "brandScreenName":$("#selected-accounts").find("#brand-account").find('h4').text(),
                 "algorithm": algorithm,
                 "option": option
             },
@@ -634,8 +638,8 @@ function previewHistory(e, screenName){
             screenName: screenName
         },
         success: function (data) {
-            IBMPreviewRender(data['IBM-Personality'], 'IBM-preview');
-            PamuksuzPreviewRender(data['Pamuksuz-Personality'], 'Pamuksuz-preview');
+            IBMPreviewRender(screenName, data['IBM-Personality'], 'IBM-preview');
+            PamuksuzPreviewRender(screenName, data['Pamuksuz-Personality'], 'Pamuksuz-preview');
             $("#history-preview").modal("show");
         },
         error: function (jqXHR, exception) {
