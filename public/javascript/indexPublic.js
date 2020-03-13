@@ -182,8 +182,24 @@ function IBMPreviewRender(screenName, IBMData, role) {
                 var warningMessage = "";
             }
 
-            $("#IBM-preview-container").append(
+            $("#" + role + "-container").append(
                 '<h1>IBM Personality</h1>\
+                 <div class="personality-header">\
+                    <i class="fas fa-exclamation-circle pull-right"\
+                        data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
+                    <div class="row">\
+                        <div class="col col-md-3 col-sm-3 col-xs-3">\
+                            <img src="' + IBMData.profile_img + '"/>\
+                        </div>\
+                        <div class="col col-md-9 col-sm-9 col-xs-9">\
+                            <h4 id="' + role +  '-screen-name">\
+                                <a target="_blank" href="https://twitter.com/' + IBMData.screen_name +'">' + IBMData.screen_name + '</a>\
+                            </h4>\
+                            <h4 class="word-count">Word Count: </h4>\
+                            <h4 class="number">' + IBMData.personality.word_count + '</h4>\
+                        </div>\
+                    </div>\
+                </div>\
                 <div class="personality persona"></div>\
                 <div class="personality needs"></div>\
                 <div class="personality values"></div>\
