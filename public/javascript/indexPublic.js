@@ -88,6 +88,7 @@ $("#batch").find("button").on('click', function(){
             },
             success: function (data) {
                 // place results but do not show
+                $("#batch").modal('hide');
                 $("#display").hide();
 
                 if ('sophistication' in data.user
@@ -104,20 +105,28 @@ $("#batch").find("button").on('click', function(){
                     $("#batch").modal('hide');
                     PamuksuzPreviewRender(userScreenName, data.user, 'user');
                     PamuksuzPreviewRender(brandScreenName, data.brand, 'brand');
+
+                    resetSimScore(algorithm);
+
+                    // update the flow
+                    flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
+
+                    // focus on the see result button
+                    $('html, body').animate({
+                        scrollTop: ($('#see-result').first().offset().top - 10)
+                    }, 1000);
+                }
+                else if ('jobId' in data.user
+                    && 'jobName' in data.user
+                    && 'jobId' in data.brand
+                    && 'jobName' in data.brand)
+                {
+                    $("#batch-confirmation").modal('show');
                 }
                 else{
-                    console.log(data);
-                    // show the job success modal
+                    $("#error").val("Unrecognized return results: "+ JSON.stringify(data));
+                    $("#warning").modal('show');
                 }
-                resetSimScore(algorithm);
-
-                // update the flow
-                flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
-
-                // focus on the see result button
-                $('html, body').animate({
-                    scrollTop: ($('#see-result').first().offset().top - 10)
-                }, 1000);
             },
             error: function (jqXHR, exception) {
                 $("#error").val(jqXHR.responseText);

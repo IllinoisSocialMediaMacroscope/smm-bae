@@ -356,4 +356,6 @@ button:active{
     font-style: italic;
 }
 
-
+.batch-confirmation-text{
+    font-size:20px;
+}
