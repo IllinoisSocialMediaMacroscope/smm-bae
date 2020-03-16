@@ -9,6 +9,10 @@ var deleteLocalFolders = require(path.join(appPath,'scripts', 'helper_func', 'de
 var archiver = require('archiver');
 
 router.get('/history', function(req, res, next){
+    res.render('history', {});
+});
+
+router.get('/history-list', function(req, res, next){
     var promiseArr = [];
 
     // loop through folders
@@ -35,7 +39,6 @@ router.get('/history', function(req, res, next){
         Promise.all(promiseArr).then( results => {
             res.status(200).send({'historyList': results});
         }).catch( err => {
-            console.log(err);
             res.status(500).send(err);
         });
 
