@@ -75,19 +75,24 @@ router.get('/preview', function(req, res, next){
             // push empty promise to resever the spot
             promises.push(new Promise((resolve,reject) => {resolve();}));
         }
-        var accountInfo = results[0];
-        var IBMPersonality = results[1];
-        var UtkuPersonality = results[2];
-
-        if (accountInfo){
-            IBMPersonality['screen_name'] = screenName;
-            IBMPersonality['profile_img'] = accountInfo['profile_image_url_https'];
-            IBMPersonality['statuses_count'] = accountInfo['statuses_count'];
-            UtkuPersonality['screen_name'] = screenName;
-            UtkuPersonality['profile_img'] = accountInfo['profile_img'];
-            UtkuPersonality['statuses_count'] = accountInfo['statuses_count'];
-        }
         Promise.all(promises).then(results => {
+            var accountInfo = results[0];
+            var IBMPersonality = results[1];
+            var UtkuPersonality = results[2];
+
+            if (accountInfo){
+                if (IBMPersonality){
+                    IBMPersonality['screen_name'] = screenName;
+                    IBMPersonality['profile_img'] = accountInfo['profile_image_url_https'];
+                    IBMPersonality['statuses_count'] = accountInfo['statuses_count'];
+                }
+
+                if (UtkuPersonality){
+                    UtkuPersonality['screen_name'] = screenName;
+                    UtkuPersonality['profile_img'] = accountInfo['profile_image_url_https'];
+                    UtkuPersonality['statuses_count'] = accountInfo['statuses_count'];
+                }
+            }
             res.status(200).send({
                 "IBM-Personality": IBMPersonality,
                 "Pamuksuz-Personality": UtkuPersonality
