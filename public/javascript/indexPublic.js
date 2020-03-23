@@ -114,10 +114,10 @@ $("#batch").find("button").on('click', function(){
                         scrollTop: ($('#see-result').first().offset().top - 10)
                     }, 1000);
                 }
-                else if ('jobId' in data.user
-                    && 'jobName' in data.user
-                    && 'jobId' in data.brand
-                    && 'jobName' in data.brand)
+                else if (('jobId' in data.user
+                    && 'jobName' in data.user) ||
+                    ('jobId' in data.brand
+                    && 'jobName' in data.brand))
                 {
                     $("#batch-confirmation").modal('show');
                 }
