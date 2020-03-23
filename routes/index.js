@@ -67,12 +67,13 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
     return new Promise((resolve, reject) =>
 
         // 1. check if username exist
-        lambdaInvoke('bae_check_screen_name', {
+        lambdaInvoke('bae_check_screen_name_dev', {
             consumer_key: config.twitter.consumerKey,
             consumer_secret: config.twitter.consumerSecret,
             access_token: credentials.twtAccessTokenKey,
             access_token_secret: credentials.twtAccessTokenSecret,
-            screen_name: screenName
+            screen_name: screenName,
+            sessionID: sessionID,
         })
         .then(user => {
 

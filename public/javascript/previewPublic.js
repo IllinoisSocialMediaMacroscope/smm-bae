@@ -1,35 +1,46 @@
+function twitterAccountHeader(data, role){
+    if ('personality' in data && 'warnings' in data.personality && data.personality.warnings.length > 0) {
+        var warningMessage = data.personality.warnings[0].message;
+    } else {
+        var warningMessage = "";
+    }
+
+    $("#" + role + "-container").append(
+        '<div class="personality-header">\
+            <i class="fas fa-exclamation-circle pull-right"\
+                data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
+            <div class="row">\
+                <div class="col col-md-3 col-sm-3 col-xs-3">\
+                    <img src="' + data.profile_img + '"/>\
+                </div>\
+                <div class="col col-md-9 col-sm-9 col-xs-9">\
+                    <h4 id="' + role +  '-screen-name">\
+                        <a target="_blank" href="https://twitter.com/' + data.screen_name +'">' + data.screen_name + '</a>\
+                    </h4>\
+                    <h4 class="word-count">Statuses Count: </h4>\
+                    <h4 class="number">' + data.statuses_count + '</h4>\
+                </div>\
+            </div>\
+        </div>'
+    );
+}
+
 /**
- * similary function but in history preview modal
- * @param data
+ * IBM preivew
+ * @param screenName
+ * @param IBMData
+ * @param role
+ * @constructor
  */
 function IBMPreviewRender(screenName, IBMData, role) {
     $("#" + role + "-container").empty();
     if (IBMData !== undefined) {
         var promise = new Promise(function (resolve, reject) {
-            if ('warnings' in IBMData.personality && IBMData.personality.warnings.length > 0) {
-                var warningMessage = IBMData.personality.warnings[0].message;
-            } else {
-                var warningMessage = "";
-            }
+            // add twitter account header
+            twitterAccountHeader(IBMData, role);
 
             $("#" + role + "-container").append(
-                '<div class="personality-header">\
-                    <i class="fas fa-exclamation-circle pull-right"\
-                        data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
-                    <div class="row">\
-                        <div class="col col-md-3 col-sm-3 col-xs-3">\
-                            <img src="' + IBMData.profile_img + '"/>\
-                        </div>\
-                        <div class="col col-md-9 col-sm-9 col-xs-9">\
-                            <h4 id="' + role +  '-screen-name">\
-                                <a target="_blank" href="https://twitter.com/' + IBMData.screen_name +'">' + IBMData.screen_name + '</a>\
-                            </h4>\
-                            <h4 class="word-count">Statuses Count: </h4>\
-                            <h4 class="number">' + IBMData.statuses_count + '</h4>\
-                        </div>\
-                    </div>\
-                </div>\
-                <div class="personality persona"></div>\
+                '<div class="personality persona"></div>\
                 <div class="personality needs"></div>\
                 <div class="personality values"></div>\
                 <div class="personality consumption-preferences"></div>');
@@ -55,9 +66,19 @@ function IBMPreviewRender(screenName, IBMData, role) {
     }
 }
 
+/**
+ * Pamuksuz preview
+ * @param screenName
+ * @param PamuksuzData
+ * @param role
+ * @constructor
+ */
 function PamuksuzPreviewRender(screenName, PamuksuzData, role) {
     $("#" + role + "-container").empty();
     if (PamuksuzData !== undefined) {
+        // add twitter account header
+        twitterAccountHeader(PamuksuzData, role);
+
         $("#" + role + "-container").append(
             '<div class="personality persona">\
                 <div class="personality">\

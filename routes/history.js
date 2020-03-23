@@ -49,30 +49,48 @@ router.get('/preview', function(req, res, next){
     var screenName = req.query.screenName;
     s3Helper.listFiles(sessionID + '/' + screenName).then(personalities => {
         var promises = [];
-        if (screenName + '_personality.json' in personalities) {
-            var IBMPersonality = screenName + '_personality.json';
-            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + IBMPersonality));
+        var accountInfoFname = screenName + '_account_info.json';
+        var IBMPersonalityFname = screenName + '_personality.json';
+        var UtkuPersonalityFname = screenName + '_utku_personality_average.json';
+        if (accountInfoFname in personalities){
+            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + accountInfoFname));
         }
         else{
             // push empty promise to resever the spot
             promises.push(new Promise((resolve,reject) => {resolve();}));
         }
 
-        if (screenName + '_utku_personality_average.json' in personalities) {
-            var UtkuPersonality = screenName + '_utku_personality_average.json';
-            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + UtkuPersonality));
+        if (IBMPersonalityFname in personalities) {
+            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + IBMPersonalityFname));
         }
         else{
             // push empty promise to resever the spot
             promises.push(new Promise((resolve,reject) => {resolve();}));
         }
 
-        //TODO if twitPersonality algorithm in it then do the same for twitPersonality algorithm
+        if (UtkuPersonalityFname in personalities) {
+            promises.push(s3Helper.downloadFile(sessionID + '/' + screenName + '/' + UtkuPersonalityFname));
+        }
+        else{
+            // push empty promise to resever the spot
+            promises.push(new Promise((resolve,reject) => {resolve();}));
+        }
+        var accountInfo = results[0];
+        var IBMPersonality = results[1];
+        var UtkuPersonality = results[2];
 
+        if (accountInfo){
+            IBMPersonality['screen_name'] = screenName;
+            IBMPersonality['profile_img'] = accountInfo['profile_image_url_https'];
+            IBMPersonality['statuses_count'] = accountInfo['statuses_count'];
+            UtkuPersonality['screen_name'] = screenName;
+            UtkuPersonality['profile_img'] = accountInfo['profile_img'];
+            UtkuPersonality['statuses_count'] = accountInfo['statuses_count'];
+        }
         Promise.all(promises).then(results => {
             res.status(200).send({
-                "IBM-Personality": results[0],
-                "Pamuksuz-Personality": results[1]
+                "IBM-Personality": IBMPersonality,
+                "Pamuksuz-Personality": UtkuPersonality
             });
         }).catch(err => {
             res.status(500).send(err);
