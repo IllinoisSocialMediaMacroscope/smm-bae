@@ -36,24 +36,7 @@ html
 
             div(class="login")
                 div(class="login-background")
-                    h1 Please Cite
-                    p Please cite these works below if you are going to use our tool for published research.
-                    div(id="citation-content")
-                        p Yun, J. T., Pamuksuz, U., & Duff, B. R. L. (1819). Are we who we follow? Computationally analyzing
-                            | human personality and brand following on Twitter. International Journal of Advertising, 0(0), 1–18.
-                            | <a href="https://doi.org/10.1080/02650487.1819.1575106" target="_blank">
-                            | https://doi.org/10.1080/02650487.1819.1575106</a> (Access to a free pre-print version of the article
-                            | can be found <a href="https://www.researchgate.net/publication/330542500_Are_we_who_we_follow_Computationally_analyzing_human_personality_and_brand_following_on_Twitter"
-                            | target="_blank">HERE</a>)
-                        p Yun, J. T., Vance, N., Wang, C., Troy, J., Marini, L., Booth, R., Nelson, T., Hetrick, A., Hodgekins, H. (1818).
-                            | The Social Media Macroscope. In Gateways 1818.
-                            | <a href="https://doi.org/10.6084/m9.figshare.6855269.v2" target="_blank">https://doi.org/10.6084/m9.figshare.6855269.v2</a>
-                        p Arnoux, Pierre-Hadrien, Anbang Xu, Neil Boyette, Jalal Mahmud, Rama Akkiraju, and Vibha Sinha.
-                            | <a href="https://aaai.org/ocs/index.php/ICWSM/ICWSM17/paper/view/15681" target="_blank">25 Tweets to
-                            | Know you: A New Model to Predict Personality with Social Media.</a> AAAI Publications, Eleventh
-                            | International AAAI Conference on Web and Social Media (1817): pp. 472-475.
-                        p <a href="https://console.bluemix.net/docs/services/personality-insights/references.html#references"
-                            | target="_blank">More Research References ...</a>
+                    include citation-content
             script.
                 $(document).ready(function () {
                     $('html, body').animate({scrollTop: ($('.login').first().offset().top - 10)}, 3000);

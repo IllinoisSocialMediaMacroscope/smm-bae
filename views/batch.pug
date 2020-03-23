@@ -1,0 +1,27 @@
+div(id="batch" class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-header")
+                button(class="close", data-dismiss="modal") &times;
+                h3(class="modal-title", id="modal-title", style="text-align:left;") Submit Batch Job
+            div(class="modal-body form")
+                div(class="form-group")
+                    p The algorithm you selected cannot be performed with real time response.
+                        |  We will have to place this on a job queue.
+                        |  Once your computation job has succeeded, we will email you with instructions to review your results.
+                div(class="form-group")
+                    label(class="control-label col-md-3 col-md-3 col-xs-12") Email Address
+                    div(class="col-md-9 col-md-9 col-xs-12")
+                        input(id="email", class="form-control", type="email", name="email")
+            div(class="modal-footer")
+                button(class="btn btn-primary pull-right") Submit
+
+
+div(id="batch-confirmation", class="modal fade", role="dialog", data-backdrop="static", data-keyboard="false")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-body confirmation")
+                img(src="img/success.gif", width="80px")
+                p(class="batch-confirmation-text") Your request has been submitted. You will receive an email and further instruction from us once it's done!
+            div(class="modal-footer")
+                button(class="btn btn-primary pull-right", data-dismiss="modal") Close
