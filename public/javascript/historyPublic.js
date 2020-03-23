@@ -64,7 +64,7 @@ function renderHistoryList(historyList){
         var screenName = Object.keys(val)[0];
 
         $("#history-links").append('<div class="history-link" value="' + screenName + '">\
-            <a class="preview" onclick="previewHistory(event, `'+ screenName +'`)">'+screenName +'</a>\
+            <a href="" class="preview" onclick="previewHistory(event, `'+ screenName +'`)">'+screenName +'</a>\
             <button onclick="deleteRemote(`'+ screenName + '`);">\
                 <i class="fas fa-trash-alt"/>\
             </button>\
