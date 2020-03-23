@@ -2,8 +2,8 @@
  * scroll down and focus on login
  */
 $(document).ready(function(){
-    $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
     checkLoginStatus();
+    $('html, body').animate({ scrollTop: ($('.login').first().offset().top - 10)}, 3000);
 });
 
 /******************************* START ANALYSIS ********************************/

@@ -1,6 +1,7 @@
 /******************************* HISTORY PANEL ********************************/
 $(document).ready(function(){
     updateHistory();
+    $('html, body').animate({ scrollTop: ($('#history').first().offset().top - 10)}, 3000);
 });
 
 

@@ -1,14 +1,6 @@
 function twitterAccountHeader(data, role){
-    if ('personality' in data && 'warnings' in data.personality && data.personality.warnings.length > 0) {
-        var warningMessage = data.personality.warnings[0].message;
-    } else {
-        var warningMessage = "";
-    }
-
     $("#" + role + "-container").append(
         '<div class="personality-header">\
-            <i class="fas fa-exclamation-circle pull-right"\
-                data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
             <div class="row">\
                 <div class="col col-md-3 col-sm-3 col-xs-3">\
                     <img src="' + data.profile_img + '"/>\
@@ -23,6 +15,14 @@ function twitterAccountHeader(data, role){
             </div>\
         </div>'
     );
+
+    if ('personality' in data && 'warnings' in data.personality && data.personality.warnings.length > 0) {
+        var warningMessage = data.personality.warnings[0].message;
+        $("#" + role + "-container").find('.personality-header').prepend(
+            '<i class="fas fa-exclamation-circle pull-right" data-toggle="tooltip" \
+            data-placement="left" title="' + warningMessage + '"></i>'
+        );
+    }
 }
 
 /**
