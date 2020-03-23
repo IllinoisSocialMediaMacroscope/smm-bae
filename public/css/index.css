@@ -363,3 +363,8 @@ button:active{
 .tab-content{
     padding:20px 0;
 }
+
+#IBM-preview-tab,
+#Pamuksuz-preview-tab{
+    display:none;
+ }

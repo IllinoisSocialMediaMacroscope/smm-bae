@@ -118,6 +118,7 @@ function renderHistoryList(historyList){
  */
 function previewHistory(e, screenName){
     e.preventDefault();
+
     $.ajax({
         url: "preview",
         type: "GET",
@@ -125,8 +126,33 @@ function previewHistory(e, screenName){
             screenName: screenName
         },
         success: function (data) {
-            IBMPreviewRender(screenName, data['IBM-Personality'], 'IBM-preview');
-            PamuksuzPreviewRender(screenName, data['Pamuksuz-Personality'], 'Pamuksuz-preview');
+            if (data['IBM-Personality']){
+                IBMPreviewRender(screenName, data['IBM-Personality'], 'IBM-preview');
+                $("#IBM-preview-tab").show();
+            }
+            else{
+                $("#IBM-preview-tab").removeClass("active");
+                $("#IBM-preview-container").removeClass("in").removeClass("active");
+                $("#Pamuksuz-preview-tab").addClass("active");
+                $("#Pamuksuz-preview-container").addClass("in").addClass("active");
+
+                $("#IBM-preview-tab").hide();
+            }
+
+            if (data['Pamuksuz-Personality']){
+                PamuksuzPreviewRender(screenName, data['Pamuksuz-Personality'], 'Pamuksuz-preview');
+                $("#Pamuksuz-preview-tab").show();
+            }
+            else{
+                $("#Pamuksuz-preview-tab").removeClass("active");
+                $("#Pamuksuz-preview-container").removeClass("in").removeClass("active");
+
+                $("#IBM-preview-tab").addClass("active");
+                $("#IBM-preview-container").addClass("in").addClass("active");
+
+                $("#Pamuksuz-preview-tab").hide();
+            }
+
             $("#history-preview").modal("show");
         },
         error: function (jqXHR, exception) {
