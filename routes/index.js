@@ -106,6 +106,9 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
                                 s3Helper.downloadFile(sessionID + '/' + screenName + '/' + personalityFname)
                                 .then(personality => {
+                                    personality['screen_name'] = screenName;
+                                    personality['profile_img'] = user['profile_img'];
+                                    personality['statuses_count'] = user['statuses_count'];
                                     resolve(personality);
                                 }).catch(err => {
                                     reject(err);
@@ -119,8 +122,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                         sessionID: sessionID,
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
-                                        profile_img: user['profile_img']
                                     }).then(personality => {
+                                        personality['screen_name'] = screenName;
+                                        personality['profile_img'] = user['profile_img'];
+                                        personality['statuses_count'] = user['statuses_count'];
                                         resolve(personality);
                                     }).catch(err => {
                                         reject(err);
@@ -129,25 +134,6 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                 else if (algorithm === 'TwitPersonality') {
                                     reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                         "and we have to temporarily deprecate it.");
-                                    // var options = {
-                                    //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                    //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                    //     pythonOptions: ['-W ignore'],
-                                    //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                    //     args:['--sessionID', sessionID,
-                                    //         '--screenName', screenName,
-                                    //         '--profileImg', user['profile_img']]
-                                    // }
-                                    // PythonShell.run('predict_personality.py', options, function(err, results){
-                                    //     if (err) reject(err);
-                                    //     else{
-                                    //         getMultiRemote(results[0]).then(personality =>{
-                                    //             resolve(JSON.parse(personality));
-                                    //         }).catch(err =>{
-                                    //             reject(err);
-                                    //         });
-                                    //     }
-                                    // });
                                 }
                                 else if (algorithm === 'Pamuksuz-Personality') {
                                     if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
@@ -194,8 +180,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     sessionID: sessionID,
                                     apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,
-                                    profile_img: user['profile_img']
                                 }).then(personality => {
+                                    personality['screen_name'] = screenName;
+                                    personality['profile_img'] = user['profile_img'];
+                                    personality['statuses_count'] = user['statuses_count'];
                                     resolve(personality);
                                 }).catch(err => {
                                     reject(err);
@@ -204,25 +192,6 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                             else if (algorithm === 'TwitPersonality') {
                                 reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                     "and we have to temporarily deprecate it.");
-                                // var options = {
-                                //     pythonPath:'/apps/share64/debian7/anaconda/anaconda3-5.1/bin/python',
-                                //     // pythonPath:'/Library/Frameworks/Python.framework/Versions/3.6/bin/python3',
-                                //     pythonOptions: ['-W ignore'],
-                                //     scriptPath: path.join(appPath,'scripts', 'twitPersonality'),
-                                //     args:['--sessionID', sessionID,
-                                //         '--screenName', screenName,
-                                //         '--profileImg', user['profile_img']]
-                                // }
-                                // PythonShell.run('predict_personality.py', options, function(err, results){
-                                //     if (err) reject(err);
-                                //     else{
-                                //         getMultiRemote(results[0]).then(personality =>{
-                                //             resolve(JSON.parse(personality));
-                                //         }).catch(err =>{
-                                //             reject(err);
-                                //         });
-                                //     }
-                                // });
                             }
                             else if (algorithm === 'Pamuksuz-Personality') {
                                 if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");

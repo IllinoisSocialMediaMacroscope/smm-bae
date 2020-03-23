@@ -24,8 +24,8 @@ function IBMPreviewRender(screenName, IBMData, role) {
                             <h4 id="' + role +  '-screen-name">\
                                 <a target="_blank" href="https://twitter.com/' + IBMData.screen_name +'">' + IBMData.screen_name + '</a>\
                             </h4>\
-                            <h4 class="word-count">Word Count: </h4>\
-                            <h4 class="number">' + IBMData.personality.word_count + '</h4>\
+                            <h4 class="word-count">Statuses Count: </h4>\
+                            <h4 class="number">' + IBMData.statuses_count + '</h4>\
                         </div>\
                     </div>\
                 </div>\
