@@ -85,12 +85,14 @@ router.get('/preview', function(req, res, next){
                     IBMPersonality['screen_name'] = screenName;
                     IBMPersonality['profile_img'] = accountInfo['profile_image_url_https'];
                     IBMPersonality['statuses_count'] = accountInfo['statuses_count'];
+                    IBMPersonality['lastModified'] = personalities[screenName + '_tweets.txt']['lastModified'];
                 }
 
                 if (UtkuPersonality){
                     UtkuPersonality['screen_name'] = screenName;
                     UtkuPersonality['profile_img'] = accountInfo['profile_image_url_https'];
                     UtkuPersonality['statuses_count'] = accountInfo['statuses_count'];
+                    UtkuPersonality['lastModified'] = personalities[screenName + '_tweets.txt']['lastModified'];
                 }
             }
             res.status(200).send({

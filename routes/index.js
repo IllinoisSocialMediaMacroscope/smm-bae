@@ -110,6 +110,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     personality['screen_name'] = screenName;
                                     personality['profile_img'] = user['profile_img'];
                                     personality['statuses_count'] = user['statuses_count'];
+                                    personality['lastModified'] = timelines[screenName + '_tweets.txt']['lastModified'];
                                     resolve(personality);
                                 }).catch(err => {
                                     reject(err);
@@ -127,6 +128,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                         personality['screen_name'] = screenName;
                                         personality['profile_img'] = user['profile_img'];
                                         personality['statuses_count'] = user['statuses_count'];
+                                        personality['lastModified'] = timelines[screenName + '_tweets.txt']['lastModified'];
                                         resolve(personality);
                                     }).catch(err => {
                                         reject(err);
@@ -185,6 +187,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     personality['screen_name'] = screenName;
                                     personality['profile_img'] = user['profile_img'];
                                     personality['statuses_count'] = user['statuses_count'];
+                                    personality['lastModified'] = new Date();
                                     resolve(personality);
                                 }).catch(err => {
                                     reject(err);

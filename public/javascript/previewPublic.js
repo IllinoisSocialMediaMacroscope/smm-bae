@@ -6,11 +6,19 @@ function twitterAccountHeader(data, role){
                     <img src="' + data.profile_img + '"/>\
                 </div>\
                 <div class="col col-md-9 col-sm-9 col-xs-9">\
-                    <h4 id="' + role +  '-screen-name">\
-                        <a target="_blank" href="https://twitter.com/' + data.screen_name +'">' + data.screen_name + '</a>\
-                    </h4>\
-                    <h4 class="word-count">Statuses Count: </h4>\
-                    <h4 class="number">' + data.statuses_count + '</h4>\
+                    <div class="twitter-account-row">\
+                        <h4 id="' + role +  '-screen-name">\
+                            <a target="_blank" href="https://twitter.com/' + data.screen_name +'">' + data.screen_name + '</a>\
+                        </h4>\
+                    </div>\
+                    <div class="twitter-account-row">\
+                        <h4 class="word-count">Statuses Count: </h4>\
+                        <h4 class="number">' + data.statuses_count + '</h4>\
+                    </div>\
+                    <div class="twitter-account-row">\
+                        <h4 class="word-count">Collected At: </h4>\
+                        <h4 class="number">' + data.lastModified.slice(0,10) + '</h4>\
+                    </div>\
                 </div>\
             </div>\
         </div>'
