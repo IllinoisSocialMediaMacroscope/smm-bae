@@ -13,8 +13,7 @@ function IBMPreviewRender(screenName, IBMData, role) {
             }
 
             $("#" + role + "-container").append(
-                '<h1>IBM Personality</h1>\
-                 <div class="personality-header">\
+                '<div class="personality-header">\
                     <i class="fas fa-exclamation-circle pull-right"\
                         data-toggle="tooltip" data-placement="left" title="' + warningMessage + '"></i>\
                     <div class="row">\
@@ -60,8 +59,7 @@ function PamuksuzPreviewRender(screenName, PamuksuzData, role) {
     $("#" + role + "-container").empty();
     if (PamuksuzData !== undefined) {
         $("#" + role + "-container").append(
-            '<h1>Pamuksuz Personality</h1>\
-            <div class="personality persona">\
+            '<div class="personality persona">\
                 <div class="personality">\
                     <h4 class="word-count">Sophistication</h4>\
                     <h4 class="number">' + PamuksuzData['sophistication'].toFixed(4) + '</h4>\

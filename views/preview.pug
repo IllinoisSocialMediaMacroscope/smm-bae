@@ -2,7 +2,13 @@ div(id="history-preview", class="modal fade", role="dialog", data-backdrop="stat
     div(class="modal-dialog modal-lg")
         div(class="modal-content")
             div(class="modal-body")
-                div(id="IBM-preview-container")
-                div(id="Pamuksuz-preview-container")
+                ul(class="nav nav-tabs")
+                    li(class="active")
+                        a(data-toggle="tab", href="#IBM-preview-container") IBM Personality Insight
+                    li
+                        a(data-toggle="tab", href="#Pamuksuz-preview-container") Pamuksuz Brand Personality
+                div(class="tab-content")
+                    div(id="IBM-preview-container", class="tab-pane fade in active")
+                    div(id="Pamuksuz-preview-container", class="tab-pane fade")
             div(class="modal-footer")
                 button(class="btn btn-primary pull-right", data-dismiss="modal") Close

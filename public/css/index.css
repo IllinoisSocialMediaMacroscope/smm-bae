@@ -359,3 +359,7 @@ button:active{
 .batch-confirmation-text{
     font-size:20px;
 }
+
+.tab-content{
+    padding:20px 0;
+}
