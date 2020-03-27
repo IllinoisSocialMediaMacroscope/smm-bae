@@ -1,4 +1,6 @@
 function twitterAccountHeader(data, role){
+    var tweetCount = data.statuses_count >=3200 ? 3200: data.statuses_count;
+
     $("#" + role + "-container").append(
         '<div class="personality-header">\
             <div class="row">\
@@ -12,8 +14,8 @@ function twitterAccountHeader(data, role){
                         </h4>\
                     </div>\
                     <div class="twitter-account-row">\
-                        <h4 class="word-count">Statuses Count: </h4>\
-                        <h4 class="number">' + data.statuses_count + '</h4>\
+                        <h4 class="word-count">Collected Tweet Count </h4>\
+                        <h4 class="number">' + tweetCount + '</h4>\
                     </div>\
                     <div class="twitter-account-row">\
                         <h4 class="word-count">Collected At: </h4>\

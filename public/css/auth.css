@@ -20,6 +20,7 @@
     border: 2px solid #ffffff;
     border-radius: 10px;
     width: 25%;
+    min-height: 100px;
     cursor:auto;
     pointer-events: none;
     color:#ffffff;
@@ -31,6 +32,7 @@
     background: #ffffff;
     color:#063535;
     width: 25%;
+    min-height: 100px;
     cursor:auto;
     pointer-events: none;
 }
@@ -73,7 +75,7 @@
     color: #063535;
     text-decoration: underline;
     float: right;
-    font-size: 15px;
+    font-size: 20px;
 }
 
 
