@@ -151,7 +151,7 @@ button:active{
 #user-container,
 #brand-container,
 #history-links,
-#bulk-comparison{
+#history-display{
     background-color: #def2f1;
     min-height: 600px;
     padding: 50px;

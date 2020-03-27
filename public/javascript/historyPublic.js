@@ -153,7 +153,7 @@ function previewHistory(e, screenName){
                 $("#Pamuksuz-preview-tab").hide();
             }
 
-            $("#history-preview").modal("show");
+            $("#history-preview").show();
         },
         error: function (jqXHR, exception) {
             $("#error").val(jqXHR.responseText);
