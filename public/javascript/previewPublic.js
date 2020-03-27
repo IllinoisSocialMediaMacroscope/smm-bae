@@ -14,7 +14,7 @@ function twitterAccountHeader(data, role){
                         </h4>\
                     </div>\
                     <div class="twitter-account-row">\
-                        <h4 class="word-count">Collected Tweet Count </h4>\
+                        <h4 class="word-count">Collected Tweet Count: </h4>\
                         <h4 class="number">' + tweetCount + '</h4>\
                     </div>\
                     <div class="twitter-account-row">\
