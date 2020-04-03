@@ -67,11 +67,11 @@
 
 #twitter-auth,
 #bluemix-auth,
-#bluemix-skip{
+.auth-flow-next{
     margin-top:10px;
 }
 
-#bluemix-skip a{
+.auth-flow-next a{
     color: #063535;
     text-decoration: underline;
     float: right;

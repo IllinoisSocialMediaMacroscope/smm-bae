@@ -40,12 +40,10 @@ $("#analyze-btn").on('click', function(){
                     $(".loading").hide();
                     $("#analyze-btn").show();
 
-                    // update the flow
-                    flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
-
-                    // focus on the see result button
+                    //focus on display containers
+                    $("#display").show();
                     $('html, body').animate({
-                        scrollTop: ($('#see-result').first().offset().top - 10)
+                        scrollTop: ($('#display').first().offset().top - 10)
                     }, 1000);
                 },
                 error: function (jqXHR, exception) {
@@ -106,12 +104,10 @@ $("#batch").find("button").on('click', function(){
 
                     resetSimScore(algorithm);
 
-                    // update the flow
-                    flowEffect({"authorization": "done", "ibmkey": "done", "search": "done", "citation": "on"});
-
-                    // focus on the see result button
+                    //focus on display containers
+                    $("#display").show();
                     $('html, body').animate({
-                        scrollTop: ($('#see-result').first().offset().top - 10)
+                        scrollTop: ($('#display').first().offset().top - 10)
                     }, 1000);
                 }
                 else if (('jobId' in data.user
@@ -132,17 +128,6 @@ $("#batch").find("button").on('click', function(){
             }
         })
     }
-});
-
-$("#see-result").on('click', function(){
-    // update the flow
-    flowEffect({"authorization":"done", "ibmkey":"done", "search":"on", "citation":"off"});
-
-    //focus on display containers
-    $("#display").show();
-    $('html, body').animate({
-        scrollTop: ($('#display').first().offset().top - 10)
-    }, 1000);
 });
 
 $("#run-another").on('click', function(){

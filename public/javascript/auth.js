@@ -74,7 +74,8 @@ function checkLoginStatus() {
             var panels = {"authorization": "off", "ibmkey": "off", "search": "off", "citation": "off"};
 
             if (!data.twitter) {
-                panels["authorization"] = "on";
+                panels["citation"] = "on";
+                panels["authorization"] = "off";
                 flowEffect(panels);
             }
             else if (!data.bluemix) {
@@ -95,6 +96,15 @@ function checkLoginStatus() {
         }
     });
 }
+
+/**
+ * citation next
+ * @param panels
+ */
+$("#citation-skip").find('a').on('click', function(e){
+    e.preventDefault();
+    flowEffect({"authorization": "on", "ibmkey": "off", "search": "off", "citation": "done"});
+});
 
 /**
  * IBM bluemix skip providing credentials

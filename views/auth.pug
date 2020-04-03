@@ -1,6 +1,10 @@
 div(class="login")
     div(class="btn-group flow")
-        div(class="btn flowgrid on", id="authorization-flow")
+        div(class="btn flowgrid on", id="citation-flow")
+            p step 0
+                i(class="fas fa-check-circle")
+            h4 Cite
+        div(class="btn flowgrid off", id="authorization-flow")
             p step 1
                 i(class="fas fa-check-circle")
             h4 Authorization
@@ -13,10 +17,11 @@ div(class="login")
             p step 3
                 i(class="fas fa-check-circle")
             h4 Select Algorithms <br>and Accounts
-        div(class="btn flowgrid off", id="citation-flow")
-            p step 4
-                i(class="fas fa-check-circle")
-            h4 Cite
+
+    div(class="login-background", id="citation")
+        include citation-content
+        div(class="auth-flow-next", id="citation-skip")
+            a(href="") Next
 
     div(class="login-background", id="authorization")
         h1 Authorization
@@ -43,8 +48,8 @@ div(class="login")
             button(class="btn btn-primary pull-right", id="bluemix-pin-submit")
                 img(src="img/bluemix-sm-logo.png" width=18)
                 | Submit
-        div(id="bluemix-skip")
-            a(href="") skip
+        div(class="auth-flow-next", id="bluemix-skip")
+            a(href="") Skip
 
     div(class="login-background", id="search")
         h1 Algorithms and Accounts
@@ -73,11 +78,6 @@ div(class="login")
             button(id="analyze-btn", class="btn btn-primary btn-block") Start Analysis
         div(class="loading")
             img(src="img/bae_loading_md.gif")
-
-    div(class="login-background", id="citation")
-        include citation-content
-        div(class=row)
-            button(id="see-result", class="btn btn-primary btn-block") See Result
 
 <!-- twitter input popup -->
 div(id="twitter-callback", class="modal fade", role="dialog", data-backdrop="static", data-keyboard="false")
