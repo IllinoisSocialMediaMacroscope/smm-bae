@@ -17,6 +17,12 @@ button:active{
     overflow:auto;
 }
 
+.modal-body img{
+    display:block;
+    margin:auto auto;
+    width:30%;
+}
+
 .modal-body .btn{
     margin:10px;
 }
@@ -371,4 +377,8 @@ button:active{
 
 .twitter-account-row{
     margin:10px 0;
+}
+
+.batch-notification{
+    display: none;
 }

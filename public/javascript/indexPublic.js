@@ -72,6 +72,11 @@ $("#batch").find("button").on('click', function(){
         var algorithm = $("#algorithm option:selected").val();
         var email = $("#email").val();
 
+        // disable submit button when still loading
+        $("#batch").find(".form-group").hide();
+        $("#batch").find(".batch-notification").show();
+        $("#batch").find("button").attr('disabled', true);
+
         $.ajax({
             url: "update",
             type: "post",
@@ -83,6 +88,10 @@ $("#batch").find("button").on('click', function(){
                 "sessionURL": sessionURL
             },
             success: function (data) {
+                $("#batch").find(".form-group").show();
+                $("#batch").find(".batch-notification").hide();
+                $("#batch").find("button").removeAttr('disabled');
+
                 // place results but do not show
                 $("#batch").modal('hide');
                 $("#display").hide();
@@ -123,6 +132,10 @@ $("#batch").find("button").on('click', function(){
                 }
             },
             error: function (jqXHR, exception) {
+                $("#batch").find(".form-group").show();
+                $("#batch").find(".batch-notification").hide();
+                $("#batch").find("button").removeAttr('disabled');
+
                 $("#error").val(jqXHR.responseText);
                 $("#warning").modal('show');
             }
