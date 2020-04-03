@@ -75,17 +75,18 @@ function checkLoginStatus() {
 
             if (!data.twitter) {
                 panels["citation"] = "on";
-                panels["authorization"] = "off";
                 flowEffect(panels);
             }
             else if (!data.bluemix) {
                 panels["ibmkey"] = "on";
+                panels["citation"] = "done";
                 panels["authorization"] = "done";
                 flowEffect(panels)
             }
             else {
                 panels["ibmkey"] = "done";
                 panels["authorization"] = "done";
+                panels["citation"] = "done";
                 panels["search"] = "on";
                 flowEffect(panels)
             }
@@ -112,7 +113,7 @@ $("#citation-skip").find('a').on('click', function(e){
  */
 $("#bluemix-skip").find('a').on('click', function(e){
     e.preventDefault();
-    flowEffect({"authorization": "done", "ibmkey": "off", "search": "on", "citation": "off"});
+    flowEffect({"authorization": "done", "ibmkey": "off", "search": "on", "citation": "done"});
 });
 
 /**
