@@ -115,7 +115,7 @@ function PamuksuzPreviewRender(screenName, PamuksuzData, role) {
         );
 
         $("#" + role + "-account h4").text(screenName);
-        $("#" + role + "-account p").text('Pamuksuz Brand Personality ML Model').attr("value", "Pamuksuz-Personality");
+        $("#" + role + "-account p").text('Pamuksuz, Yun, Humphreys Brand Personality Model').attr("value", "Pamuksuz-Personality");
         $("#" + role + "-account a").attr("href", "download?screenName=" + screenName);
     }
 }
