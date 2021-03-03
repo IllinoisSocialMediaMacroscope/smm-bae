@@ -30,7 +30,7 @@
     "nodemon": "^1.17.5",
     "oauth": "^0.9.15",
     "progressbar.js": "^1.0.1",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "python-shell": "^1.0.4",
     "request": "^2.88.0",
     "rimraf": "^2.6.2"
