@@ -186,10 +186,13 @@ $("#botometer-button").on("click", function () {
 });
 
 function renderBotScore(scores) {
-    if (scores !== undefined && "display_scores" in scores && "english" in scores["display_scores"]) {
+    if (scores !== undefined
+        && "display_scores" in scores
+        && "english" in scores["display_scores"]
+        && "overall" in scores["display_scores"]["english"]) {
         var data = google.visualization.arrayToDataTable([
             ["Label", "Value"],
-            ["Bot Score", scores["display_scores"]["english"]]
+            ["Bot Score", scores["display_scores"]["english"]["overall"]]
         ]);
         var options = {
             min: 0,
@@ -212,7 +215,7 @@ function downloadBotScore(scores) {
     var a = $("#botometer-display").find("a");
     var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(scores));
     a.attr("href", "data:" + data);
-    a.attr("download", scores["user"]["screen_name"] + "_botometer_scores.json");
+    a.attr("download", scores["user"]["user_data"]["screen_name"] + "_botometer_scores.json");
 }
 
 /**

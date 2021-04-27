@@ -7,7 +7,6 @@ var lambdaInvoke = require(path.join(appPath,'scripts','helper_func','lambdaHelp
 
 router.get('/botometer', function(req, res, next){
     lambdaInvoke('bae_botometer', {
-        mashape_key: config.mashape.apiKey,
         consumer_key: config.twitter.consumerKey,
         consumer_secret: config.twitter.consumerSecret,
         access_token: req.session.twtAccessTokenKey,
