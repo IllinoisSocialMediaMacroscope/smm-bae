@@ -115,9 +115,9 @@ div(id="botometer-modal" class="modal fade" role="dialog" data-backdrop="static"
                         a(href="https://botometer.iuni.iu.edu/#!/", target="_blank")  Botometer
                         |  checks the activity of a Twitter account and gives it a score based on
                         |  <b>how likely the account is to be a bot</b>.
-                        |  BAE is using the free version of the API which is subject to rate limit of 1800
-                        |  requests per day shared among all the BAE users.
-                        |  If you receive an error message, the quota for the current date might have exceeded.
+                        |  BAE is using the free version of the API which is subject to quota limit of 500
+                        |  requests per day shared among all the BAE users. The rate limit is 1 request per second.
+                        |  If you receive an error message, the quota for the current date or second might have exceeded.
                     p(style="display:inline-block") Would you like to check&nbsp;
                     p(id="botometer-screen-name")
                     p(style="display:inline-block") &nbsp;is a bot?
