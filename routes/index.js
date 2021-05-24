@@ -73,7 +73,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
-                s3.list_files(sessionID +'/' + screenName).then( timelines => {
+                s3.listFiles(sessionID +'/' + screenName).then( timelines => {
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
@@ -81,7 +81,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
                         console.log({message: 'Timeline has already been collected and it is within on month of date range!'});
 
-                        s3.list_files(sessionID +'/' + screenName).then( personalities => {
+                        s3.listFiles(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
                             if (algorithm === 'IBM-Watson') {
                                 var personalityFname = screenName + '_personality.json';

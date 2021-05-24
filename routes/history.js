@@ -10,14 +10,14 @@ router.get('/history-list', function(req, res, next){
     var promiseArr = [];
 
     // loop through folders
-    s3.list_folders(sessionID + '/').then( folders => {
+    s3.listFolders(sessionID + '/').then( folders => {
         var folders = Object.keys(folders);
 
         folders.forEach( folder =>{
             promiseArr.push(new Promise((resolve, reject) => {
 
                 // loop through each folder to find its files
-                s3.list_files(sessionID + '/' + folder + '/').then( files =>{
+                s3.listFiles(sessionID + '/' + folder + '/').then( files =>{
                     var historyListItem = {};
                     var files = Object.keys(files);
                     historyListItem[folder] = files;
@@ -41,7 +41,7 @@ router.get('/history-list', function(req, res, next){
 
 router.get('/preview', function(req, res, next){
     var screenName = req.query.screenName;
-    s3.list_files(sessionID + '/' + screenName).then(personalities => {
+    s3.listFiles(sessionID + '/' + screenName).then(personalities => {
         var promises = [];
         var accountInfoFname = screenName + '_account_info.json';
         var IBMPersonalityFname = screenName + '_personality.json';

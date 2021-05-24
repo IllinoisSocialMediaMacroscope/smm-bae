@@ -65,7 +65,7 @@ class S3Helper {
 
     };
 
-    list_folders(prefix){
+    listFolders(prefix){
         return new Promise((resolve,reject) =>{
             this.s3.listObjectsV2({
 				Bucket:BUCKET_NAME,
@@ -279,10 +279,9 @@ class S3Helper {
      * @returns {Promise<any>}
      */
     parseFile(remoteKey){
-        var s3 = this.s3;
         return new Promise((resolve, reject) => {
 
-            s3.getObject({ Bucket:BUCKET_NAME, Key:remoteKey},function(err,data){
+            this.s3.getObject({ Bucket:BUCKET_NAME, Key:remoteKey},function(err,data){
                 if (err){
                     console.log(err,err.stack);
                     reject(err);
