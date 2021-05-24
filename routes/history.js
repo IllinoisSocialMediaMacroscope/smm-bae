@@ -115,23 +115,24 @@ router.post('/bulk-comparison', function(req,res,next){
 });
 
 router.get('/download', function(req,res, next){
-    var prefix = sessionID + '/' + req.query.screenName +'/';
-    var filename = 'BAE-' + req.query.screenName + '.zip';
-    s3.zipDownloads(prefix, filename, req.query.screenName)
-    .then((downloadable) => {
-        res.on('finish', function(){
-            s3.deleteLocalFile(downloadable)
-            .then()
-            .catch(err =>{
-                console.log(err);
-                res.status(500).send(err)
-            })
+    var downloadPath = "downloads";
+    s3.downloadFolder(sessionID + '/' + req.query.screenName +'/', downloadPath)
+    .then( fnames =>{
+        var filename = path.join(downloadPath, 'BAE-' + req.query.screenName + '.zip');
+        s3.zipDownloads(filename,path.join(downloadPath, req.query.screenName), req.query.screenName).then(() => {
+            res.on('finish', function(){
+                deleteLocalFolders(downloadPath).then(data => {
+                    console.log(data);
+                }).catch(err =>{
+                    console.log(err);
+                })
+            });
+            res.download(filename);}).catch(err => {res.status(500).send(err);
+
         });
-        res.download(downloadable);
+    }).catch(err =>{
+        res.status(404).send(err);
     })
-    .catch(err => {
-        res.status(500).send(err);
-    });
 });
 
 router.get('/deleteRemote', function(req,res,next){
