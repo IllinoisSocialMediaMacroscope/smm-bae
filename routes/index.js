@@ -1,9 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var path = require('path');
-var appPath = path.dirname(__dirname);
-var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
-var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
 
 
 router.get('/', function (req, res, next) {
@@ -37,7 +33,7 @@ router.post('/update', function (req, res, next) {
 });
 
 router.get('/score', function(req, res, next){
-    connectToRabbitMQ('bae_get_sim_score', {
+    lambdaHandler.invoke('bae_get_sim_score', {
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
@@ -65,7 +61,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
     return new Promise((resolve, reject) =>
 
         // 1. check if username exist
-        connectToRabbitMQ('bae_check_screen_name', {
+        lambdaHandler.invoke('bae_check_screen_name', {
             consumer_key: TWITTER_CONSUMER_KEY,
             consumer_secret: TWITTER_CONSUMER_SECRET,
             access_token: credentials.twtAccessTokenKey,
@@ -77,7 +73,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
-                localStorageHelper.listFiles(sessionID +'/' + screenName).then( timelines => {
+                s3.list_files(sessionID +'/' + screenName).then( timelines => {
                     var files = Object.keys(timelines);
 
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
@@ -85,7 +81,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
                         console.log({message: 'Timeline has already been collected and it is within on month of date range!'});
 
-                        localStorageHelper.listFiles(sessionID +'/' + screenName).then( personalities => {
+                        s3.list_files(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
                             if (algorithm === 'IBM-Watson') {
                                 var personalityFname = screenName + '_personality.json';
@@ -103,7 +99,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
                                 console.log({message: 'Personality has already been collected and it is within one month of date range!'});
 
-                                localStorageHelper.parseFile(sessionID + '/' + screenName + '/' + personalityFname)
+                                s3.parseFile(sessionID + '/' + screenName + '/' + personalityFname)
                                     .then( personality =>{
                                         resolve(personality);
                                     }).catch(err =>{
@@ -114,7 +110,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
                                 if (algorithm === 'IBM-Watson') {
-                                    connectToRabbitMQ('bae_get_personality', {
+                                    lambdaHandler.invoke('bae_get_personality', {
                                         sessionID: sessionID,
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
@@ -163,7 +159,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
                     // 1.1.2 if timeline hasn't been collected, collect timeline
                     else {
-                        connectToRabbitMQ('bae_collect_timeline', {
+                        lambdaHandler.invoke('bae_collect_timeline', {
                             sessionID: sessionID,
                             consumer_key: TWITTER_CONSUMER_KEY,
                             consumer_secret: TWITTER_CONSUMER_SECRET,
@@ -173,7 +169,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                         }).then(timelines => {
 
                             if (algorithm === 'IBM-Watson') {
-                                connectToRabbitMQ('bae_get_personality', {
+                                lambdaHandler.invoke('bae_get_personality', {
                                     sessionID: sessionID,
                                     apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,

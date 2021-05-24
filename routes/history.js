@@ -1,9 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var path = require('path');
-var appPath = path.dirname(__dirname);
-var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
-var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbitmqSender.js'));
+
 
 router.get('/history', function(req, res, next){
     res.render('history', {});
@@ -13,12 +10,12 @@ router.get('/history-list', function(req, res, next){
     var promiseArr = [];
 
     // loop through folders
-    localStorageHelper.listFolders(sessionID + '/').then( folders => {
+    s3.list_folders(sessionID + '/').then( folders => {
         folders.forEach( folder =>{
             promiseArr.push(new Promise((resolve, reject) => {
 
                 // loop through each folder to find its files
-                localStorageHelper.listFiles(sessionID + '/' + folder + '/').then( files =>{
+                s3.list_files(sessionID + '/' + folder + '/').then( files =>{
                     var historyListItem = {};
                     var files = Object.keys(files);
                     historyListItem[folder] = files;
@@ -42,13 +39,13 @@ router.get('/history-list', function(req, res, next){
 
 router.get('/preview', function(req, res, next){
     var screenName = req.query.screenName;
-    localStorageHelper.listFiles(sessionID + '/' + screenName).then(personalities => {
+    s3.list_files(sessionID + '/' + screenName).then(personalities => {
         var promises = [];
         var accountInfoFname = screenName + '_account_info.json';
         var IBMPersonalityFname = screenName + '_personality.json';
         var UtkuPersonalityFname = screenName + '_utku_personality_average.json';
         if (accountInfoFname in personalities){
-            promises.push(localStorageHelper.parseFile(sessionID + '/' + screenName + '/' + accountInfoFname));
+            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + accountInfoFname));
         }
         else{
             // push empty promise to resever the spot
@@ -56,7 +53,7 @@ router.get('/preview', function(req, res, next){
         }
 
         if (IBMPersonalityFname in personalities) {
-            promises.push(localStorageHelper.parseFile(sessionID + '/' + screenName + '/' + IBMPersonalityFname));
+            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + IBMPersonalityFname));
         }
         else{
             // push empty promise to resever the spot
@@ -64,7 +61,7 @@ router.get('/preview', function(req, res, next){
         }
 
         if (UtkuPersonalityFname in personalities) {
-            promises.push(localStorageHelper.parseFile(sessionID + '/' + screenName + '/' + UtkuPersonalityFname));
+            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + UtkuPersonalityFname));
         }
         else{
             // push empty promise to resever the spot
@@ -104,7 +101,7 @@ router.get('/preview', function(req, res, next){
 });
 
 router.post('/bulk-comparison', function(req,res,next){
-    connectToRabbitMQ('bae_bulk_comparison', {
+    lambdaHandler.invoke('bae_bulk_comparison', {
         screen_names: req.body.screenNames,
         sessionID: sessionID,
         algorithm: req.body.algorithm
@@ -118,10 +115,10 @@ router.post('/bulk-comparison', function(req,res,next){
 router.get('/download', function(req,res, next){
     var prefix = sessionID + '/' + req.query.screenName +'/';
     var filename = 'BAE-' + req.query.screenName + '.zip';
-    localStorageHelper.zipDownloads(prefix, filename, req.query.screenName)
+    s3.zipDownloads(prefix, filename, req.query.screenName)
     .then((downloadable) => {
         res.on('finish', function(){
-            localStorageHelper.deleteLocalFile(downloadable)
+            s3.deleteLocalFile(downloadable)
             .then()
             .catch(err =>{
                 console.log(err);
@@ -136,7 +133,7 @@ router.get('/download', function(req,res, next){
 });
 
 router.get('/deleteRemote', function(req,res,next){
-    localStorageHelper.deleteLocalFolders(sessionID + '/' + req.query.screenName + '/')
+    s3.deleteLocalFolders(sessionID + '/' + req.query.screenName + '/')
         .then(data =>{
             console.log('remove', data);
             res.status(200).send(data);
@@ -144,7 +141,7 @@ router.get('/deleteRemote', function(req,res,next){
 });
 
 router.get('/purgeRemote', function(req,res,next){
-    localStorageHelper.deleteLocalFolders(sessionID + '/').then( values => {
+    s3.deleteLocalFolders(sessionID + '/').then( values => {
         res.send({'data':'Successfully purged!'});
     }).catch( err =>{
         console.log(err);
