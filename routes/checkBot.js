@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 router.get('/botometer', function(req, res){
-    lambdaHandler.invoke('bae_botometer', {
+    lambdaHandler.invoke('bae_botometer', 'bae_botometer', {
         consumer_key: TWITTER_CONSUMER_KEY,
         consumer_secret: TWITTER_CONSUMER_SECRET,
         access_token: req.session.twtAccessTokenKey,

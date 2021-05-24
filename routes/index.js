@@ -33,7 +33,7 @@ router.post('/update', function (req, res, next) {
 });
 
 router.get('/score', function(req, res, next){
-    lambdaHandler.invoke('bae_get_sim_score', {
+    lambdaHandler.invoke('bae_get_sim_score', 'bae_get_sim_score', {
         user_screen_name: req.query.userScreenName,
         brand_screen_name: req.query.brandScreenName,
         option: req.query.option,
@@ -61,7 +61,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
     return new Promise((resolve, reject) =>
 
         // 1. check if username exist
-        lambdaHandler.invoke('bae_check_screen_name', {
+        lambdaHandler.invoke('bae_check_screen_name', 'bae_check_screen_name', {
             consumer_key: TWITTER_CONSUMER_KEY,
             consumer_secret: TWITTER_CONSUMER_SECRET,
             access_token: credentials.twtAccessTokenKey,
@@ -110,7 +110,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                             // 1.1.1.2 if not collected, collect personality, job done!
                             else {
                                 if (algorithm === 'IBM-Watson') {
-                                    lambdaHandler.invoke('bae_get_personality', {
+                                    lambdaHandler.invoke('bae_get_personality', 'bae_get_personality', {
                                         sessionID: sessionID,
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
@@ -159,7 +159,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
                     // 1.1.2 if timeline hasn't been collected, collect timeline
                     else {
-                        lambdaHandler.invoke('bae_collect_timeline', {
+                        lambdaHandler.invoke('bae_collect_timeline', 'bae_collect_timeline', {
                             sessionID: sessionID,
                             consumer_key: TWITTER_CONSUMER_KEY,
                             consumer_secret: TWITTER_CONSUMER_SECRET,
@@ -169,7 +169,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                         }).then(timelines => {
 
                             if (algorithm === 'IBM-Watson') {
-                                lambdaHandler.invoke('bae_get_personality', {
+                                lambdaHandler.invoke('bae_get_personality', 'bae_get_personality', {
                                     sessionID: sessionID,
                                     apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,

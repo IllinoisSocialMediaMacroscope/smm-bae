@@ -101,7 +101,7 @@ router.get('/preview', function(req, res, next){
 });
 
 router.post('/bulk-comparison', function(req,res,next){
-    lambdaHandler.invoke('bae_bulk_comparison', {
+    lambdaHandler.invoke('bae_bulk_comparison', 'bae_bulk_comparison', {
         screen_names: req.body.screenNames,
         sessionID: sessionID,
         algorithm: req.body.algorithm
