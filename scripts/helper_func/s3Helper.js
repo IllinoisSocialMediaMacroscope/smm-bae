@@ -76,7 +76,6 @@ class S3Helper {
                     console.log(err);
                     reject(err);
                 }
-
                 var folderObj = {};
                 var fileList = data.CommonPrefixes;
                 if (fileList !== []){
@@ -265,14 +264,15 @@ class S3Helper {
      * @returns {Promise<any>}
      */
     parseFile(fname){
-        var fnamePath = path.join("/tmp", fname);
         return new Promise((resolve,reject) => {
-            fs.readFile(fnamePath, function(err, data){
-                if (err) {
-                    console.log(err, err.stack);
+
+            s3.getObject({ Bucket:BUCKET_NAME, Key:fname},function(err,data){
+                if (err){
+                    console.log(err,err.stack);
                     reject(err);
-                } else {
-                    resolve(JSON.parse(data));
+                }else {
+                    console.log(data);
+                    resolve(JSON.parse(data.Body));
                 }
             });
         });
