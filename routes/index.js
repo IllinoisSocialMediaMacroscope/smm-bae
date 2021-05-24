@@ -18,6 +18,7 @@ router.post('/update', function (req, res, next) {
                 brand: results[1]
             })
     }).catch(err => {
+        console.log(err);
         try {
             var parsedError = JSON.parse(err);
             if (req.body.algorithm === "IBM-Watson" && parsedError.code === 401) {
@@ -101,6 +102,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
                                 s3.parseFile(sessionID + '/' + screenName + '/' + personalityFname)
                                     .then( personality =>{
+                                        personality['screen_name'] = screenName;
+                                        personality['profile_img'] = user['profile_img'];
+                                        personality['statuses_count'] = user['statuses_count'];
+                                        personality['lastModified'] = timelines[screenName + '_tweets.txt']['lastModified'];
                                         resolve(personality);
                                     }).catch(err =>{
                                     reject(err);
@@ -115,6 +120,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
                                     }).then(personality => {
+                                        console.log(user);
                                         personality['screen_name'] = screenName;
                                         personality['profile_img'] = user['profile_img'];
                                         personality['statuses_count'] = user['statuses_count'];

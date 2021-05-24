@@ -48,7 +48,7 @@ router.get('/preview', function(req, res, next){
         var IBMPersonalityFname = screenName + '_personality.json';
         var UtkuPersonalityFname = screenName + '_utku_personality_average.json';
         if (accountInfoFname in personalities){
-            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + accountInfoFname));
+            promises.push(s3.parseFile(personalities[accountInfoFname]['remoteKey']));
         }
         else{
             // push empty promise to resever the spot
