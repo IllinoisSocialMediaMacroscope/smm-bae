@@ -4,6 +4,7 @@
  * equivalent to each user
  * @type {string}
  */
+var sessionURL = window.location.href;
 
 var pathArray = window.location.pathname.split('/');
 var newPath = "";

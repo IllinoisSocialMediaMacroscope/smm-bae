@@ -6,29 +6,29 @@ var connectToRabbitMQ = require(path.join(appPath,'scripts','helper_func','rabbi
 var localStorageHelper = require(path.join(appPath, 'scripts','helper_func', 'localStorageHelper.js'));
 
 
-router.get('/', function(req, res, next){
-    res.render('index',{});
+router.get('/', function (req, res, next) {
+    res.render('index', {});
 });
 
-router.post('/update', function(req, res, next){
+router.post('/update', function (req, res, next) {
     var promises = [];
-    promises.push( getTimeline(sessionID, req.body.userScreenName, req.body.algorithm, req.session));
-    promises.push( getTimeline(sessionID, req.body.brandScreenName, req.body.algorithm, req.session));
-    Promise.all(promises).then( results => {
+    promises.push(getTimeline(sessionID, req.body.userScreenName, req.body.algorithm, req.session, req.body.email, req.body.sessionURL));
+    promises.push(getTimeline(sessionID, req.body.brandScreenName, req.body.algorithm, req.session, req.body.email, req.body.sessionURL));
+    Promise.all(promises).then(results => {
         res.status(200).send(
-        {
-            algorithm: req.body.algorithm,
-            user:results[0],
-            brand:results[1]
-        })
-    }).catch( err =>{
-        try{
+            {
+                algorithm: req.body.algorithm,
+                user: results[0],
+                brand: results[1]
+            })
+    }).catch(err => {
+        try {
             var parsedError = JSON.parse(err);
-            if (parsedError.code === 401){
+            if (req.body.algorithm === "IBM-Watson" && parsedError.code === 401) {
                 // this error means personality credentials are invalid
                 delete req.session.bluemixPersonalityApikey;
             }
-        }catch(e){
+        } catch (e) {
             console.log(e);
         }
 
@@ -48,17 +48,19 @@ router.get('/score', function(req, res, next){
     }).catch(err => {
         res.status(500).send(err);
     });
-
 });
 
 /**
  * main script to trigger aws lambda to pull twitter timeline and calcualte personality scores
  * @param sessionID
  * @param screenName
+ * @param algorithm
  * @param credentials
+ * @param email
+ * @param sessionURL
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, algorithm, credentials){
+function getTimeline(sessionID, screenName, algorithm, credentials, email = null, sessionURL = null) {
 
     return new Promise((resolve, reject) =>
 
@@ -68,8 +70,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
             consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
             access_token: credentials.twtAccessTokenKey,
             access_token_secret: credentials.twtAccessTokenSecret,
-            screen_name:screenName })
-        .then( user => {
+            screen_name: screenName,
+            sessionID: sessionID,
+        })
+        .then(user => {
 
             // 1.1 if user name exist, check if timeline has been collected
             if (user['user_exist']) {
@@ -79,18 +83,21 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                     // 1.1.1 if timeline has already been collected, check if personality has been collected
                     if (files.indexOf(screenName + '_tweets.txt') > -1
                         && timelines[screenName + '_tweets.txt']['upToDate']) {
-                        console.log({ message: 'Timeline has already been collected and it is within on month of date range!'});
+                        console.log({message: 'Timeline has already been collected and it is within on month of date range!'});
 
                         localStorageHelper.listFiles(sessionID +'/' + screenName).then( personalities => {
                             var files = Object.keys(personalities);
-                            if (algorithm === 'IBM-Watson'){
+                            if (algorithm === 'IBM-Watson') {
                                 var personalityFname = screenName + '_personality.json';
                             }
-                            else if (algorithm === 'TwitPersonality'){
+                            else if (algorithm === 'TwitPersonality') {
                                 var personalityFname = screenName + '_twitPersonality.json';
                             }
-                            else{
-                                reject()
+                            else if (algorithm === 'Pamuksuz-Personality') {
+                                var personalityFname = screenName + '_utku_personality_average.json';
+                            }
+                            else {
+                                reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
                             }
                             // 1.1.1.1 if personality has been collected, job done!
                             if (files.indexOf(personalityFname) > -1 && timelines[personalityFname]['upToDate']) {
@@ -111,19 +118,45 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                                         sessionID: sessionID,
                                         apikey: credentials.bluemixPersonalityApikey,
                                         screen_name: screenName,
-                                        profile_img: user['profile_img']
                                     }).then(personality => {
+                                        personality['screen_name'] = screenName;
+                                        personality['profile_img'] = user['profile_img'];
+                                        personality['statuses_count'] = user['statuses_count'];
+                                        personality['lastModified'] = timelines[screenName + '_tweets.txt']['lastModified'];
                                         resolve(personality);
                                     }).catch(err => {
                                         reject(err);
                                     });
                                 }
-                                else if (algorithm === 'TwitPersonality'){
+                                else if (algorithm === 'TwitPersonality') {
                                     reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                         "and we have to temporarily deprecate it.");
                                 }
+                                else if (algorithm === 'Pamuksuz-Personality') {
+                                    // if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
+                                    // var jobName = sessionID + '_' + screenName;
+                                    //
+                                    // // set default batch command
+                                    // var command = [
+                                    //     "python3.6",
+                                    //     "/scripts/batch_function.py",
+                                    //     "--sessionID", sessionID,
+                                    //     "--screen_name", screenName,
+                                    //     "--email", email,
+                                    //     "--sessionURL", sessionURL
+                                    // ];
+                                    // batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                    //     jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
+                                    //     resolve(data);
+                                    // }).catch(err => {
+                                    //     reject(err);
+                                    // });
+                                }
+                                else {
+                                    reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
+                                }
                             }
-                        }).catch( err => {
+                        }).catch(err => {
                             reject(err);
                         })
                     }
@@ -136,30 +169,56 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
                             consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
                             access_token: credentials.twtAccessTokenKey,
                             access_token_secret: credentials.twtAccessTokenSecret,
-                            screen_name:screenName
-                        }).then( timelines => {
+                            screen_name: screenName
+                        }).then(timelines => {
 
                             if (algorithm === 'IBM-Watson') {
                                 connectToRabbitMQ('bae_get_personality', {
                                     sessionID: sessionID,
                                     apikey: credentials.bluemixPersonalityApikey,
                                     screen_name: screenName,
-                                    profile_img: user['profile_img']
                                 }).then(personality => {
+                                    personality['screen_name'] = screenName;
+                                    personality['profile_img'] = user['profile_img'];
+                                    personality['statuses_count'] = user['statuses_count'];
+                                    personality['lastModified'] = new Date();
                                     resolve(personality);
                                 }).catch(err => {
                                     reject(err);
                                 })
                             }
-                            else if (algorithm === 'TwitPersonality'){
+                            else if (algorithm === 'TwitPersonality') {
                                 reject("We are currently experiencing some problem with the TwitPersonality alogrithm, " +
                                     "and we have to temporarily deprecate it.");
                             }
-                        }).catch( err => {
+                            else if (algorithm === 'Pamuksuz-Personality') {
+                                if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
+                                var jobName = sessionID + '_' + screenName;
+
+                                // set default batch command
+                                var command = [
+                                    "python3.6",
+                                    "/scripts/batch_function.py",
+                                    "--sessionID", sessionID,
+                                    "--screen_name", screenName,
+                                    "--email", email,
+                                    "--sessionURL", sessionURL
+                                ];
+                                batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                    jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
+                                    resolve(data);
+                                }).catch(err => {
+                                    reject(err);
+                                });
+                            }
+                            else {
+                                reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
+                            }
+                        }).catch(err => {
                             reject(err);
                         });
                     }
-                }).catch( err => {
+                }).catch(err => {
                     console.log(err);
                     reject(err);
                 })
@@ -169,10 +228,10 @@ function getTimeline(sessionID, screenName, algorithm, credentials){
             else {
                 reject('User screen name: ' + screenName + ' does not exist!');
             }
-        }).catch( err => {
+        }).catch(err => {
             console.log(err);
             reject(err);
-    }));
+        }));
 }
 
 module.exports = router;

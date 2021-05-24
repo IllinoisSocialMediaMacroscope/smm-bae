@@ -17,6 +17,12 @@ button:active{
     overflow:auto;
 }
 
+.modal-body img{
+    display:block;
+    margin:auto auto;
+    width:30%;
+}
+
 .modal-body .btn{
     margin:10px;
 }
@@ -151,7 +157,7 @@ button:active{
 #user-container,
 #brand-container,
 #history-links,
-#bulk-comparison{
+#history-display{
     background-color: #def2f1;
     min-height: 600px;
     padding: 50px;
@@ -264,14 +270,14 @@ button:active{
     border-bottom:solid 1px #bcd1d5;
 }
 
-.history-link p{
+.history-link > .preview{
     display:inline;
     font-weight:bolder;
     font-size:15px;
 }
 
-.history-link button,
-.history-link a{
+.history-link  button,
+.history-link > .download{
     float:right;
     background:none;
     border:none;
@@ -284,6 +290,12 @@ button:active{
 }
 
 .tag-Twit{
+    background-color:#b4cbcf;
+    font-size:x-small;
+    margin:3px;
+}
+
+.tag-Pamuksuz{
     background-color:#063535;
     font-size:x-small;
     margin:3px;
@@ -303,7 +315,6 @@ button:active{
     display: inline;
     position: relative;
     vertical-align: middle;
-    padding:2px;
     width:85%;
     height: 34px;
     padding: 6px 12px;
@@ -345,6 +356,29 @@ button:active{
     box-shadow: 0 0 40px #607d8b59;
 }
 
+.personality-description{
+    color: #063535;
+    font-size: 10px;
+    font-style: italic;
+}
 
+.batch-confirmation-text{
+    font-size:20px;
+}
 
+.tab-content{
+    padding:20px 0;
+}
 
+#IBM-preview-tab,
+#Pamuksuz-preview-tab{
+    display:none;
+ }
+
+.twitter-account-row{
+    margin:10px 0;
+}
+
+.batch-notification{
+    display: none;
+}
