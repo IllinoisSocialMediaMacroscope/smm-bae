@@ -293,40 +293,6 @@ class S3Helper {
         });
     }
 
-    /**
-     * zip the downloaded forder to one file
-     * @param filename
-     * @param zipfolder
-     * @param screenName
-     * @returns {Promise<any>}
-     */
-    zipDownloads(filename,zipfolder, screenName){
-
-        return new Promise((resolve,reject) => {
-
-            var archive = archiver('zip', {
-                // Sets the compression level
-                zlib: { level: 9 }
-            });
-
-            var fileOutput = fs.createWriteStream(filename);
-            fileOutput.on('close',function(){
-                resolve(archive.pointer() + ' total bytes');
-            });
-
-            archive.on('error',function(err){
-                console.log(err);
-                reject(err);
-            });
-
-            archive.pipe(fileOutput);
-            archive.directory(zipfolder, screenName);
-
-            archive.finalize();
-        });
-
-    }
-
 }
 
 
