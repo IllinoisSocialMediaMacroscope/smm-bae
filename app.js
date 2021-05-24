@@ -9,6 +9,15 @@ var app = express();
 var LambdaHelper = require(path.join(__dirname, 'scripts', 'helper_func', 'lambdaHelper.js'));
 var BatchHelper = require(path.join(__dirname, 'scripts', 'helper_func', 'batchHelper.js'));
 var RabbitmqSender = require(path.join(__dirname, 'scripts', 'helper_func', 'rabbitmqSender.js'));
+var S3Helper = require(path.join(__dirname, 'scripts', 'helper_func', 's3Helper.js'));
+
+
+/**
+ * default path from environment file and set it global; maybe not be used
+ */
+baeHomePath = path.join(process.env.HOME, 'bae');
+s3FolderName = process.env.USER || 'local';
+email = true;
 
 app.use(session({
     secret: 'keyboard cat',
@@ -25,15 +34,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-
-// paths
-app.use('/', require('./routes/index'));
-app.use('/', require('./routes/auth'));
-app.use('/', require('./routes/history'));
-app.use('/', require('./routes/documentation'));
-app.use('/', require('./routes/checkBot'));
-app.use('/', require('./routes/userPrompt'));
-app.use('/', require('./routes/citation'));
 
 if (process.env.DOCKERIZED === 'true'){
     // determine credentials either from file or from environment variable
@@ -60,10 +60,21 @@ else{
     AWS_ACCESSKEYSECRET = config.aws.accessKeySecret;
     TWITTER_CONSUMER_KEY = config.twitter.consumerKey;
     TWITTER_CONSUMER_SECRET = config.twitter.consumerSecret;
+    BUCKET_NAME = "macroscope-bae";
     lambdaHandler = new LambdaHelper(AWS_ACCESSKEY, AWS_ACCESSKEYSECRET);
     batchHandler = new BatchHelper(AWS_ACCESSKEY, AWS_ACCESSKEYSECRET);
     s3 = new S3Helper(false, AWS_ACCESSKEY, AWS_ACCESSKEYSECRET);
 }
+
+// paths
+app.use('/', require('./routes/index'));
+app.use('/', require('./routes/auth'));
+app.use('/', require('./routes/history'));
+app.use('/', require('./routes/documentation'));
+app.use('/', require('./routes/checkBot'));
+app.use('/', require('./routes/userPrompt'));
+app.use('/', require('./routes/citation'));
+
 // set server
 var debug = require('debug');
 var port = normalizePort('8001');

@@ -11,14 +11,14 @@ router.get('/history-list', function(req, res, next){
 
     // loop through folders
     s3.list_folders(sessionID + '/').then( folders => {
-        folders.forEach( folder =>{
+        for (var i=0; i<folders.length; i++){
             promiseArr.push(new Promise((resolve, reject) => {
 
                 // loop through each folder to find its files
-                s3.list_files(sessionID + '/' + folder + '/').then( files =>{
+                s3.list_files(sessionID + '/' + folders[i] + '/').then(files =>{
                     var historyListItem = {};
                     var files = Object.keys(files);
-                    historyListItem[folder] = files;
+                    historyListItem[folders[i]] = files;
 
                     resolve(historyListItem);
 
@@ -26,7 +26,7 @@ router.get('/history-list', function(req, res, next){
                     reject(err);
                 });
             }));
-        });
+        }
 
         Promise.all(promiseArr).then( results => {
             res.status(200).send({'historyList': results});
