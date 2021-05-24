@@ -55,7 +55,7 @@ router.get('/preview', function(req, res, next){
         }
 
         if (IBMPersonalityFname in personalities) {
-            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + IBMPersonalityFname));
+            promises.push(s3.parseFile(personalities[IBMPersonalityFname]['remoteKey']));
         }
         else{
             // push empty promise to resever the spot
@@ -63,7 +63,7 @@ router.get('/preview', function(req, res, next){
         }
 
         if (UtkuPersonalityFname in personalities) {
-            promises.push(s3.parseFile(sessionID + '/' + screenName + '/' + UtkuPersonalityFname));
+            promises.push(s3.parseFile(personalities[UtkuPersonalityFname]['remoteKey']));
         }
         else{
             // push empty promise to resever the spot

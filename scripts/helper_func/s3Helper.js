@@ -90,7 +90,7 @@ class S3Helper {
 
     };
 
-    list_files(prefix){
+    list_files(prefix, signedUrl=false){
         return new Promise((resolve,reject) =>{
             var s3 = this.s3;
             s3.listObjectsV2({
@@ -110,9 +110,24 @@ class S3Helper {
                     for (var i=0, length=fileList.length; i< length; i++){
                         // generate downloadable URL
                         var filename = fileList[i].Key.split('/').slice(-1)[0];
-                        var fileURL = s3.getSignedUrl('getObject',
-                            {Bucket:BUCKET_NAME,Key:fileList[i].Key, Expires:604800});
-                        folderObj[filename] = fileURL;
+                        var lastModified = new Date(fileList[i].LastModified);
+
+                        var monthFromToday = new Date();
+                        monthFromToday.setMonth(monthFromToday.getMonth() -1);
+                        monthFromToday.setHours(0,0,0);
+                        monthFromToday.setMilliseconds(0);
+                        var upToDate = +lastModified > +monthFromToday;
+
+                        folderObj[filename] = {};
+                        folderObj[filename]['lastModified'] = lastModified;
+                        folderObj[filename]['upToDate'] = upToDate;
+                        folderObj[filename]['remoteKey'] = fileList[i].Key;
+
+                        if (signedUrl){
+                            var fileURL = s3.getSignedUrl('getObject',
+                                {Bucket:BUCKET_NAME, Key:fileList[i].Key, Expires:604800});
+                            folderObj[filename]['signedUrl'] = fileURL;
+                        }
                     }
 
                     resolve(folderObj);
@@ -260,18 +275,18 @@ class S3Helper {
 
     /**
      * download all the file given filename
-     * @param fname
+     * @param remoteKey
      * @returns {Promise<any>}
      */
-    parseFile(fname){
-        return new Promise((resolve,reject) => {
+    parseFile(remoteKey){
+        var s3 = this.s3;
+        return new Promise((resolve, reject) => {
 
-            s3.getObject({ Bucket:BUCKET_NAME, Key:fname},function(err,data){
+            s3.getObject({ Bucket:BUCKET_NAME, Key:remoteKey},function(err,data){
                 if (err){
                     console.log(err,err.stack);
                     reject(err);
                 }else {
-                    console.log(data);
                     resolve(JSON.parse(data.Body));
                 }
             });
