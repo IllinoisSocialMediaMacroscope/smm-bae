@@ -6,8 +6,8 @@ var connectToRabbitMQ = require(path.join(appPath, 'scripts', 'helper_func', 'ra
 
 router.post('/prompt', function(req, res) {
     connectToRabbitMQ('bae_screen_name_prompt', {
-        consumer_key: process.env.TWITTER_CONSUMER_KEY,
-        consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+        consumer_key: TWITTER_CONSUMER_KEY,
+        consumer_secret: TWITTER_CONSUMER_SECRET,
         access_token: req.session.twtAccessTokenKey,
         access_token_secret: req.session.twtAccessTokenSecret,
         screen_name: req.body.screenName

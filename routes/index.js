@@ -66,8 +66,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
 
         // 1. check if username exist
         connectToRabbitMQ('bae_check_screen_name', {
-            consumer_key: process.env.TWITTER_CONSUMER_KEY,
-            consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+            consumer_key: TWITTER_CONSUMER_KEY,
+            consumer_secret: TWITTER_CONSUMER_SECRET,
             access_token: credentials.twtAccessTokenKey,
             access_token_secret: credentials.twtAccessTokenSecret,
             screen_name: screenName,
@@ -165,8 +165,8 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                     else {
                         connectToRabbitMQ('bae_collect_timeline', {
                             sessionID: sessionID,
-                            consumer_key: process.env.TWITTER_CONSUMER_KEY,
-                            consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
+                            consumer_key: TWITTER_CONSUMER_KEY,
+                            consumer_secret: TWITTER_CONSUMER_SECRET,
                             access_token: credentials.twtAccessTokenKey,
                             access_token_secret: credentials.twtAccessTokenSecret,
                             screen_name: screenName
