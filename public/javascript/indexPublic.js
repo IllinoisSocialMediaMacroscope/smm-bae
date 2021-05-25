@@ -71,6 +71,7 @@ $("#batch").find("button").on('click', function(){
         var brandScreenName = $("#brand-search").find('input').val();
         var algorithm = $("#algorithm option:selected").val();
         var email = $("#email").val();
+        if (email === undefined) email="";
 
         // disable submit button when still loading
         $("#batch").find(".form-group").hide();
