@@ -57,7 +57,7 @@ router.get('/score', function(req, res, next){
  * @param sessionURL
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, algorithm, credentials, emailAddress = "", sessionURL = null) {
+function getTimeline(sessionID, screenName, algorithm, credentials, emailAddress = "NA", sessionURL = null) {
 
     return new Promise((resolve, reject) =>
 
