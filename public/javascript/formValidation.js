@@ -30,7 +30,7 @@ function formValidation($this, whichPerformance){
     }
     else if (whichPerformance === 'batch'){
         if ($("#email").length &&
-            $("#email").val() === "" || $("#email").val() === undefined || $("#email").val().indexOf("@") == -1){
+            ($("#email").val() === "" || $("#email").val() === undefined || $("#email").val().indexOf("@") == -1)){
             $("#modal-message").text('You have to provide valid email address ' +
                 'so that we can inform you when computation is finished.');
             $("#alert").modal('show');
