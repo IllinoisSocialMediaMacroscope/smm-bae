@@ -53,11 +53,11 @@ router.get('/score', function(req, res, next){
  * @param screenName
  * @param algorithm
  * @param credentials
- * @param email
+ * @param emailAddress
  * @param sessionURL
  * @returns {Promise<any>}
  */
-function getTimeline(sessionID, screenName, algorithm, credentials, email = null, sessionURL = null) {
+function getTimeline(sessionID, screenName, algorithm, credentials, emailAddress = undefined, sessionURL = null) {
 
     return new Promise((resolve, reject) =>
 
@@ -144,7 +144,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                         "/scripts/batch_function.py",
                                         "--sessionID", sessionID,
                                         "--screen_name", screenName,
-                                        "--email", email,
+                                        "--email", emailAddress,
                                         "--sessionURL", sessionURL
                                     ];
                                     batchHandler.batch(
@@ -199,7 +199,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     "and we have to temporarily deprecate it.");
                             }
                             else if (algorithm === 'Pamuksuz-Personality') {
-                                if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
+                                if (sessionURL === null) reject("You have to provide sessionURL!");
                                 var jobName = sessionID + '_' + screenName;
 
                                 // set default batch command
@@ -208,7 +208,7 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     "/scripts/batch_function.py",
                                     "--sessionID", sessionID,
                                     "--screen_name", screenName,
-                                    "--email", email,
+                                    "--email", emailAddress,
                                     "--sessionURL", sessionURL
                                 ];
                                 batchHandler.batch(

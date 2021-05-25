@@ -150,9 +150,6 @@ class S3Helper {
                     reject(err);
                 }else{
                     if (!data.IsTruncated){
-                        // create a place to hold the the downloaded files
-                        if (!fs.existsSync(downloadPath)) fs.mkdirSync(downloadPath);
-
                         // create a promise array to hold all the downloads since it's async
                         var p_arr = [];
 
@@ -162,7 +159,7 @@ class S3Helper {
                             var currPath = downloadPath;
                             for (var i=1, length=path.length-1; i< length; i++){
                                 currPath += '/' + path[i];
-                                if (!fs.existsSync(currPath)) fs.mkdirSync(currPath);
+                                if (!fs.existsSync(currPath)) fs.mkdirSync(currPath, {recursive:true});
                             }
                             p_arr.push(new Promise((resolve,reject) =>{
                                 s3.getObject({ Bucket:BUCKET_NAME, Key:val.Key},function(err,data){
@@ -292,6 +289,57 @@ class S3Helper {
             });
         });
     }
+
+    /**
+     * zip the downloaded forder to one file
+     * @param zipPath
+     * @param zipFilename
+     * @param sourceFolder
+     * @param targetFolderName
+     * @returns {Promise<any>}
+     */
+    zipDownloads(zipPath, zipFilename, sourceFolder, targetFolderName){
+
+        return new Promise((resolve,reject) => {
+
+            var archive = archiver('zip', {
+                // Sets the compression level
+                zlib: { level: 9 }
+            });
+
+            if (!fs.existsSync(zipPath)){
+                console.log("create zipPath folder");
+                fs.mkdirSync(zipPath, {recursive:true});
+            }
+
+            var fileOutput = fs.createWriteStream(zipPath + "/" + zipFilename)
+
+            fileOutput.on('close',function(){
+                resolve(zipPath + "/" + zipFilename);
+            });
+
+            archive.on('warning', function(err) {
+                if (err.code === 'ENOENT') {
+                    // log warning
+                } else {
+                    // throw error
+                    throw err;
+                }
+            });
+
+            archive.on('error',function(err){
+                console.log(err);
+                reject(err);
+            });
+
+            archive.pipe(fileOutput);
+            archive.directory(sourceFolder, targetFolderName);
+
+            archive.finalize();
+        });
+
+    }
+
 
 }
 
