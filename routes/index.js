@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 router.get('/', function (req, res, next) {
-    res.render('index', {});
+    res.render('index', {enableEmail: email});
 });
 
 router.post('/update', function (req, res, next) {
@@ -135,24 +135,29 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                         "and we have to temporarily deprecate it.");
                                 }
                                 else if (algorithm === 'Pamuksuz-Personality') {
-                                    // if (email === null || sessionURL === null) reject("You have to provide email and sessionURL!");
-                                    // var jobName = sessionID + '_' + screenName;
-                                    //
-                                    // // set default batch command
-                                    // var command = [
-                                    //     "python3.6",
-                                    //     "/scripts/batch_function.py",
-                                    //     "--sessionID", sessionID,
-                                    //     "--screen_name", screenName,
-                                    //     "--email", email,
-                                    //     "--sessionURL", sessionURL
-                                    // ];
-                                    // batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
-                                    //     jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
-                                    //     resolve(data);
-                                    // }).catch(err => {
-                                    //     reject(err);
-                                    // });
+                                    if (sessionURL === null) reject("You have to provide sessionURL!");
+                                    var jobName = sessionID + '_' + screenName;
+
+                                    // set default batch command
+                                    var command = [
+                                        "python3.6",
+                                        "/scripts/batch_function.py",
+                                        "--sessionID", sessionID,
+                                        "--screen_name", screenName,
+                                        "--email", email,
+                                        "--sessionURL", sessionURL
+                                    ];
+                                    batchHandler.batch(
+                                        'arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                        jobName,
+                                        'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch',
+                                        "bae_utku_brand_personality",
+                                        command)
+                                    .then(data => {
+                                        resolve(data);
+                                    }).catch(err => {
+                                        reject(err);
+                                    });
                                 }
                                 else {
                                     reject("We cannot recognize the algorithm: " + algorithm + " you specified!");
@@ -206,8 +211,13 @@ function getTimeline(sessionID, screenName, algorithm, credentials, email = null
                                     "--email", email,
                                     "--sessionURL", sessionURL
                                 ];
-                                batchInvoke('arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
-                                    jobName, 'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch', command).then(data => {
+                                batchHandler.batch(
+                                    'arn:aws:batch:us-west-2:083781070261:job-definition/bae_utku_brand_personality:1',
+                                    jobName,
+                                    'arn:aws:batch:us-west-2:083781070261:job-queue/SMILE_batch',
+                                    "bae_utku_brand_personality",
+                                    command)
+                                .then(data => {
                                     resolve(data);
                                 }).catch(err => {
                                     reject(err);

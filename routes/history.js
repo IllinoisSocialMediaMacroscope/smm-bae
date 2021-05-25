@@ -136,7 +136,7 @@ router.get('/download', function(req,res, next){
 });
 
 router.get('/deleteRemote', function(req,res,next){
-    s3.deleteLocalFolders(sessionID + '/' + req.query.screenName + '/')
+    s3.deleteRemoteFolder(sessionID + '/' + req.query.screenName + '/')
         .then(data =>{
             console.log('remove', data);
             res.status(200).send(data);
@@ -144,7 +144,7 @@ router.get('/deleteRemote', function(req,res,next){
 });
 
 router.get('/purgeRemote', function(req,res,next){
-    s3.deleteLocalFolders(sessionID + '/').then( values => {
+    s3.deleteRemoteFolder(sessionID + '/').then( values => {
         res.send({'data':'Successfully purged!'});
     }).catch( err =>{
         console.log(err);

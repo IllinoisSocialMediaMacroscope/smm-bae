@@ -212,7 +212,7 @@ class S3Helper {
                 }else{
                     if (data.KeyCount === 0){
                         console.log('There is no data in the folder you specified!');
-                        resolve();
+                        resolve(prefix);
                     }else{
                         if (!data.IsTruncated){
                             var params = {
@@ -228,7 +228,7 @@ class S3Helper {
                                     console.log('cannot delete err');
                                     reject(err);
                                 }else{
-                                    resolve();
+                                    resolve(prefix);
                                 }
                             });
                         }else{
