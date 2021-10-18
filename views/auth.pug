@@ -37,17 +37,21 @@ div(class="login")
 
     div(class="login-background", id="ibmkey")
         h1 IBM personality insights
-        p Please provide your IBM personality insights key, which is <u>DIFFERENT</u> than your IBM Cloud
-            | (formerly known as Bluemix) credentials.
+        //p Please provide your IBM personality insights key, which is <u>DIFFERENT</u> than your IBM Cloud
+        //    | (formerly known as Bluemix) credentials.
+        //div(class="login-instruction")
+        //    p Frequently Asked Questions:
+        //    a(href="documentation#access-watson", target="_blank") How do I access IBM Personality Insights?
+        //    a(href="documentation#find-watson-credential", target="_blank") How can I get an IBM personality insights key
         div(class="login-instruction")
-            p Frequently Asked Questions:
-            a(href="documentation#access-watson", target="_blank") How do I access IBM Personality Insights?
-            a(href="documentation#find-watson-credential", target="_blank") How can I get an IBM personality insights key
-        div(id="bluemix-auth")
-            input(id="bluemix-personality-apikey", type="password", class="form-control", placeholder="Personality Insights API Key")
-            button(class="btn btn-primary pull-right", id="bluemix-pin-submit")
-                img(src="img/bluemix-sm-logo.png" width=18)
-                | Submit
+            p IBM Watson™ Personality Insights is discontinued. We will explore alternatives and find replacement.
+                |  Meanwhile, please click "Skip" and try out the machine learning based personality analysis we offer.
+            a(href="https://cloud.ibm.com/apidocs/personality-insights", target="_blank") Introduction of IBM Watson™ Personality Insights
+        //div(id="bluemix-auth")
+        //    input(id="bluemix-personality-apikey", type="password", class="form-control", placeholder="Personality Insights API Key")
+        //    button(class="btn btn-primary pull-right", id="bluemix-pin-submit")
+        //        img(src="img/bluemix-sm-logo.png" width=18)
+        //        | Submit
         div(class="auth-flow-next", id="bluemix-skip")
             a(href="") Skip
 
@@ -57,7 +61,7 @@ div(class="login")
         div(id="select-algorithm", class="row")
             select(class="form-control", id="algorithm")
                 option(value="none" selected) Choose one personality alogrithm...
-                option(value="IBM-Watson") IBM Personality Insights
+                option(value="IBM-Watson" disabled=true) IBM Personality Insights
                 option(value="Pamuksuz-Personality") Pamuksuz, Yun, Humphreys Brand Personality Model
         p Please select two Twitter accounts that you want to compare.
         div(id="user-search", class="row")
